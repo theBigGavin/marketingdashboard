@@ -7,6 +7,7 @@ import { TreasuryPanel } from "@/components/dash/TreasuryPanel";
 import { SectorPanel } from "@/components/dash/SectorPanel";
 import { MoneyFlowPanel } from "@/components/dash/MoneyFlowPanel";
 import { RankPanel } from "@/components/dash/RankPanel";
+import { BoardFlowPanel } from "@/components/dash/BoardFlowPanel";
 import { NewsPanel } from "@/components/dash/NewsPanel";
 import { ChainPanel } from "@/components/dash/ChainPanel";
 import { WatchlistPanel } from "@/components/dash/WatchlistPanel";

@@ -40,9 +40,11 @@ export function BoardFlowChart({ flows, progress = 1 }: { flows: BoardFlow[]; pr
     const n = Math.max(...series.map((s) => s.points.length));
     // 重放进度: 只绘制前 idx 个点
     const idx = Math.max(1, Math.min(n - 1, Math.floor(progress * (n - 1))));
-    const allV = series.flatMap((s) => s.points.map((p) => p.v));
-    let min = Math.min(...allV, 0);
-    let max = Math.max(...allV, 0);
+    // 纵坐标按当前已播放的数据动态缩放,播放结束时再切回全天范围
+    const visiblePoints = series.flatMap((s) => (progress < 1 ? s.points.slice(0, idx + 1) : s.points));
+    const visibleV = visiblePoints.map((p) => p.v);
+    let min = Math.min(...visibleV, 0);
+    let max = Math.max(...visibleV, 0);
     const pad = (max - min) * 0.04 || 1;
     min -= pad;
     max += pad;
@@ -106,6 +108,23 @@ export function BoardFlowChart({ flows, progress = 1 }: { flows: BoardFlow[]; pr
               </text>
             </g>
           ))}
+          {/* 时间游标 */}
+          {progress < 1 && (
+            <g>
+              <line
+                x1={chart.X(chart.idx)}
+                y1={8}
+                x2={chart.X(chart.idx)}
+                y2={chart.H - 18}
+                stroke="#94a3b8"
+                strokeWidth={1}
+                strokeDasharray="3 3"
+              />
+              <text x={chart.X(chart.idx)} y={8} fontSize={8} fill="#e2e8f0" textAnchor="middle" style={TNUM}>
+                {chart.cursorT}
+              </text>
+            </g>
+          )}
         </svg>
       ) : (
         <div className="flex h-full items-center justify-center text-[11px] text-slate-600">板块资金流加载中…</div>
