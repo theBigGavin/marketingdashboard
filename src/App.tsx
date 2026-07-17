@@ -106,23 +106,23 @@ function Dashboard() {
       <Header />
       <Tape />
       {/* 一屏式大屏:三行网格,行高按比例分配 */}
-      <main className="grid min-h-0 flex-1 gap-1.5 p-1.5 lg:grid-rows-[30fr_34fr_36fr]">
+      <main className="grid min-h-0 flex-1 gap-1 p-1 lg:grid-rows-[30fr_34fr_36fr]">
         {/* 第一行:指数 / 板块 / 快讯 */}
-        <div className="grid min-h-0 grid-cols-12 gap-1.5">
+        <div className="grid min-h-0 grid-cols-12 gap-1">
           <IndexPanel className="col-span-12 lg:col-span-3" />
           <SectorPanel className="col-span-12 h-[560px] lg:h-auto lg:col-span-5" />
           <NewsPanel className="col-span-12 h-[560px] lg:h-auto lg:col-span-4" />
         </div>
         {/* 第二行:美债 / 榜单 / 资金流 / 板块资金流 / 大宗 */}
-        <div className="grid min-h-0 grid-cols-12 gap-1.5">
-          <TreasuryPanel className="col-span-12 h-[340px] lg:h-auto lg:col-span-3" />
-          <RankPanel className="col-span-12 h-[340px] lg:h-auto lg:col-span-2" />
-          <MoneyFlowPanel className="col-span-12 h-[340px] lg:h-auto lg:col-span-2" />
-          <BoardFlowPanel className="col-span-12 h-[340px] lg:h-auto lg:col-span-3" />
-          <CommodityPanel className="col-span-12 h-[300px] lg:h-auto lg:col-span-2" />
+        <div className="grid min-h-0 grid-cols-10 gap-1">
+          <BoardFlowPanel className="col-span-10 h-[340px] lg:h-auto lg:col-span-2" />
+          <MoneyFlowPanel className="col-span-10 h-[340px] lg:h-auto lg:col-span-2" />
+          <RankPanel className="col-span-10 h-[340px] lg:h-auto lg:col-span-2" />
+          <CommodityPanel className="col-span-10 h-[300px] lg:h-auto lg:col-span-2" />
+          <TreasuryPanel className="col-span-10 h-[340px] lg:h-auto lg:col-span-2" />
         </div>
         {/* 第三行:自选股 / 产业链 */}
-        <div className="grid min-h-0 grid-cols-12 gap-1.5">
+        <div className="grid min-h-0 grid-cols-12 gap-1">
           <WatchlistPanel className="col-span-12 h-[400px] lg:h-auto lg:col-span-3" />
           <ChainPanel className="col-span-12 h-[560px] lg:h-auto lg:col-span-9" />
         </div>
