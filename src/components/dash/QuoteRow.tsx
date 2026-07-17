@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePolling } from "@/hooks/usePolling";
 import { api } from "@/lib/api";
 import { Spark } from "./Spark";
@@ -17,6 +17,9 @@ function Stat({ label, value, valueCls = "text-slate-300" }: { label?: string; v
     </div>
   );
 }
+
+/** 行宽小于该值时, 资金流标签收缩为单字(净/占) */
+const COMPACT_WIDTH = 400;
 
 interface QuoteRowProps {
   /** 腾讯格式代码, 如 sh688126 */
@@ -40,8 +43,6 @@ interface QuoteRowProps {
   flow?: boolean;
   /** card = 带边框的卡片样式(产业链) */
   variant?: "plain" | "card";
-  /** 窄宽度场景: 资金流标签用单字(净/占) */
-  narrow?: boolean;
   active?: boolean;
   onClick?: () => void;
   onRemove?: () => void;
@@ -52,23 +53,50 @@ interface QuoteRowProps {
  *  底部整行: 标签 · 行业 · 概念
  */
 export function QuoteRow({
-  code, name, price, pct, tag, rank, amount, turnover, spark, boards, flow, variant = "plain", narrow, active, onClick, onRemove,
+  code, name, price, pct, tag, rank, amount, turnover, spark, boards, flow, variant = "plain", active, onClick, onRemove,
 }: QuoteRowProps) {
+  // 行宽自适应: 实测宽度决定资金流标签形态(主力净额/净占比 ↔ 净/占)
+  const rootRef = useRef<HTMLElement | null>(null);
+  const [rowWidth, setRowWidth] = useState(0);
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => setRowWidth(entries[0].contentRect.width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const compact = rowWidth > 0 && rowWidth < COMPACT_WIDTH;
+
+  // 可见性懒加载: 行进入视口后才启动分时/板块/资金流轮询(一旦加载不再关闭)
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el || seen) return;
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        setSeen(true);
+        io.disconnect();
+      }
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [seen]);
+
   const { data: minute } = usePolling(
-    () => (spark ? api.minute(code) : Promise.resolve(null)),
+    () => (spark && seen ? api.minute(code) : Promise.resolve(null)),
     60000,
-    [code, spark]
+    [code, spark, seen]
   );
   // 服务端 24h 缓存, 前端 5 分钟重试以容忍上游瞬时失败
   const { data: bd } = usePolling(
-    () => (boards ? api.stockBoards(code) : Promise.resolve(null)),
+    () => (boards && seen ? api.stockBoards(code) : Promise.resolve(null)),
     5 * 60 * 1000,
-    [code, boards]
+    [code, boards, seen]
   );
   const { data: fl } = usePolling(
-    () => (flow ? api.stockFlow(code) : Promise.resolve(null)),
+    () => (flow && seen ? api.stockFlow(code) : Promise.resolve(null)),
     30000,
-    [code, flow]
+    [code, flow, seen]
   );
 
   const Tag = onClick ? "button" : "div";
@@ -81,6 +109,9 @@ export function QuoteRow({
 
   return (
     <Tag
+      ref={(el: HTMLElement | null) => {
+        rootRef.current = el;
+      }}
       onClick={onClick}
       className={`group block w-full rounded px-2 py-[4px] text-left transition-colors ${skin} ${
         active ? "bg-cyan-500/10 ring-1 ring-cyan-500/40" : ""
@@ -140,7 +171,7 @@ export function QuoteRow({
         {/* 第二行: 主力净额 / 净占比(进度条) / 换手率 / 涨跌幅 */}
         {flow ? (
           <Stat
-            label={variant === "card" || narrow ? "净" : "主力净额"}
+            label={compact ? "净" : "主力净额"}
             value={fl ? fmtYuan(fl.netIn) : "—"}
             valueCls={`font-semibold ${fl ? clsChg(fl.netIn) : "text-slate-600"}`}
           />
@@ -149,14 +180,14 @@ export function QuoteRow({
         )}
         {flow ? (
           <div className="flex min-w-0 items-center gap-1 overflow-hidden whitespace-nowrap leading-none">
-            <span className="shrink-0 text-[9px] text-slate-600">{variant === "card" || narrow ? "占" : "净占比"}</span>
-            <span className="h-1 min-w-0 flex-1 rounded-full bg-slate-800">
+            <span className="shrink-0 text-[9px] text-slate-600">{compact ? "占" : "净占比"}</span>
+            <span className="h-1 min-w-0 flex-1 self-center rounded-full bg-slate-800">
               <span
                 className={`block h-1 rounded-full ${fl && fl.netRatio < 0 ? "bg-emerald-400/80" : "bg-rose-400/80"}`}
                 style={{ width: `${ratioBar}%` }}
               />
             </span>
-            <span className={`text-[11px] ${fl ? clsChg(fl.netRatio) : "text-slate-600"}`} style={TNUM}>
+            <span className={`truncate text-[11px] ${fl ? clsChg(fl.netRatio) : "text-slate-600"}`} style={TNUM}>
               {fl ? `${fl.netRatio.toFixed(1)}%` : "—"}
             </span>
           </div>

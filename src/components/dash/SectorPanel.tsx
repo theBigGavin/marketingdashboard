@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Panel } from "./Panel";
 import { QuoteRow } from "./QuoteRow";
 import { usePolling } from "@/hooks/usePolling";
@@ -7,10 +7,19 @@ import { clsChg, fmtPct, fmtYuan, hexChg } from "@/lib/format";
 
 type Kind = "01" | "02";
 
+/** 成分股轮播间隔(ms) */
+const ROTATE_MS = 10000;
+
 function BoardRow({ b, maxAbs, active, onClick }: { b: Board; maxAbs: number; active: boolean; onClick: () => void }) {
   const w = maxAbs > 0 ? Math.min(100, (Math.abs(b.pct) / maxAbs) * 100) : 0;
+  const ref = useRef<HTMLButtonElement>(null);
+  // 轮播/选中时滚动到可视区域
+  useEffect(() => {
+    if (active) ref.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [active]);
   return (
     <button
+      ref={ref}
       onClick={onClick}
       className={`group grid w-full grid-cols-[24px_1fr_76px_96px] items-center gap-2 rounded px-2 py-[5px] text-left transition-colors ${
         active ? "bg-cyan-500/10 ring-1 ring-cyan-500/40" : "hover:bg-slate-800/40"
@@ -38,6 +47,9 @@ export function SectorPanel({ className = "" }: { className?: string }) {
   const [dir, setDir] = useState<0 | 1>(0);
   const [selected, setSelected] = useState<Board | null>(null);
   const [q, setQ] = useState("");
+  // 轮播: 默认开启, 手动点击板块后暂停
+  const [auto, setAuto] = useState(true);
+  const [idx, setIdx] = useState(0);
 
   // 全量拉取(行业 124 / 概念 ~800), 前端本地搜索过滤
   const { data: boards, error } = usePolling(() => api.boards(kind, dir, kind === "01" ? 300 : 1000), 15000, [kind, dir]);
@@ -49,6 +61,24 @@ export function SectorPanel({ className = "" }: { className?: string }) {
 
   const filtered = boards?.filter((b) => !q || b.name.includes(q));
   const maxAbs = filtered ? Math.max(...filtered.map((b) => Math.abs(b.pct)), 0.01) : 1;
+
+  // 榜单/搜索变化时回到第一个板块
+  useEffect(() => setIdx(0), [kind, dir, q]);
+  // 定时推进轮播索引
+  useEffect(() => {
+    if (!auto || !filtered?.length) return;
+    const t = window.setInterval(() => setIdx((i) => i + 1), ROTATE_MS);
+    return () => window.clearInterval(t);
+  }, [auto, filtered?.length]);
+  // 轮播模式下同步选中项
+  useEffect(() => {
+    if (auto && filtered?.length) setSelected(filtered[idx % filtered.length]);
+  }, [auto, idx, filtered]);
+
+  const pick = (b: Board) => {
+    setAuto(false);
+    setSelected(selected?.code === b.code && !auto ? null : b);
+  };
 
   return (
     <Panel
@@ -64,10 +94,17 @@ export function SectorPanel({ className = "" }: { className?: string }) {
             placeholder="搜索板块"
             className="w-20 rounded border border-slate-700/50 bg-slate-800/40 px-1.5 py-0.5 text-[11px] text-slate-200 outline-none placeholder:text-slate-600 focus:border-cyan-500/50"
           />
+          <button
+            onClick={() => setAuto((a) => !a)}
+            title={auto ? `轮播中(${ROTATE_MS / 1000}s),点击暂停` : "已暂停,点击恢复轮播"}
+            className={`rounded px-2 py-0.5 ${auto ? "bg-cyan-500/20 text-cyan-300" : "text-slate-400 hover:text-slate-200"}`}
+          >
+            轮播
+          </button>
           {([["01", "行业"], ["02", "概念"]] as [Kind, string][]).map(([k, label]) => (
             <button
               key={k}
-              onClick={() => { setKind(k); setSelected(null); }}
+              onClick={() => { setKind(k); setAuto(true); }}
               className={`rounded px-2 py-0.5 ${kind === k ? "bg-cyan-500/20 text-cyan-300" : "text-slate-400 hover:text-slate-200"}`}
             >
               {label}
@@ -94,7 +131,7 @@ export function SectorPanel({ className = "" }: { className?: string }) {
           </div>
           {filtered?.map((b) => (
             <BoardRow key={b.code} b={b} maxAbs={maxAbs} active={selected?.code === b.code}
-              onClick={() => setSelected(selected?.code === b.code ? null : b)} />
+              onClick={() => pick(b)} />
           ))}
           {!filtered && (
             <div className="p-6 text-center text-[11px] text-slate-600">
@@ -127,10 +164,9 @@ export function SectorPanel({ className = "" }: { className?: string }) {
                   pct={s.pct}
                   amount={s.amount > 0 ? fmtYuan(s.amount) : undefined}
                   turnover={s.turnover > 0 ? `${s.turnover.toFixed(1)}%` : undefined}
-                  spark={i < 20}
-                  boards={i < 20}
-                  flow={i < 20}
-                  narrow
+                  spark
+                  boards
+                  flow
                 />
               ))}
               {stocks && <div className="px-1.5 pt-1 text-right text-[9px] text-slate-600">全量 {stocks.length} 只成分股</div>}
