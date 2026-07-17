@@ -573,6 +573,40 @@ async function handleStockFlows(codesParam) {
   return list.map((c) => out[c]).filter(Boolean);
 }
 
+/** 板块实时资金流向图: 流入/流出各取前N/2, 拉取分钟级累计主力净流入 */
+async function handleBoardFlow(n) {
+  const half = Math.max(3, Math.min(15, Math.floor((parseInt(n) || 20) / 2)));
+  return emEnqueue(async () => {
+    const pick = async (po) => {
+      const url = `https://push2delay.eastmoney.com/api/qt/clist/get?fid=f62&po=${po}&pz=${half}&pn=1&np=1&fltt=2&invt=2&fs=${encodeURIComponent("m:90+t:2")}&fields=f12,f14,f62`;
+      return ((await emGet(url))?.data?.diff || []).map((b) => ({
+        code: b.f12,
+        name: b.f14,
+        netIn: num(b.f62),
+      }));
+    };
+    const [ups, downs] = await Promise.all([pick(1), pick(0)]);
+    const boards = [...ups, ...downs.filter((d) => !ups.some((u) => u.code === d.code))];
+    const out = [];
+    for (const b of boards) {
+      try {
+        const url = `https://push2delay.eastmoney.com/api/qt/stock/fflow/kline/get?secid=90.${b.code}&klt=1&lmt=0&fields1=f1,f2,f3,f7&fields2=f51,f52`;
+        const kl = (await emGet(url))?.data?.klines || [];
+        out.push({
+          ...b,
+          points: kl.map((s) => {
+            const f = s.split(",");
+            return { t: f[0].slice(11, 16), v: num(f[1]) }; // "2026-07-17 09:31" -> "09:31", 累计主力净流入(元)
+          }),
+        });
+      } catch {
+        out.push({ ...b, points: [] });
+      }
+    }
+    return out;
+  });
+}
+
 /* ---------------- 新浪接口(node fetch 被拦时回退 curl) ---------------- */
 async function fetchSinaJson(url, { referer } = {}) {
   try {
@@ -737,6 +771,7 @@ const routes = {
   "/api/stock-flow": async (q) =>
     handleStockFlows(q.get("code") || "").then((rows) => rows[0] || Promise.reject(new Error("empty stock-flow"))),
   "/api/stock-flows": async (q) => handleStockFlows(q.get("codes") || ""),
+  "/api/board-flow": async (q) => cached(`bf:${q.get("n")}`, 120000, () => handleBoardFlow(q.get("n") || "20")),
   "/api/stock-boards": async (q) =>
     cached(`sb:${q.get("code")}`, 24 * 3600 * 1000, () => handleStockBoards(q.get("code") || "")),
   "/api/news": async (q) =>

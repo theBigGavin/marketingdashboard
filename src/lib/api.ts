@@ -101,6 +101,14 @@ export interface StockFlow {
   pct?: number;
 }
 
+/** 板块资金流向曲线(分钟级累计主力净流入) */
+export interface BoardFlow {
+  code: string;
+  name: string;
+  netIn: number; // 元
+  points: { t: string; v: number }[];
+}
+
 export interface NewsItem {
   id: number;
   title: string;
@@ -327,6 +335,7 @@ export const api = {
   stockBoards: (code: string) => get<StockBoards>(`/api/stock-boards?code=${encodeURIComponent(code)}`),
   stockFlow: (code: string) => flowLoader(code),
   futureMinute: (code: string) => get<MinuteData>(`/api/future-minute?code=${encodeURIComponent(code)}`),
+  boardFlow: (n = 20) => get<BoardFlow[]>(`/api/board-flow?n=${n}`),
   news: (size = 60) => withFallback(() => get<NewsItem[]>(`/api/news?size=${size}`), () => directNews(size)),
   treasuries: () => get<Treasury[]>(`/api/treasuries`),
   treasuryHistory: () => get<TreasuryCurvePoint[]>(`/api/treasury-history`),

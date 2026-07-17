@@ -4,7 +4,7 @@ import { usePolling } from "@/hooks/usePolling";
 import { api } from "@/lib/api";
 import { clsChg, fmtYuan } from "@/lib/format";
 
-/** 实时资金流向 — 主力净流入 TOP(东财口径) */
+/** 实时资金流向 — 个股主力净流入 TOP(东财口径) */
 export function MoneyFlowPanel({ className = "" }: { className?: string }) {
   const { data, error } = usePolling(() => api.moneyflow(15), 20000);
 
