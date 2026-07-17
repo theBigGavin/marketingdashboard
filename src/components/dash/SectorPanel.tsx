@@ -3,7 +3,7 @@ import { Panel } from "./Panel";
 import { QuoteRow } from "./QuoteRow";
 import { usePolling } from "@/hooks/usePolling";
 import { api, type Board } from "@/lib/api";
-import { clsChg, fmtPct, hexChg } from "@/lib/format";
+import { clsChg, fmtPct, fmtYuan, hexChg } from "@/lib/format";
 
 type Kind = "01" | "02";
 
@@ -108,7 +108,7 @@ export function SectorPanel({ className = "" }: { className?: string }) {
 
         {/* 成分股侧栏 */}
         {selected && (
-          <div className="w-[min(420px,48%)] shrink-0 overflow-y-auto border-l border-slate-700/40 p-2">
+          <div className="w-[min(440px,52%)] shrink-0 overflow-y-auto border-l border-slate-700/40 p-2">
             <div className="mb-2 flex items-baseline justify-between">
               <span className="text-[12px] font-semibold text-cyan-300">{selected.name}</span>
               <span className={`text-[12px] font-semibold ${clsChg(selected.pct)}`}>{fmtPct(selected.pct)}</span>
@@ -125,10 +125,12 @@ export function SectorPanel({ className = "" }: { className?: string }) {
                   name={s.name}
                   price={s.price}
                   pct={s.pct}
+                  amount={s.amount > 0 ? fmtYuan(s.amount) : undefined}
                   turnover={s.turnover > 0 ? `${s.turnover.toFixed(1)}%` : undefined}
                   spark={i < 20}
                   boards={i < 20}
                   flow={i < 20}
+                  narrow
                 />
               ))}
               {stocks && <div className="px-1.5 pt-1 text-right text-[9px] text-slate-600">全量 {stocks.length} 只成分股</div>}

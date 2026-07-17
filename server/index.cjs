@@ -163,6 +163,7 @@ async function handleBoardStocks(code, dir, n) {
     speed: num(s.speed),
     circ_mv: num(s.ltsz), // 流通市值(亿)
     total_mv: num(s.zsz),
+    amount: num(s.volume) * 100 * num(s.zxj), // 成交量(手)估算成交额(元)
   });
   const out = [];
   for (let offset = 0; out.length < want; offset += 100) {

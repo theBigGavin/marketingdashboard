@@ -54,6 +54,7 @@ export interface BoardStock {
   pe: number;
   speed: number;
   circ_mv: number;
+  amount: number; // 元(估算)
 }
 
 export interface RankStock {
