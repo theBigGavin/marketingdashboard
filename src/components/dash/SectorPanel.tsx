@@ -155,7 +155,7 @@ export function SectorPanel({ className = "" }: { className?: string }) {
               <span>20日 <span className={clsChg(selected.pct20)}>{fmtPct(selected.pct20)}</span></span>
             </div>
             <div className="space-y-0.5">
-              {stocks?.map((s, i) => (
+              {stocks?.map((s) => (
                 <QuoteRow
                   key={s.code}
                   code={s.code}
