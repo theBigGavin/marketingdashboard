@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Routes, Route } from "react-router";
+import { Maximize2, Minimize2 } from "lucide-react";
 import { TickerTape, type TapeItem } from "@/components/dash/TickerTape";
+import { Logo } from "@/components/Logo";
 import { IndexPanel } from "@/components/dash/IndexPanel";
 import { CommodityPanel } from "@/components/dash/CommodityPanel";
 import { TreasuryPanel } from "@/components/dash/TreasuryPanel";
@@ -12,6 +14,7 @@ import { NewsPanel } from "@/components/dash/NewsPanel";
 import { ChainPanel } from "@/components/dash/ChainPanel";
 import { WatchlistPanel } from "@/components/dash/WatchlistPanel";
 import { usePolling } from "@/hooks/usePolling";
+import { useFullscreen } from "@/hooks/useFullscreen";
 import { api } from "@/lib/api";
 import { INDICES, FOREX, COMMODITIES } from "@/config/dashboard";
 
@@ -24,7 +27,7 @@ function useClock() {
   return now;
 }
 
-function Header() {
+function Header({ isFullscreen, onToggleFullscreen }: { isFullscreen: boolean; onToggleFullscreen: () => void }) {
   const now = useClock();
   const hh = String(now.getHours()).padStart(2, "0");
   const mm = String(now.getMinutes()).padStart(2, "0");
@@ -33,11 +36,9 @@ function Header() {
   const week = ["日", "一", "二", "三", "四", "五", "六"][now.getDay()];
 
   return (
-    <header className="flex h-9 shrink-0 items-center gap-3 border-b border-slate-700/50 bg-gradient-to-r from-[#0a1424] via-[#0c1320] to-[#0a1424] px-3">
+    <header className="titlebar flex h-9 shrink-0 items-center gap-3 border-b border-slate-700/50 bg-gradient-to-r from-[#0a1424] via-[#0c1320] to-[#0a1424]">
       <div className="flex items-center gap-2.5">
-        <div className="flex h-5.5 w-5.5 items-center justify-center rounded bg-gradient-to-br from-cyan-400 to-blue-600 text-[12px] font-black text-white shadow-[0_0_12px_rgba(34,211,238,0.45)]" style={{ height: 22, width: 22 }}>
-          驾
-        </div>
+        <Logo size={22} className="rounded-[6px] shadow-[0_0_12px_rgba(34,211,238,0.45)]" />
         <h1 className="text-[13px] font-bold tracking-wider text-slate-100">
           市场研究驾驶舱
           <span className="ml-2 text-[8px] font-medium tracking-[0.2em] text-cyan-500/80">MARKET RESEARCH COCKPIT</span>
@@ -58,9 +59,16 @@ function Header() {
         <span className="hidden text-[10px] text-slate-400 md:inline" style={{ fontVariantNumeric: "tabular-nums" }}>
           {dateStr} 星期{week}
         </span>
-        <span className="rounded border border-slate-700/60 bg-slate-800/40 px-2 py-px text-[12px] font-bold text-cyan-300" style={{ fontVariantNumeric: "tabular-nums" }}>
+        <span className="rounded border border-slate-700/60 bg-slate-800/40 px-2 py-px font-mono text-[12px] font-bold text-cyan-300">
           {hh}:{mm}<span className="text-cyan-600">:{ss}</span>
         </span>
+        <button
+          onClick={onToggleFullscreen}
+          title={isFullscreen ? "退出全屏" : "全屏显示"}
+          className="flex h-[22px] w-[22px] items-center justify-center rounded border border-slate-700/60 bg-slate-800/40 text-slate-400 transition-colors hover:border-cyan-500/60 hover:text-cyan-300"
+        >
+          {isFullscreen ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+        </button>
       </div>
     </header>
   );
@@ -101,9 +109,10 @@ function Tape() {
 }
 
 function Dashboard() {
+  const { isFullscreen, toggle } = useFullscreen();
   return (
     <div className="flex min-h-screen flex-col bg-[#070b12] text-slate-200 lg:h-screen lg:overflow-hidden">
-      <Header />
+      <Header isFullscreen={isFullscreen} onToggleFullscreen={toggle} />
       <Tape />
       {/* 一屏式大屏:三行网格,行高按比例分配 */}
       <main className="grid min-h-0 flex-1 gap-1 p-1 lg:grid-rows-[30fr_34fr_36fr]">

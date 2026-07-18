@@ -132,3 +132,20 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* ===== PWA Window Controls Overlay ===== */
+/* 安装为桌面应用后浏览器标题栏隐藏, Header 兼任可拖拽标题栏;
+   按平台窗口按钮区(macOS 红绿灯在左 / Windows 最小化按钮在右)自动留白;
+   普通浏览器中 env() 回退, 布局保持 px-3 不变。 */
+header.titlebar {
+  -webkit-app-region: drag;
+  app-region: drag;
+  padding-left: calc(0.75rem + env(titlebar-area-x, 0px));
+  padding-right: calc(
+    0.75rem + (100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw))
+  );
+}
+header.titlebar button {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}

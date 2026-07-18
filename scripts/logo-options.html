@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; background: #111827; height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; gap: 36px;
+    font-family: "PingFang SC", "Hiragino Sans GB", sans-serif;
+  }
+  .item { text-align: center; }
+  .item svg { width: 300px; height: 300px; display: block; }
+  .item p { color: #cbd5e1; font-size: 22px; margin: 18px 0 0; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+
+<!-- A 仪表盘 -->
+<div class="item">
+<svg viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="gA" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#0b1220"/>
+  <rect x="6" y="6" width="500" height="500" rx="106" fill="none" stroke="#1e293b" stroke-width="2"/>
+  <path d="M 116 322 A 140 140 0 0 1 396 322" fill="none" stroke="#1c2942" stroke-width="26" stroke-linecap="round"/>
+  <path d="M 116 322 A 140 140 0 0 1 355 223" fill="none" stroke="url(#gA)" stroke-width="26" stroke-linecap="round"/>
+  <line x1="256" y1="322" x2="333" y2="245" stroke="#f1f5f9" stroke-width="16" stroke-linecap="round"/>
+  <circle cx="256" cy="322" r="20" fill="#22d3ee"/>
+  <circle cx="256" cy="322" r="9" fill="#0b1220"/>
+</svg>
+<p>A · 仪表盘</p>
+</div>
+
+<!-- B K线趋势 -->
+<div class="item">
+<svg viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="gB" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#3b82f6"/>
+    </linearGradient>
+    <marker id="arrB" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6"/>
+    </marker>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#0b1220"/>
+  <rect x="6" y="6" width="500" height="500" rx="106" fill="none" stroke="#1e293b" stroke-width="2"/>
+  <g opacity="0.5" stroke="#155e75" stroke-width="7">
+    <line x1="150" y1="252" x2="150" y2="372"/>
+    <line x1="228" y1="232" x2="228" y2="352"/>
+    <line x1="306" y1="272" x2="306" y2="392"/>
+  </g>
+  <g opacity="0.5">
+    <rect x="132" y="276" width="36" height="72" rx="7" fill="#164e63"/>
+    <rect x="210" y="252" width="36" height="80" rx="7" fill="#155e75"/>
+    <rect x="288" y="292" width="36" height="72" rx="7" fill="#164e63"/>
+  </g>
+  <polyline points="118,372 214,296 282,330 398,190" fill="none" stroke="url(#gB)"
+    stroke-width="24" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrB)"/>
+</svg>
+<p>B · K线趋势</p>
+</div>
+
+<!-- C 市场脉冲 -->
+<div class="item">
+<svg viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="gC" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#3b82f6"/>
+    </linearGradient>
+    <filter id="blurC" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#0b1220"/>
+  <rect x="6" y="6" width="500" height="500" rx="106" fill="none" stroke="#1e293b" stroke-width="2"/>
+  <g stroke="#152238" stroke-width="3">
+    <line x1="70" y1="196" x2="442" y2="196"/>
+    <line x1="70" y1="256" x2="442" y2="256"/>
+    <line x1="70" y1="316" x2="442" y2="316"/>
+  </g>
+  <polyline points="78,256 168,256 204,172 250,342 286,256 344,256 372,206 398,256 424,256"
+    fill="none" stroke="#22d3ee" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"
+    opacity="0.45" filter="url(#blurC)"/>
+  <polyline points="78,256 168,256 204,172 250,342 286,256 344,256 372,206 398,256 424,256"
+    fill="none" stroke="url(#gC)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="424" cy="256" r="15" fill="#34d399"/>
+</svg>
+<p>C · 市场脉冲</p>
+</div>
+
+<!-- D 雷达扫描 -->
+<div class="item">
+<svg viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="gD" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22d3ee" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#22d3ee" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#0b1220"/>
+  <rect x="6" y="6" width="500" height="500" rx="106" fill="none" stroke="#1e293b" stroke-width="2"/>
+  <line x1="256" y1="108" x2="256" y2="404" stroke="#152238" stroke-width="4"/>
+  <line x1="108" y1="256" x2="404" y2="256" stroke="#152238" stroke-width="4"/>
+  <circle cx="256" cy="256" r="148" fill="none" stroke="#1c2942" stroke-width="8"/>
+  <circle cx="256" cy="256" r="99" fill="none" stroke="#1c2942" stroke-width="6"/>
+  <circle cx="256" cy="256" r="50" fill="none" stroke="#1c2942" stroke-width="6"/>
+  <path d="M 256 256 L 361 151 A 148 148 0 0 1 404 256 Z" fill="url(#gD)"/>
+  <line x1="256" y1="256" x2="361" y2="151" stroke="#22d3ee" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="196" cy="186" r="11" fill="#34d399"/>
+  <circle cx="308" cy="306" r="9" fill="#22d3ee"/>
+  <circle cx="176" cy="318" r="8" fill="#3b82f6"/>
+  <circle cx="256" cy="256" r="10" fill="#22d3ee"/>
+</svg>
+<p>D · 雷达扫描</p>
+</div>
+
+</body>
+</html>
