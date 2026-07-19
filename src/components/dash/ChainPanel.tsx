@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Panel } from "./Panel";
+import { Panel, type PanelZoomProps } from "./Panel";
 import { QuoteRow } from "./QuoteRow";
 import { usePolling } from "@/hooks/usePolling";
 import { api, type Quote } from "@/lib/api";
@@ -28,7 +28,7 @@ function StockCell({ code, name, tag, q }: { code: string; name: string; tag?: s
 }
 
 /** 产业链上下游全景 */
-export function ChainPanel({ className = "" }: { className?: string }) {
+export function ChainPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
   const [chainId, setChainId] = useState(CHAINS[0].id);
   const chain = CHAINS.find((c) => c.id === chainId)!;
 
@@ -56,6 +56,7 @@ export function ChainPanel({ className = "" }: { className?: string }) {
   return (
     <Panel
       className={className}
+      {...zoomProps}
       title="产业链上下游全景"
       icon="⛓"
       accent="#34d399"

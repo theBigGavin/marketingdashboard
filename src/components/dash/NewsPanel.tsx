@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Panel } from "./Panel";
+import { Panel, type PanelZoomProps } from "./Panel";
 import { usePolling } from "@/hooks/usePolling";
 import { api, type NewsItem } from "@/lib/api";
 import { fmtTime } from "@/lib/format";
@@ -36,7 +36,7 @@ function NewsRow({ item, isNew }: { item: NewsItem; isNew: boolean }) {
 }
 
 /** 7x24 实时快讯 */
-export function NewsPanel({ className = "" }: { className?: string }) {
+export function NewsPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
   const { data, error } = usePolling(() => api.news(60), 20000);
   const [newIds, setNewIds] = useState<Set<number>>(new Set());
   const seenRef = useRef<Set<number>>(new Set());
@@ -58,6 +58,7 @@ export function NewsPanel({ className = "" }: { className?: string }) {
   return (
     <Panel
       className={className}
+      {...zoomProps}
       title="实时热点新闻 · 7×24 快讯"
       icon="↯"
       accent="#f472b6"

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Panel } from "./Panel";
+import { Panel, type PanelZoomProps } from "./Panel";
 import { BoardFlowChart } from "./BoardFlowChart";
 import { usePolling } from "@/hooks/usePolling";
 import { api } from "@/lib/api";
@@ -8,7 +8,7 @@ const DURATION_MS = 12000;
 const STEP_MS = 100;
 
 /** 板块实时资金流向图(流入/流出 TOP10 行业, 分钟级累计主力净流入) */
-export function BoardFlowPanel({ className = "" }: { className?: string }) {
+export function BoardFlowPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
   const { data: flows, error } = usePolling(() => api.boardFlow(20), 120000);
   const [progress, setProgress] = useState(1);
   const [playing, setPlaying] = useState(false);
@@ -33,6 +33,7 @@ export function BoardFlowPanel({ className = "" }: { className?: string }) {
   return (
     <Panel
       className={className}
+      {...zoomProps}
       title="板块资金流向"
       icon="∿"
       accent="#f43f5e"

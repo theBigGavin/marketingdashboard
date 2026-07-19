@@ -1,4 +1,4 @@
-import { Panel } from "./Panel";
+import { Panel, type PanelZoomProps } from "./Panel";
 import { Spark } from "./Spark";
 import { usePolling } from "@/hooks/usePolling";
 import { api, type Quote, type MinuteData } from "@/lib/api";
@@ -29,7 +29,7 @@ function IndexRow({ def, q, minute }: { def: IndexDef; q?: Quote; minute?: Minut
   );
 }
 
-export function IndexPanel({ className = "" }: { className?: string }) {
+export function IndexPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
   const { data: quotes } = usePolling(() => api.quotes(ALL_CODES), 5000);
   const { data: minutes } = usePolling(
     async () => {
@@ -50,7 +50,7 @@ export function IndexPanel({ className = "" }: { className?: string }) {
   ];
 
   return (
-    <Panel className={className} title="全球关键指数" icon="▦" accent="#38bdf8"
+    <Panel className={className} {...zoomProps} title="全球关键指数" icon="▦" accent="#38bdf8"
       right={<span className="text-[10px] text-slate-500">5s</span>}>
       <div className="flex h-full flex-col justify-between overflow-y-auto p-1">
         {groups.map((g) => (

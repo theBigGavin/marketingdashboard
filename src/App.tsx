@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import type { ComponentType } from "react";
 import { Routes, Route } from "react-router";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { TickerTape, type TapeItem } from "@/components/dash/TickerTape";
@@ -13,8 +14,10 @@ import { BoardFlowPanel } from "@/components/dash/BoardFlowPanel";
 import { NewsPanel } from "@/components/dash/NewsPanel";
 import { ChainPanel } from "@/components/dash/ChainPanel";
 import { WatchlistPanel } from "@/components/dash/WatchlistPanel";
+import { type PanelZoomProps } from "@/components/dash/Panel";
 import { usePolling } from "@/hooks/usePolling";
 import { useFullscreen } from "@/hooks/useFullscreen";
+import { usePanelZoom } from "@/hooks/usePanelZoom";
 import { api } from "@/lib/api";
 import { INDICES, FOREX, COMMODITIES } from "@/config/dashboard";
 
@@ -108,33 +111,74 @@ function Tape() {
   return <TickerTape items={items} />;
 }
 
+type PanelRowDef = {
+  defaultH: number;
+  panels: { id: string; component: ComponentType<{ className?: string } & PanelZoomProps>; defaultW: number; mobileH: string }[];
+};
+
+const PANEL_ROWS: PanelRowDef[] = [
+  {
+    defaultH: 0.30,
+    panels: [
+      { id: "index", component: IndexPanel, defaultW: 0.25, mobileH: "h-[560px]" },
+      { id: "sector", component: SectorPanel, defaultW: 0.4167, mobileH: "h-[560px]" },
+      { id: "news", component: NewsPanel, defaultW: 0.3333, mobileH: "h-[560px]" },
+    ],
+  },
+  {
+    defaultH: 0.34,
+    panels: [
+      { id: "boardFlow", component: BoardFlowPanel, defaultW: 0.2, mobileH: "h-[340px]" },
+      { id: "moneyFlow", component: MoneyFlowPanel, defaultW: 0.2, mobileH: "h-[340px]" },
+      { id: "rank", component: RankPanel, defaultW: 0.2, mobileH: "h-[340px]" },
+      { id: "commodity", component: CommodityPanel, defaultW: 0.2, mobileH: "h-[300px]" },
+      { id: "treasury", component: TreasuryPanel, defaultW: 0.2, mobileH: "h-[340px]" },
+    ],
+  },
+  {
+    defaultH: 0.36,
+    panels: [
+      { id: "watchlist", component: WatchlistPanel, defaultW: 0.25, mobileH: "h-[400px]" },
+      { id: "chain", component: ChainPanel, defaultW: 0.75, mobileH: "h-[560px]" },
+    ],
+  },
+];
+
 function Dashboard() {
   const { isFullscreen, toggle } = useFullscreen();
+  const { isZoomed, toggle: toggleZoom, layout } = usePanelZoom(PANEL_ROWS);
+
   return (
     <div className="flex min-h-screen flex-col bg-[#070b12] text-slate-200 lg:h-screen lg:overflow-hidden">
       <Header isFullscreen={isFullscreen} onToggleFullscreen={toggle} />
       <Tape />
-      {/* 一屏式大屏:三行网格,行高按比例分配 */}
-      <main className="grid min-h-0 flex-1 gap-1 p-1 lg:grid-rows-[30fr_34fr_36fr]">
-        {/* 第一行:指数 / 板块 / 快讯 */}
-        <div className="grid min-h-0 grid-cols-12 gap-1">
-          <IndexPanel className="col-span-12 lg:col-span-3" />
-          <SectorPanel className="col-span-12 h-[560px] lg:h-auto lg:col-span-5" />
-          <NewsPanel className="col-span-12 h-[560px] lg:h-auto lg:col-span-4" />
-        </div>
-        {/* 第二行:美债 / 榜单 / 资金流 / 板块资金流 / 大宗 */}
-        <div className="grid min-h-0 grid-cols-10 gap-1">
-          <BoardFlowPanel className="col-span-10 h-[340px] lg:h-auto lg:col-span-2" />
-          <MoneyFlowPanel className="col-span-10 h-[340px] lg:h-auto lg:col-span-2" />
-          <RankPanel className="col-span-10 h-[340px] lg:h-auto lg:col-span-2" />
-          <CommodityPanel className="col-span-10 h-[300px] lg:h-auto lg:col-span-2" />
-          <TreasuryPanel className="col-span-10 h-[340px] lg:h-auto lg:col-span-2" />
-        </div>
-        {/* 第三行:自选股 / 产业链 */}
-        <div className="grid min-h-0 grid-cols-12 gap-1">
-          <WatchlistPanel className="col-span-12 h-[400px] lg:h-auto lg:col-span-3" />
-          <ChainPanel className="col-span-12 h-[560px] lg:h-auto lg:col-span-9" />
-        </div>
+      {/* 一屏式大屏:三行布局,行高与列宽按缩放状态动态分配 */}
+      <main className="flex min-h-0 flex-1 flex-col gap-1 p-1">
+        {PANEL_ROWS.map((row, rowIdx) => (
+          <div
+            key={rowIdx}
+            className="flex min-h-0 flex-col gap-1 transition-all duration-300 lg:h-[var(--row-h)] lg:flex-row"
+            style={{ "--row-h": `${layout.rowHeights[rowIdx] * 100}%` } as React.CSSProperties}
+          >
+            {row.panels.map((panel, panelIdx) => {
+              const PanelComponent = panel.component;
+              return (
+                <div
+                  key={panel.id}
+                  className={`min-h-0 w-full transition-all duration-300 ${panel.mobileH} lg:h-full lg:w-[var(--panel-w)]`}
+                  style={{ "--panel-w": `${layout.rowWidths[rowIdx][panelIdx] * 100}%` } as React.CSSProperties}
+                >
+                  <PanelComponent
+                    className="h-full"
+                    panelId={panel.id}
+                    isZoomed={isZoomed(panel.id)}
+                    onToggleZoom={toggleZoom}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        ))}
       </main>
     </div>
   );

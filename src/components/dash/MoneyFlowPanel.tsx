@@ -1,11 +1,11 @@
-import { Panel } from "./Panel";
+import { Panel, type PanelZoomProps } from "./Panel";
 import { QuoteRow } from "./QuoteRow";
 import { usePolling } from "@/hooks/usePolling";
 import { api } from "@/lib/api";
 import { clsChg, fmtYuan } from "@/lib/format";
 
 /** 实时资金流向 — 个股主力净流入 TOP(东财口径) */
-export function MoneyFlowPanel({ className = "" }: { className?: string }) {
+export function MoneyFlowPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
   const { data, error } = usePolling(() => api.moneyflow(15), 20000);
 
   const total = data?.reduce((s, d) => s + d.netIn, 0) ?? 0;
@@ -13,6 +13,7 @@ export function MoneyFlowPanel({ className = "" }: { className?: string }) {
   return (
     <Panel
       className={className}
+      {...zoomProps}
       title="实时资金流向 · 主力净流入"
       icon="⇄"
       accent="#fb7185"

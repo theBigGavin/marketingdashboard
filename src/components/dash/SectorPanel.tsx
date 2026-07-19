@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Panel } from "./Panel";
+import { Panel, type PanelZoomProps } from "./Panel";
 import { QuoteRow } from "./QuoteRow";
 import { usePolling } from "@/hooks/usePolling";
 import { api, type Board } from "@/lib/api";
@@ -42,7 +42,7 @@ function BoardRow({ b, maxAbs, active, onClick }: { b: Board; maxAbs: number; ac
   );
 }
 
-export function SectorPanel({ className = "" }: { className?: string }) {
+export function SectorPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
   const [kind, setKind] = useState<Kind>("01");
   const [dir, setDir] = useState<0 | 1>(0);
   const [selected, setSelected] = useState<Board | null>(null);
@@ -83,6 +83,7 @@ export function SectorPanel({ className = "" }: { className?: string }) {
   return (
     <Panel
       className={className}
+      {...zoomProps}
       title="市场板块实时热点"
       icon="▤"
       accent="#22d3ee"

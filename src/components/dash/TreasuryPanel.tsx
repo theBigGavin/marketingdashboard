@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Panel } from "./Panel";
+import { Panel, type PanelZoomProps } from "./Panel";
 import { usePolling } from "@/hooks/usePolling";
 import { api, type Treasury } from "@/lib/api";
 import { clsChg } from "@/lib/format";
@@ -13,7 +13,7 @@ const LABEL: Record<string, string> = {
 const MILE_COLORS = ["#60a5fa", "#fbbf24", "#fb7185"];
 
 /** 美债收益率曲线 */
-export function TreasuryPanel({ className = "" }: { className?: string }) {
+export function TreasuryPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
   const { data, error } = usePolling(() => api.treasuries(), 60000);
   const { data: hist } = usePolling(() => api.treasuryHistory(), 3600000);
 
@@ -74,7 +74,7 @@ export function TreasuryPanel({ className = "" }: { className?: string }) {
   const spread3m10y = m3 && y10 ? (y10.yield - m3.yield) * 100 : null;
 
   return (
-    <Panel className={className} title="美债国债市场" icon="◧" accent="#a78bfa"
+    <Panel className={className} {...zoomProps} title="美债国债市场" icon="◧" accent="#a78bfa"
       right={<span className="text-[10px] text-slate-500">CNBC · 60s</span>}>
       <div className="flex h-full flex-col p-2.5">
         {/* 利差指标 */}

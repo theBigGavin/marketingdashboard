@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Panel } from "./Panel";
+import { Panel, type PanelZoomProps } from "./Panel";
 import { QuoteRow } from "./QuoteRow";
 import { usePolling } from "@/hooks/usePolling";
 import { api } from "@/lib/api";
@@ -13,7 +13,7 @@ const TABS: { key: Tab; label: string; sort: "amount" | "changepercent"; asc: 0 
 ];
 
 /** 个股榜单:热门(成交额) / 涨幅 / 跌幅 */
-export function RankPanel({ className = "" }: { className?: string }) {
+export function RankPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
   const [tab, setTab] = useState<Tab>("hot");
   const conf = TABS.find((t) => t.key === tab)!;
   const { data, error } = usePolling(() => api.rank(conf.sort, conf.asc, 30), 15000, [tab]);
@@ -21,6 +21,7 @@ export function RankPanel({ className = "" }: { className?: string }) {
   return (
     <Panel
       className={className}
+      {...zoomProps}
       title="个股榜单"
       icon="≣"
       accent="#fbbf24"

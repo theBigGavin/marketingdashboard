@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Panel } from "./Panel";
+import { Panel, type PanelZoomProps } from "./Panel";
 import { QuoteRow } from "./QuoteRow";
 import { usePolling } from "@/hooks/usePolling";
 import { api } from "@/lib/api";
@@ -31,7 +31,7 @@ function normalizeCode(input: string): string | null {
 }
 
 /** 自选股 / 持仓面板 — localStorage 持久化,5s 轮询 */
-export function WatchlistPanel({ className = "" }: { className?: string }) {
+export function WatchlistPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
   const [codes, setCodes] = useState<string[]>(load);
   const [input, setInput] = useState("");
   const [invalid, setInvalid] = useState(false);
@@ -60,6 +60,7 @@ export function WatchlistPanel({ className = "" }: { className?: string }) {
   return (
     <Panel
       className={className}
+      {...zoomProps}
       title="自选股"
       icon="★"
       accent="#fbbf24"
