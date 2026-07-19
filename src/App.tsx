@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ComponentType } from "react";
 import { Routes, Route } from "react-router";
-import { Maximize2, Minimize2 } from "lucide-react";
+import { Github, Maximize2, Minimize2 } from "lucide-react";
 import { TickerTape, type TapeItem } from "@/components/dash/TickerTape";
 import { Logo } from "@/components/Logo";
 import { IndexPanel } from "@/components/dash/IndexPanel";
@@ -65,6 +65,15 @@ function Header({ isFullscreen, onToggleFullscreen }: { isFullscreen: boolean; o
         <span className="rounded border border-slate-700/60 bg-slate-800/40 px-2 py-px font-mono text-[12px] font-bold text-cyan-300">
           {hh}:{mm}<span className="text-cyan-600">:{ss}</span>
         </span>
+        <a
+          href="https://github.com/theBigGavin/marketingdashboard"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="GitHub 仓库"
+          className="flex h-[22px] w-[22px] items-center justify-center rounded border border-slate-700/60 bg-slate-800/40 text-slate-400 transition-colors hover:border-cyan-500/60 hover:text-cyan-300"
+        >
+          <Github size={12} />
+        </a>
         <button
           onClick={onToggleFullscreen}
           title={isFullscreen ? "退出全屏" : "全屏显示"}
