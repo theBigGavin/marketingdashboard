@@ -10,13 +10,13 @@ type Kind = "01" | "02";
 /** 成分股轮播间隔(ms) */
 const ROTATE_MS = 10000;
 
-function BoardRow({ b, maxAbs, active, onClick }: { b: Board; maxAbs: number; active: boolean; onClick: () => void }) {
+function BoardRow({ b, maxAbs, active, onClick, auto }: { b: Board; maxAbs: number; active: boolean; onClick: () => void; auto?: boolean }) {
   const w = maxAbs > 0 ? Math.min(100, (Math.abs(b.pct) / maxAbs) * 100) : 0;
   const ref = useRef<HTMLButtonElement>(null);
-  // 轮播/选中时滚动到可视区域
+  // 仅手动点击时滚动到可视区域（自动轮播不抢焦点）
   useEffect(() => {
-    if (active) ref.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }, [active]);
+    if (active && !auto) ref.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [active, auto]);
   return (
     <button
       ref={ref}
@@ -131,7 +131,7 @@ export function SectorPanel({ className = "", ...zoomProps }: { className?: stri
             <span>代码</span><span>板块 / 强度{filtered ? ` (${filtered.length})` : ""}</span><span className="text-right">涨跌幅</span><span className="text-right">领涨股</span>
           </div>
           {filtered?.map((b) => (
-            <BoardRow key={b.code} b={b} maxAbs={maxAbs} active={selected?.code === b.code}
+            <BoardRow key={b.code} b={b} maxAbs={maxAbs} active={selected?.code === b.code} auto={auto}
               onClick={() => pick(b)} />
           ))}
           {!filtered && (
