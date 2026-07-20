@@ -4,14 +4,28 @@ import { BoardFlowChart } from "./BoardFlowChart";
 import { usePolling } from "@/hooks/usePolling";
 import { api } from "@/lib/api";
 
+const POLL_MS = 10000;
 const DURATION_MS = 12000;
 const STEP_MS = 100;
 
 /** 板块实时资金流向图(流入/流出 TOP10 行业, 分钟级累计主力净流入) */
 export function BoardFlowPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
-  const { data: flows, error } = usePolling(() => api.boardFlow(20), 10000);
+  const { data: flows, error, updated } = usePolling(() => api.boardFlow(20), POLL_MS);
   const [progress, setProgress] = useState(1);
   const [playing, setPlaying] = useState(false);
+  const [countdown, setCountdown] = useState(POLL_MS / 1000);
+
+  // 数据刷新时重置倒计时
+  useEffect(() => {
+    setCountdown(POLL_MS / 1000);
+  }, [updated]);
+
+  // 倒计时每秒递减
+  useEffect(() => {
+    if (countdown <= 0) return;
+    const id = window.setTimeout(() => setCountdown((c) => c - 1), 1000);
+    return () => window.clearTimeout(id);
+  }, [countdown]);
 
   useEffect(() => {
     if (!playing) return;
@@ -38,20 +52,25 @@ export function BoardFlowPanel({ className = "", ...zoomProps }: { className?: s
       icon="∿"
       accent="#f43f5e"
       right={
-        <button
-          type="button"
-          onClick={() => {
-            if (progress >= 1) {
-              setProgress(0);
-              setPlaying(true);
-            } else {
-              setPlaying((p) => !p);
-            }
-          }}
-          className="rounded px-1.5 py-0.5 text-[10px] text-slate-400 transition hover:bg-slate-800 hover:text-slate-200"
-        >
-          {label}
-        </button>
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[10px] text-slate-500" style={{ fontVariantNumeric: "tabular-nums" }}>
+            {countdown}s
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              if (progress >= 1) {
+                setProgress(0);
+                setPlaying(true);
+              } else {
+                setPlaying((p) => !p);
+              }
+            }}
+            className="rounded px-1.5 py-0.5 text-[10px] text-slate-400 transition hover:bg-slate-800 hover:text-slate-200"
+          >
+            {label}
+          </button>
+        </div>
       }
     >
       <div className="h-full min-h-0 p-1.5">
