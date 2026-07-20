@@ -9,7 +9,7 @@ const STEP_MS = 100;
 
 /** 板块实时资金流向图(流入/流出 TOP10 行业, 分钟级累计主力净流入) */
 export function BoardFlowPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
-  const { data: flows, error } = usePolling(() => api.boardFlow(20), 120000);
+  const { data: flows, error } = usePolling(() => api.boardFlow(20), 10000);
   const [progress, setProgress] = useState(1);
   const [playing, setPlaying] = useState(false);
 
