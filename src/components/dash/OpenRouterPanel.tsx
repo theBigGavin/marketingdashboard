@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, Fragment } from "react";
 import { Panel, type PanelZoomProps } from "./Panel";
 import { useOpenRouterUsage } from "@/lib/api";
 import type { OrUsageDay } from "@/lib/api";
@@ -14,9 +14,9 @@ const VENDOR_COLORS: Record<string, string> = [
   "#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f",
   "#edc948", "#b07aa1", "#ff9da7", "#9c755f", "#bab0ac",
   "#86bcb6", "#d4a6c8", "#f1ce63", "#a0cbe8", "#e377c2",
-  "#7f7f7f",
+  "#7f7f7f", "#00bcd4", "#ff5722", "#8bc34a",
 ].reduce((m, c, i) => {
-  const names = ["腾讯", "小米", "DeepSeek", "Anthropic", "Google", "OpenAI", "智谱GLM", "月之暗面", "MiniMax", "阶跃星辰", "NVIDIA", "Mistral", "Meta", "xAI", "Cohere"];
+  const names = ["腾讯", "小米", "DeepSeek", "Anthropic", "Google", "OpenAI", "智谱GLM", "月之暗面", "MiniMax", "阶跃星辰", "NVIDIA", "Mistral", "Meta", "xAI", "Cohere", "通义千问", "Poolside", "inclusionai", "nex-agi", "字节跳动", "BAAI", "Perplexity"];
   if (i < names.length) m[names[i]] = c;
   return m;
 }, {} as Record<string, string>);
@@ -56,7 +56,7 @@ function Chart({ allDays, days, mode }: { allDays: OrUsageDay[]; days: OrUsageDa
   const chart = useMemo(() => {
     if (!days || days.length < 2) return null;
     const { w: W, h: H } = size;
-    const ch = H - 36, PL = 50, PR = 18, PT = 8, PB = 24;
+    const ch = H - 36, PL = 50, PR = 18, PT = 8, PB = 34;
     const iw = W - PL - PR, ih = ch - PT - PB;
     if (iw < 40 || ih < 20) return null;
     const n = days.length;
@@ -68,7 +68,9 @@ function Chart({ allDays, days, mode }: { allDays: OrUsageDay[]; days: OrUsageDa
     const cum: Record<string, number> = {};
     for (const d of allDays)
       for (const p of d[source]) cum[p.name] = (cum[p.name] || 0) + p.tokens;
-    const topNames = Object.keys(cum).filter((v) => v !== "其他").sort((a, b) => cum[b] - cum[a]);
+    let topNames = Object.keys(cum).filter((v) => v !== "其他").sort((a, b) => cum[b] - cum[a]);
+    // 将 openrouter 合并到"其他"
+    topNames = topNames.filter((v) => v !== "openrouter");
 
     if (mode === "vendor") {
       // vendor mode: top N + other
@@ -105,14 +107,20 @@ function Chart({ allDays, days, mode }: { allDays: OrUsageDay[]; days: OrUsageDa
 
       const yTicks: { v: number; y: number }[] = [];
       for (let i = 0; i <= 4; i++) yTicks.push({ v: lo + ((hi - lo) / 4) * i, y: Y(lo + ((hi - lo) / 4) * i) });
-      const xStep = Math.max(1, Math.floor(n / 6));
+      const xStep = Math.max(1, Math.floor(n / 8));
       const xLabels: { label: string; x: number }[] = [];
-      for (let i = 0; i < n; i += xStep) xLabels.push({ label: days[i].date.slice(5), x: X(i) });
+      const span = n > 1 ? (new Date(days[n-1].date).getTime() - new Date(days[0].date).getTime()) / 86400000 : 0;
+      const fmt = span > 200 ? (d: string) => d.slice(0, 7) : (d: string) => d.slice(5);
+      for (let i = 0; i < n; i += xStep) xLabels.push({ label: fmt(days[i].date), x: X(i) });
       const lastX = X(n - 1);
-      if (!xLabels.length || xLabels[xLabels.length - 1].x < lastX - 20) xLabels.push({ label: days[n - 1].date.slice(5), x: lastX });
+      if (!xLabels.length || xLabels[xLabels.length - 1].x < lastX - 20) xLabels.push({ label: fmt(days[n - 1].date), x: lastX });
       const last = stacked[n - 1].total, first = stacked[0].total, chg = last - first;
+      const chgPct = first ? ((last / first) - 1) * 100 : 0;
+      const dayCount = n - 1;
+      const dailyRate = dayCount > 0 && first ? ((last / first) ** (1 / dayCount) - 1) * 100 : 0;
       const avg7 = stacked.slice(-7).reduce((s, d) => s + d.total, 0) / Math.min(7, n);
-      return { W, H, PL, PR, PT, PB, areas, yTicks, xLabels, last, chg, avg7 };
+      const avg = stacked.reduce((s, d) => s + d.total, 0) / n;
+      return { W, H, PL, PR, PT, PB, areas, yTicks, xLabels, last, chg, chgPct, dailyRate, avg7, avg, dayCount };
     } else {
       // country mode: all countries (China, US, Other)
       const stacked = days.map((d) => {
@@ -147,14 +155,20 @@ function Chart({ allDays, days, mode }: { allDays: OrUsageDay[]; days: OrUsageDa
 
       const yTicks: { v: number; y: number }[] = [];
       for (let i = 0; i <= 4; i++) yTicks.push({ v: lo + ((hi - lo) / 4) * i, y: Y(lo + ((hi - lo) / 4) * i) });
-      const xStep = Math.max(1, Math.floor(n / 6));
+      const xStep = Math.max(1, Math.floor(n / 8));
       const xLabels: { label: string; x: number }[] = [];
-      for (let i = 0; i < n; i += xStep) xLabels.push({ label: days[i].date.slice(5), x: X(i) });
+      const span = n > 1 ? (new Date(days[n-1].date).getTime() - new Date(days[0].date).getTime()) / 86400000 : 0;
+      const fmt = span > 200 ? (d: string) => d.slice(0, 7) : (d: string) => d.slice(5);
+      for (let i = 0; i < n; i += xStep) xLabels.push({ label: fmt(days[i].date), x: X(i) });
       const lastX = X(n - 1);
-      if (!xLabels.length || xLabels[xLabels.length - 1].x < lastX - 20) xLabels.push({ label: days[n - 1].date.slice(5), x: lastX });
+      if (!xLabels.length || xLabels[xLabels.length - 1].x < lastX - 20) xLabels.push({ label: fmt(days[n - 1].date), x: lastX });
       const last = stacked[n - 1].total, first = stacked[0].total, chg = last - first;
+      const chgPct = first ? ((last / first) - 1) * 100 : 0;
+      const dayCount = n - 1;
+      const dailyRate = dayCount > 0 && first ? ((last / first) ** (1 / dayCount) - 1) * 100 : 0;
       const avg7 = stacked.slice(-7).reduce((s, d) => s + d.total, 0) / Math.min(7, n);
-      return { W, H, PL, PR, PT, PB, areas, yTicks, xLabels, last, chg, avg7 };
+      const avg = stacked.reduce((s, d) => s + d.total, 0) / n;
+      return { W, H, PL, PR, PT, PB, areas, yTicks, xLabels, last, chg, chgPct, dailyRate, avg7, avg, dayCount };
     }
   }, [days, allDays, size, mode]);
 
@@ -173,11 +187,13 @@ function Chart({ allDays, days, mode }: { allDays: OrUsageDay[]; days: OrUsageDa
       <div className="flex shrink-0 items-baseline gap-3 pb-1 text-[10px]">
         <span className="font-semibold text-slate-200">{fmtT(chart.last)}</span>
         <span className={chart.chg >= 0 ? "text-emerald-400" : "text-red-400"}>
-          {chart.chg >= 0 ? "↑" : "↓"} {Math.abs(chart.chg) / 1e12 > 0.01 ? fmtT(Math.abs(chart.chg)) : "0"}
+          {chart.chg >= 0 ? "↑" : "↓"} {chart.chgPct > 0.01 || chart.chgPct < -0.01 ? `${chart.chgPct > 0 ? "+" : ""}${chart.chgPct.toFixed(1)}%` : "0%"}
         </span>
-        <span className="text-slate-500">近7日均 {fmtT(Math.round(chart.avg7))}/日</span>
+        <span className="text-slate-500">日均 {fmtT(Math.round(chart.avg))}</span>
+        <span className="text-slate-500">日增速 {chart.dailyRate > 0.001 ? `+${chart.dailyRate.toFixed(2)}%` : `${chart.dailyRate.toFixed(2)}%`}</span>
+        <span className="text-slate-500">近7日 {fmtT(Math.round(chart.avg7))}/日</span>
       </div>
-      <svg width={chart.W} height={chart.H - 36} className="block flex-1">
+      <svg width={chart.W} height={chart.H - 36} className="block flex-1" style={{ overflow: "visible" }}>
         {chart.yTicks.map((t, i) => (
           <line key={i} x1={chart.PL} y1={t.y} x2={chart.W - chart.PR} y2={t.y} stroke="#1e293b" strokeWidth={0.5} />
         ))}
@@ -185,7 +201,10 @@ function Chart({ allDays, days, mode }: { allDays: OrUsageDay[]; days: OrUsageDa
           <path key={a.name} d={a.d} fill={VENDOR_COLORS[a.name] || "#64748b"} />
         ))}
         {chart.xLabels.map((xl, i) => (
-          <text key={i} x={xl.x} y={chart.H - 12} textAnchor="middle" fill="#475569" fontSize={8} fontFamily="monospace">{xl.label}</text>
+          <Fragment key={i}>
+            <line x1={xl.x} y1={8} x2={xl.x} y2={chart.H - 36 - 4} stroke="rgba(148,163,184,0.15)" strokeWidth={0.5} />
+            <text x={xl.x} y={chart.H - 52} textAnchor="middle" fill="#94a3b8" fontSize={9} fontFamily="monospace">{xl.label}</text>
+          </Fragment>
         ))}
         {chart.yTicks.map((t, i) => (
           <text key={`y${i}`} x={chart.PL - 4} y={t.y + 3} textAnchor="end" fill="#64748b" fontSize={8} fontFamily="monospace">{fmtT(Math.round(t.v))}</text>
@@ -196,13 +215,13 @@ function Chart({ allDays, days, mode }: { allDays: OrUsageDay[]; days: OrUsageDa
 }
 
 export function OpenRouterPanel({ className, panelId, isZoomed, onToggleZoom }: PanelZoomProps & { className?: string }) {
-  const [range, setRange] = useState<"7d" | "14d" | "30d">("7d");
+  const [range, setRange] = useState<"7d" | "14d" | "30d" | "60d" | "180d" | "1y">("30d");
   const [mode, setMode] = useState<"vendor" | "country">("vendor");
   const { data, loading, error } = useOpenRouterUsage();
 
   const sliced = useMemo(() => {
     if (!data || data.length === 0) return [];
-    const n = range === "7d" ? 7 : range === "14d" ? 14 : 30;
+    const n = range === "7d" ? 7 : range === "14d" ? 14 : range === "30d" ? 30 : range === "60d" ? 60 : range === "180d" ? 180 : 365;
     return data.slice(-n);
   }, [data, range]);
 
@@ -221,7 +240,7 @@ export function OpenRouterPanel({ className, panelId, isZoomed, onToggleZoom }: 
             <button onClick={() => setMode("vendor")} className={`rounded px-1.5 py-0.5 transition-colors ${mode === "vendor" ? "bg-violet-500/20 text-violet-300" : "text-slate-500 hover:text-slate-300"}`}>厂商</button>
             <button onClick={() => setMode("country")} className={`rounded px-1.5 py-0.5 transition-colors ${mode === "country" ? "bg-violet-500/20 text-violet-300" : "text-slate-500 hover:text-slate-300"}`}>中美</button>
           </div>
-          {(["7d", "14d", "30d"] as const).map((r) => (
+          {(["7d", "14d", "30d", "60d", "180d", "1y"] as const).map((r) => (
             <button key={r} onClick={() => setRange(r)} className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors ${range === r ? "bg-violet-500/20 text-violet-300" : "text-slate-500 hover:text-slate-300"}`}>{r}</button>
           ))}
         </div>

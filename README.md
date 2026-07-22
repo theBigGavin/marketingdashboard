@@ -27,10 +27,10 @@
 - **🔥 板块热点雷达** — 行业 / 概念板块涨跌排行，点击板块联动成分股、龙头股与资金流
 - **💰 资金流向追踪** — 个股主力净流入 TOP 榜、板块资金分钟级累计曲线、热门股 / 涨幅 / 跌幅榜单
 - **⛓️ 产业链全景** — 半导体、AI 算力、新能源车、机器人、创新药等产业链，上中下游标的分层展示并联动行情。支持手动编辑或从问财自动获取股票列表
-- **🤖 AI 驾驶舱** — LLM API 用量监控面板，实时追踪多模型多提供商 Token 消耗与配额
+- **🤖 AI 驾驶舱** — OpenRouter 日度榜单 API，追踪全球 50+ 大模型厂商 Token 消耗量趋势（支持 7d~1y 时间范围），按厂商/国家/地区堆叠面积图展示份额变化，支持 60 天以上超长历史回溯
 - **📰 7×24 快讯聚合** — 全球财经快讯滚动播报，宏观关键词与产业链关联新闻自动高亮
 - **🖥️ 可安装为桌面应用** — 内置 PWA 支持（Web Manifest + Service Worker），浏览器地址栏一键安装，独立窗口运行
-- **⚡ 零依赖数据服务** — 内置 Node 代理聚合公开行情接口，内存缓存减压，无需 API Key，开箱即用
+- **⚡ 零依赖数据服务** — 内置 Node 代理聚合公开行情接口，内存缓存减压，大部分接口无需 API Key，开箱即用
 
 ## 🏗️ 架构
 
@@ -43,6 +43,7 @@ flowchart LR
         C2[华尔街见闻] --> D
         C3[CNBC / Binance] --> D
         C4[同花顺问财] --> D
+        C5[OpenRouter 榜单] --> D
     end
     subgraph 本项目
         D["Node 数据代理<br/>内存 TTL 缓存"] -->|"/api/*"| E["React 19 前端<br/>轮询刷新"]
@@ -75,6 +76,8 @@ npm run dev
 
 ```bash
 npm run build   # 构建到 dist/
+# 可选：配置 OpenRouter API Key（AI 驾驶舱面板）
+# echo 'OPENROUTER_API_KEY=sk-or-v1-xxxx' > server/.env
 npm start       # 单进程启动，访问 http://localhost:3000
 ```
 
@@ -113,6 +116,7 @@ docker run -p 3000:3000 market-cockpit
 | `/api/treasury-history` | 美债收益率历史曲线 |
 | `/api/mystery-select?query=...&limit=...` | 问财股票筛选（按概念/行业查询） |
 | `/api/chain-parse` | 产业链文本解析（按段落标题自动分配上中下游） |
+| `/api/openrouter-usage` | OpenRouter 日度榜单（厂商 Token 消耗量，本地缓存持久化积累） |
 | `/api/health` | 健康检查 |
 
 ## 🗂️ 项目结构
