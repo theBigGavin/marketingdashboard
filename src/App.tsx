@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ComponentType } from "react";
-import { Routes, Route } from "react-router";
+import { Routes, Route, Link } from "react-router";
 import { Github, Maximize2, Minimize2 } from "lucide-react";
 import { TickerTape, type TapeItem } from "@/components/dash/TickerTape";
 import { Logo } from "@/components/Logo";
@@ -14,6 +14,7 @@ import { BoardFlowPanel } from "@/components/dash/BoardFlowPanel";
 import { NewsPanel } from "@/components/dash/NewsPanel";
 import { ChainPanel } from "@/components/dash/ChainPanel";
 import { WatchlistPanel } from "@/components/dash/WatchlistPanel";
+import AiDashboard from "./AiDashboard";
 import { type PanelZoomProps } from "@/components/dash/Panel";
 import { usePolling } from "@/hooks/usePolling";
 import { useFullscreen } from "@/hooks/useFullscreen";
@@ -52,6 +53,12 @@ function Header({ isFullscreen, onToggleFullscreen }: { isFullscreen: boolean; o
         <span>沪深港美 · 大宗 · 美债 · 板块 · 资金流 · 快讯 · 产业链</span>
       </div>
       <div className="ml-auto flex items-center gap-3">
+        <Link
+          to="/ai"
+          className="flex items-center gap-1 rounded border border-slate-700/60 bg-slate-800/40 px-2 py-1 text-[10px] text-slate-400 transition-colors hover:border-violet-500/60 hover:text-violet-300"
+        >
+          AI 驾驶舱
+        </Link>
         <span className="flex items-center gap-1.5 text-[10px] text-emerald-400">
           <span className="relative flex h-1.5 w-1.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
@@ -147,8 +154,8 @@ const PANEL_ROWS: PanelRowDef[] = [
   {
     defaultH: 0.36,
     panels: [
-      { id: "watchlist", component: WatchlistPanel, defaultW: 0.25, mobileH: "h-[400px]" },
-      { id: "chain", component: ChainPanel, defaultW: 0.75, mobileH: "h-[560px]" },
+      { id: "watchlist", component: WatchlistPanel, defaultW: 0.2222, mobileH: "h-[400px]" },
+      { id: "chain", component: ChainPanel, defaultW: 0.7778, mobileH: "h-[560px]" },
     ],
   },
 ];
@@ -197,6 +204,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Dashboard />} />
+      <Route path="/ai" element={<AiDashboard />} />
     </Routes>
   );
 }

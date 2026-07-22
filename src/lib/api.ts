@@ -130,6 +130,40 @@ export interface TreasuryCurvePoint {
   yields: Record<string, number>; // US3M..US30Y -> 收益率(%)
 }
 
+export interface OrUsagePoint {
+  date: string;
+  name: string;
+  tokens: number;
+  pct: number;
+}
+
+export interface OrUsageDay {
+  date: string;
+  total: number;
+  providers: OrUsagePoint[];
+  countries: OrUsagePoint[];
+}
+
+/** iWenCai 搜索结果(问财选股) */
+export interface MysteryStock {
+  code: string;
+  name: string;
+  price?: number;
+  pct?: number;
+  ratio?: number;
+  avgAmount3?: number;
+  avgAmount20?: number;
+  rangePct5?: number;
+  raw?: Record<string, unknown>;
+}
+
+export interface MysteryResult {
+  query: string;
+  total: number;
+  rows: MysteryStock[];
+  chunksInfo?: Record<string, unknown>;
+}
+
 export interface MinuteData {
   code: string;
   prec: number;
@@ -143,6 +177,14 @@ const num = (v: unknown) => {
 
 async function get<T>(path: string): Promise<T> {
   const r = await fetch(path);
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || "api error");
+  return j.data as T;
+}
+
+async function post<T>(path: string, body: unknown): Promise<T> {
+  const r = await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   const j = await r.json();
   if (!j.ok) throw new Error(j.error || "api error");
@@ -339,4 +381,40 @@ export const api = {
   news: (size = 60) => withFallback(() => get<NewsItem[]>(`/api/news?size=${size}`), () => directNews(size)),
   treasuries: () => get<Treasury[]>(`/api/treasuries`),
   treasuryHistory: () => get<TreasuryCurvePoint[]>(`/api/treasury-history`),
+  openRouterUsage: () => get<OrUsageDay[]>(`/api/openrouter-usage`),
+  mysterySelect: (query: string, limit = 30, refresh = false) =>
+    get<MysteryResult>(`/api/mystery-select?query=${encodeURIComponent(query)}&limit=${limit}${refresh ? "&refresh=1" : ""}`),
+  parseChain: (name: string, content: string) =>
+    post<{ name: string; source: string; segments: { name: string; desc: string; stocks: { code: string; name: string }[] }[]; warnings?: string[] }>(`/api/chain-parse`, { name, content }),
 };
+
+/** 轮询封装:自动管理 loading/error,组件卸载时停止 */
+import { useEffect, useState, useRef } from "react";
+export function usePolling<T>(fn: () => Promise<T>, intervalMs: number): { data: T | null; loading: boolean; error: string | null } {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    const tick = async () => {
+      try {
+        const d = await fn();
+        if (mounted.current) { setData(d); setError(null); }
+      } catch (e: any) {
+        if (mounted.current) setError(String(e.message || e));
+      } finally {
+        if (mounted.current) setLoading(false);
+      }
+    };
+    tick();
+    const id = setInterval(tick, intervalMs);
+    return () => { mounted.current = false; clearInterval(id); };
+  }, [fn, intervalMs]);
+  return { data, loading, error };
+}
+
+/** OpenRouter 用量轮询(1 小时) */
+export function useOpenRouterUsage() {
+  return usePolling(() => api.openRouterUsage(), 3600000);
+}

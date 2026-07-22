@@ -8,6 +8,19 @@ const fs = require("fs");
 const path = require("path");
 const iconv = require("iconv-lite");
 const { execFile } = require("child_process");
+const crypto = require("crypto");
+
+// 加载 .env
+try {
+  const envPath = path.join(__dirname, ".env");
+  if (fs.existsSync(envPath)) {
+    for (const line of fs.readFileSync(envPath, "utf-8").split("\n")) {
+      const m = line.trim().match(/^export\s+(.+?)=(.*)$/) || line.trim().match(/^([A-Z_][A-Z0-9_]*)=(.*)$/);
+      if (m) process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
+    }
+    console.log("[env] loaded", envPath);
+  }
+} catch (e) { console.error("[env] load error:", e.message); }
 
 function curlText(url, { referer, timeout = 8000, encoding = "gbk" } = {}) {
   return new Promise((resolve, reject) => {
@@ -108,6 +121,29 @@ async function handleQuotes(codes) {
     const q = parseTencentLine(line.trim());
     if (q) out[q.symbol] = q;
   }
+  // usVIX 腾讯数据已停更，从新浪期货获取实时值覆盖
+  if (codes.includes("usVIX") || out.usVIX) {
+    try {
+      const vixText = await curlText("https://hq.sinajs.cn/list=hf_VX", { referer: "https://finance.sina.com.cn/futures/", timeout: 4000, encoding: "utf-8" });
+      const m = vixText.match(/hf_VX="([^"]*)"/);
+      if (m) {
+        const f = m[1].split(",");
+        const price = parseFloat(f[0]);
+        const prev = parseFloat(f[7]);
+        if (!isNaN(price)) {
+          out.usVIX = {
+            symbol: "usVIX",
+            name: "VIX恐慌指数期货",
+            price,
+            prev,
+            change: +(price - prev).toFixed(4),
+            pct: prev ? +(((price - prev) / prev) * 100).toFixed(3) : 0,
+            time: `${f[12]} ${f[6]}`,
+          };
+        }
+      }
+    } catch { /* keep tencent fallback */ }
+  }
   return out;
 }
 
@@ -206,6 +242,95 @@ function parseFutures(text) {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+function pickValue(obj, matchers) {
+  for (const [key, value] of Object.entries(obj || {})) {
+    if (matchers.some((m) => key.includes(m))) return value;
+  }
+  return undefined;
+}
+
+function pickRatioValue(obj) {
+  for (const [key, value] of Object.entries(obj || {})) {
+    if ((key.includes("/") || key.includes("除以")) && (key.includes("成交额") || key.includes("成交金额"))) return value;
+  }
+  return pickValue(obj, ["放量倍数", "成交额放量", "成交金额放量"]);
+}
+
+function parseMaybeNumber(v) {
+  if (v == null || v === "") return undefined;
+  const n = parseFloat(String(v).replace(/,/g, ""));
+  return Number.isFinite(n) ? n : undefined;
+}
+
+function iwencaiErrorFromText(text) {
+  const clean = String(text || "").replace(/\s+/g, " ").trim();
+  if (clean.includes("次数已用完")) return "IWENCAI_QUOTA_EXHAUSTED: 问财今日次数已用完";
+  if (clean.includes("Invalid") || clean.includes("Unauthorized") || clean.includes("鉴权") || clean.includes("权限")) {
+    return "IWENCAI_AUTH_FAILED: 问财鉴权失败";
+  }
+  return `IWENCAI_NON_JSON: ${clean.slice(0, 160)}`;
+}
+
+function normalizeIwencaiStock(item) {
+  return {
+    code: String(item["股票代码"] || item.code || ""),
+    name: String(item["股票简称"] || item.name || ""),
+    price: parseMaybeNumber(item["最新价"] ?? item.price),
+    pct: parseMaybeNumber(item["最新涨跌幅"] ?? pickValue(item, ["涨跌幅"]) ?? item.pct),
+    ratio: parseMaybeNumber(pickRatioValue(item)),
+    avgAmount3: parseMaybeNumber(pickValue(item, ["平均成交额[20260715-20260717]", "区间日均成交额[20260715-20260717]", "最近3日区间日均成交额", "最近3日平均成交金额", "成交额平均值"])),
+    avgAmount20: parseMaybeNumber(pickValue(item, ["平均成交额[20260618-20260716]", "区间日均成交额[20260618-20260716]", "前20日区间日均成交额", "前20日平均成交金额"])),
+    rangePct5: parseMaybeNumber(pickValue(item, ["涨跌幅[20260713-20260717]", "最近5日区间涨跌幅"])),
+    raw: item,
+  };
+}
+
+async function handleMysterySelect(query, limit = "30", page = "1") {
+  const apiKey = process.env.IWENCAI_API_KEY;
+  if (!apiKey) throw new Error("IWENCAI_NOT_CONFIGURED: IWENCAI_API_KEY is not configured");
+  const base = (process.env.IWENCAI_BASE_URL || "https://openapi.iwencai.com").replace(/\/$/, "");
+  const traceId = crypto.randomBytes(32).toString("hex");
+  const payload = {
+    query,
+    page: String(parseInt(page, 10) || 1),
+    limit: String(Math.min(Math.max(parseInt(limit, 10) || 30, 1), 80)),
+    is_cache: "1",
+    expand_index: "true",
+  };
+  const resp = await fetch(`${base}/v1/query2data`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+      "X-Claw-Call-Type": "normal",
+      "X-Claw-Skill-Id": "hithink-astock-selector",
+      "X-Claw-Skill-Version": "1.0.0",
+      "X-Claw-Plugin-Id": "none",
+      "X-Claw-Plugin-Version": "none",
+      "X-Claw-Trace-Id": traceId,
+    },
+    body: JSON.stringify(payload),
+  });
+  const text = await resp.text();
+  let json;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    throw new Error(iwencaiErrorFromText(text));
+  }
+  if (!resp.ok) {
+    const errMsg = typeof json?.error === "string" ? json.error : json?.error?.message || json?.message || `IWENCAI_HTTP_${resp.status}`;
+    throw new Error(errMsg);
+  }
+  const datas = Array.isArray(json.datas) ? json.datas : Array.isArray(json.data) ? json.data : [];
+  return {
+    query,
+    total: Number(json.code_count || datas.length || 0),
+    rows: datas.map(normalizeIwencaiStock),
+    chunksInfo: json.chunks_info,
+  };
+}
+
 /* ---------------- 内盘期货(沪金等):新浪 nf_ ---------------- */
 function parseSinaDomestic(text) {
   const out = {};
@@ -214,8 +339,12 @@ function parseSinaDomestic(text) {
   while ((m = re.exec(text))) {
     const f = m[2].split(",");
     if (f.length < 17 || !f[0]) continue;
-    const price = num(f[5]);
-    const prevSettle = num(f[9]);
+    const prevSettle = num(f[8]); // f[8]=昨收
+    let price = num(f[5]); // 最新价(夜盘可能为0)
+    if (!price) {
+      const bid = num(f[6]), ask = num(f[7]);
+      price = bid && ask ? +((bid + ask) / 2).toFixed(2) : (bid || ask || prevSettle);
+    }
     out[m[1]] = {
       symbol: m[1],
       name: f[0],
@@ -306,6 +435,27 @@ async function handleFutures(list) {
       if (Object.keys(r).length === 0) {
         await sleep(1200);
         r = parseSinaDomestic(await curlText(url, opts));
+      }
+      // 夜盘期间 hq.sinajs.cn 最新价可能为0,从分钟线接口补实时价格
+      for (const code of nf) {
+        const item = r[code];
+        if (!item || item.price > 0) continue;
+        const symbol = code.slice(3);
+        try {
+          const text = await curlText(
+            `https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var%20t=/InnerFuturesNewService.getMinLine?symbol=${symbol}`,
+            { referer: `https://finance.sina.com.cn/futures/quotes/${symbol}.shtml`, encoding: "utf-8" }
+          );
+          const arr = parseJsonp(text);
+          if (arr && arr.length && arr[0][1]) {
+            const livePrice = num(arr[0][1]);
+            if (livePrice > 0) {
+              item.price = livePrice;
+              item.change = +(livePrice - item.prev).toFixed(4);
+              item.pct = item.prev ? +(((livePrice - item.prev) / item.prev) * 100).toFixed(3) : 0;
+            }
+          }
+        } catch { /* minLine 失败就保留现有值 */ }
       }
       Object.assign(out, r);
     })());
@@ -738,7 +888,219 @@ async function cached(key, ttl, fn) {
   return inflight;
 }
 
-/* ---------------- 路由 ---------------- */
+/* ---------------- OpenRouter 大模型 Token 消耗量(厂商聚合) ---------------- */
+const OR_KEY = process.env.OPENROUTER_API_KEY || "";
+const OR_DATA_FILE = path.join(__dirname, "data", "openrouter-usage.json");
+
+const VENDOR_MAP = {
+  openai: "OpenAI", anthropic: "Anthropic", google: "Google",
+  deepseek: "DeepSeek", qwen: "通义千问", minimax: "MiniMax",
+  "z-ai": "智谱GLM", moonshotai: "月之暗面", stepfun: "阶跃星辰",
+  xiaomi: "小米", tencent: "腾讯", nvidia: "NVIDIA",
+  "meta-llama": "Meta", mistralai: "Mistral", cohere: "Cohere", "x-ai": "xAI",
+  poolside: "Poolside", meituan: "美团",
+};
+
+function vendorSlug(slug) {
+  if (slug === "other") return "其他";
+  const p = slug.split("/")[0];
+  return VENDOR_MAP[p] || p;
+}
+
+const COUNTRY_MAP = {
+  "腾讯":"🇨🇳中国","小米":"🇨🇳中国","DeepSeek":"🇨🇳中国","智谱GLM":"🇨🇳中国",
+  "月之暗面":"🇨🇳中国","MiniMax":"🇨🇳中国","阶跃星辰":"🇨🇳中国","通义千问":"🇨🇳中国","美团":"🇨🇳中国",
+  "OpenAI":"🇺🇸美国","Anthropic":"🇺🇸美国","Google":"🇺🇸美国","Meta":"🇺🇸美国",
+  "NVIDIA":"🇺🇸美国","xAI":"🇺🇸美国","Cohere":"🇺🇸美国","Poolside":"🇺🇸美国",
+};
+
+function country(name) { return COUNTRY_MAP[name] || "🌍其他"; }
+
+async function handleOpenRouterUsage() {
+  const today = new Date();
+  const end = today.toISOString().slice(0, 10);
+  const start = new Date(today - 60 * 86400000).toISOString().slice(0, 10);
+  // 尝试从缓存文件读取已有数据
+  let cached = [];
+  try { cached = JSON.parse(fs.readFileSync(OR_DATA_FILE, "utf-8") || "[]"); } catch {}
+  const cachedDates = new Set(cached.map((r) => r.date));
+
+  try {
+    const resp = await fetch(
+      `https://openrouter.ai/api/v1/datasets/rankings-daily?start_date=${start}&end_date=${end}`,
+      { headers: { Authorization: `Bearer ${OR_KEY}`, Accept: "application/json" }, signal: AbortSignal.timeout(10000) }
+    );
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const body = await resp.json();
+    const rows = body?.data || [];
+
+    // 按日期+厂商聚合 token
+    const byDV = {};
+    for (const r of rows) {
+      const dt = r.date, v = vendorSlug(r.model_permaslug);
+      if (!byDV[dt]) byDV[dt] = {};
+      byDV[dt][v] = (byDV[dt][v] || 0n) + BigInt(r.total_tokens);
+    }
+
+    // 合并到已有数据
+    for (const [dt, vMap] of Object.entries(byDV)) {
+      const total = Object.values(vMap).reduce((a, b) => a + b, 0n);
+      const providers = Object.entries(vMap).map(([name, tokens]) => ({
+        name, tokens: Number(tokens),
+        pct: Number((tokens * 10000n / total)) / 100,
+      })).sort((a, b) => b.tokens - a.tokens);
+      // 按国家聚合
+      const byCountry = {};
+      for (const p of providers) {
+        const c = country(p.name);
+        byCountry[c] = (byCountry[c] || 0n) + BigInt(p.tokens);
+      }
+      const countries = Object.entries(byCountry).map(([name, tokens]) => ({
+        name, tokens: Number(tokens),
+        pct: Number((tokens * 10000n / total)) / 100,
+      })).sort((a, b) => b.tokens - a.tokens);
+      const entry = { date: dt, total: Number(total), providers, countries };
+      const idx = cached.findIndex((e) => e.date === dt);
+      if (idx >= 0) cached[idx] = entry;
+      else cached.push(entry);
+    }
+
+    cached.sort((a, b) => a.date.localeCompare(b.date));
+    // 保留最近 90 天
+    const trimmed = cached.slice(-90);
+    try {
+      fs.mkdirSync(path.dirname(OR_DATA_FILE), { recursive: true });
+      fs.writeFileSync(OR_DATA_FILE, JSON.stringify(trimmed));
+    } catch {}
+    return trimmed;
+  } catch (e) {
+    if (cached.length) return cached;
+    return [{ date: today.toISOString().slice(0, 10), total: 0, providers: [] }];
+  }
+}
+/* ------------------------------------------------------------- */
+
+/* ---------------- 产业链股票解析(本地正则,无需LLM) ---------------- */
+function handleChainParse(body) {
+  const { name = "", content = "" } = body || {};
+  const warnings = [];
+
+  if (!content.trim()) {
+    return { name, source: "local", segments: [], warnings: ["content is empty"] };
+  }
+
+  // 尝试按 iWenCai 段落标题分段: 上游·材料/设备、中游·制造/封测、下游·应用/终端
+  const sectionHeaders = [
+    { key: "上游", name: "上游·材料/设备", desc: "原材料、设备与零部件等上游环节" },
+    { key: "中游", name: "中游·制造/封测", desc: "代工、制造与封测等中游环节" },
+    { key: "下游", name: "下游·应用/终端", desc: "应用、终端与整车等下游客群" },
+  ];
+
+  // 提取股票代码: 支持 NAME(CODE.SZ) 和 CODE NAME 两种格式
+  const stocksFromText = (text) => {
+    const results = [];
+    const seen = new Set();
+    // 给代码加上市场前缀
+    const prefixed = (code) => {
+      const c = code.replace(/\D/g, "").slice(-6).padStart(6, "0");
+      if (/^6/.test(c)) return `sh${c}`;
+      if (/^[03]/.test(c)) return `sz${c}`;
+      if (/^[489]/.test(c)) return `bj${c}`;
+      return c;
+    };
+    // 格式1: 中文名称（CODE.SH/SZ/BJ）或 中文名称(CODE)
+    const re1 = /([\u4e00-\u9fa5]{2,6})[（(]\s*(?:sh|sz|bj)?(\d{6})[^）)]*[）)]/gi;
+    let m;
+    while ((m = re1.exec(text)) !== null) {
+      const code = prefixed(m[2]);
+      const key = `${code}:${m[1]}`;
+      if (!seen.has(key)) { seen.add(key); results.push({ code, name: m[1] }); }
+    }
+    // 格式2: CODE.SH/SZ/BJ 中文名称 或 CODE 中文名称
+    const re2 = /(?:sh|sz|bj)?(\d{6})\s*([\u4e00-\u9fa5]{2,6})/g;
+    while ((m = re2.exec(text)) !== null) {
+      const code = prefixed(m[1]);
+      const key = `${code}:${m[2]}`;
+      if (!seen.has(key)) { seen.add(key); results.push({ code, name: m[2] }); }
+    }
+    return results;
+  };
+
+  // 先按段落标题切分
+  const lines = content.split("\n");
+  let currentSection = -1; // -1 = 未进入任何段落
+  const sectionTexts = ["", "", ""];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    for (let i = 0; i < sectionHeaders.length; i++) {
+      if (trimmed.includes(sectionHeaders[i].key) && (trimmed.includes("上游") || trimmed.includes("中游") || trimmed.includes("下游"))) {
+        // 检查是否真的是段落标题（包含材料/制造/应用或类似关键词，或只有标题没有股票）
+        if (trimmed.length < 20 || !trimmed.match(/[\u4e00-\u9fa5]{2,6}[（(]\s*\d{4}/)) {
+          currentSection = i;
+          break;
+        }
+      }
+    }
+    if (currentSection >= 0 && currentSection < 3) {
+      // 跳过标题行本身
+      if (!trimmed.includes(sectionHeaders[currentSection].key) || trimmed.length < 15) {
+        sectionTexts[currentSection] += "\n" + trimmed;
+      }
+    }
+  }
+
+  // 如果段落切分成功（至少两段有股票），用段落方式
+  const segments = sectionHeaders.map((header, i) => {
+    const stocks = sectionTexts[i] ? stocksFromText(sectionTexts[i]) : [];
+    return { name: header.name, desc: header.desc, stocks: stocks.slice(0, 10) };
+  });
+
+  const totalBySections = segments.reduce((s, seg) => s + seg.stocks.length, 0);
+
+  // 段落切分不理想时，回退：全文提取 + 关键词匹配
+  if (totalBySections < 3) {
+    const allStocks = stocksFromText(content);
+    if (allStocks.length === 0) {
+      return { name, source: "local", segments: [], warnings: ["未从文本中提取到任何A股股票"] };
+    }
+
+    // 按股票名称关键词分配到三段
+    const segmentKeywords = [
+      { keywords: ["材料", "设备", "原料", "矿产", "化工", "硅", "锂", "稀土", "靶材", "晶圆", "气体", "试剂", "新材", "半导体", "芯片", "元器件", "元件", "部件", "模组"] },
+      { keywords: ["代工", "制造", "封测", "组装", "加工", "铸造", "冶炼", "封装", "测试", "PCB", "面板", "光伏", "绿能", "电池", "电芯", "电机", "集成", "系统"] },
+      { keywords: ["应用", "终端", "整车", "车企", "汽车", "消费", "手机", "电脑", "服务器", "机器人", "无人机", "储能", "运营", "服务", "互联网", "平台", "AI", "智能", "数据", "软件", "方案", "车"] },
+    ];
+
+    const unassigned = [...allStocks];
+    const fallbackSegments = segmentKeywords.map((rule) => {
+      const stocks = [];
+      for (let i = unassigned.length - 1; i >= 0; i--) {
+        if (stocks.length >= 10) break;
+        if (rule.keywords.some((kw) => unassigned[i].name.includes(kw))) {
+          stocks.push(unassigned[i]);
+          unassigned.splice(i, 1);
+        }
+      }
+      stocks.reverse();
+      return stocks;
+    });
+
+    if (unassigned.length > 0 && unassigned.length < allStocks.length) {
+      warnings.push(`${unassigned.length} 只股票未能匹配产业链关键词: ${unassigned.map(s => s.name).join("、")}`);
+    }
+
+    return {
+      name, source: "local",
+      segments: sectionHeaders.map((h, i) => ({ name: h.name, desc: h.desc, stocks: fallbackSegments[i] })),
+      warnings,
+    };
+  }
+
+  return { name, source: "local", segments, warnings };
+}
+
+/* ---------------- 主机路由表 ---------------- */
 const routes = {
   "/api/quotes": async (q) =>
     cached(`quotes:${q.get("codes")}`, 1500, () => handleQuotes(q.get("codes") || "")),
@@ -753,7 +1115,7 @@ const routes = {
       handleBoardStocks(q.get("code") || "", q.get("dir") || "down", q.get("n") || "10")
     ),
   "/api/futures": async (q) =>
-    cached(`futures:${q.get("list")}`, 15000, () => handleFutures(q.get("list") || "hf_GC,hf_XAU,hf_SI,hf_CAD,hf_CL,nf_AU0,BTCUSDT")),
+    cached(`futures:${q.get("list")}`, 15000, () => handleFutures(q.get("list") || "hf_GC,hf_XAU,hf_SI,hf_CAD,hf_CL,hf_VX,nf_AU0,BTCUSDT")),
   "/api/future-minute": async (q) =>
     cached(`fmin:${q.get("code")}`, 60000, () => handleFutureMinute(q.get("code") || "")),
   "/api/rank": async (q) =>
@@ -781,6 +1143,10 @@ const routes = {
   "/api/treasuries": async () => cached("treasuries", 30000, () => handleTreasuries()),
   "/api/treasury-history": async () => cached("treasury-history", 6 * 3600 * 1000, () => handleTreasuryHistory()),
   "/api/health": async () => ({ status: "up", ts: Date.now(), cache: cache.size }),
+  "/api/openrouter-usage": async () => cached("or-usage", 3600000, () => handleOpenRouterUsage()), // 1h cache
+  "/api/mystery-select": async (q) =>
+    handleMysterySelect(q.get("query") || "", q.get("limit") || "30", q.get("page") || "1"),
+  "/api/chain-parse": async (_q, body) => handleChainParse(body || {}),
 };
 
 const MIME = {
@@ -803,7 +1169,13 @@ const server = http.createServer(async (req, res) => {
     const u = new URL(req.url, "http://localhost");
     if (routes[u.pathname]) {
       try {
-        const data = await routes[u.pathname](u.searchParams);
+        let body;
+        if (req.method === "POST") {
+          const chunks = [];
+          for await (const chunk of req) chunks.push(chunk);
+          try { body = JSON.parse(Buffer.concat(chunks).toString()); } catch { body = {}; }
+        }
+        const data = await routes[u.pathname](u.searchParams, body);
         send(res, 200, { ok: true, data, ts: Date.now() });
       } catch (e) {
         send(res, 502, { ok: false, error: String(e.message || e) });

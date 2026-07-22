@@ -140,9 +140,9 @@ export function QuoteRow({
           </div>
         )}
         {/* 左格: 名称+代码, 跨2行 */}
-        <div className="row-span-2 flex min-w-0 flex-col justify-center leading-none">
+        <div className="row-span-2 flex min-w-0 flex-col justify-center gap-1 leading-none">
           <span className="truncate text-[12px] text-slate-200">{name}</span>
-          <span className="text-[9px] text-slate-600">{code}</span>
+          <span className="text-[10px] text-slate-500">{code}</span>
         </div>
 
         {/* 第一行: 分时图(跨2列, 恒占 20px 高度) */}

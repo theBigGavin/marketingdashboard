@@ -7,13 +7,11 @@ import { clsChg, fmtPct, fmtYuan, hexChg } from "@/lib/format";
 
 type Kind = "01" | "02";
 
-/** 成分股轮播间隔(ms) */
 const ROTATE_MS = 10000;
 
 function BoardRow({ b, maxAbs, active, onClick }: { b: Board; maxAbs: number; active: boolean; onClick: () => void }) {
   const w = maxAbs > 0 ? Math.min(100, (Math.abs(b.pct) / maxAbs) * 100) : 0;
   const ref = useRef<HTMLButtonElement>(null);
-  // 滚动到可视区域，但不抢焦点
   useEffect(() => {
     if (active) {
       const activeEl = document.activeElement;
@@ -52,11 +50,9 @@ export function SectorPanel({ className = "", ...zoomProps }: { className?: stri
   const [dir, setDir] = useState<0 | 1>(0);
   const [selected, setSelected] = useState<Board | null>(null);
   const [q, setQ] = useState("");
-  // 轮播: 默认开启, 手动点击板块后暂停
-  const [auto, setAuto] = useState(true);
+  const [auto, setAuto] = useState(false);
   const [idx, setIdx] = useState(0);
 
-  // 全量拉取(行业 124 / 概念 ~800), 前端本地搜索过滤
   const { data: boards, error } = usePolling(() => api.boards(kind, dir, kind === "01" ? 300 : 1000), 15000, [kind, dir]);
   const { data: stocks } = usePolling(
     () => (selected ? api.boardStocks(selected.code, 300) : Promise.resolve(null)),
@@ -68,16 +64,18 @@ export function SectorPanel({ className = "", ...zoomProps }: { className?: stri
   const maxAbs = filtered ? Math.max(...filtered.map((b) => Math.abs(b.pct)), 0.01) : 1;
 
   // 榜单/搜索变化时回到第一个板块
-  useEffect(() => setIdx(0), [kind, dir, q]);
+  useEffect(() => { setIdx(0); }, [kind, dir, q]);
   // 定时推进轮播索引
   useEffect(() => {
     if (!auto || !filtered?.length) return;
     const t = window.setInterval(() => setIdx((i) => i + 1), ROTATE_MS);
     return () => window.clearInterval(t);
   }, [auto, filtered?.length]);
-  // 轮播模式下同步选中项
+  // 轮播时选中当前板块；未轮播时默认选中第一
   useEffect(() => {
-    if (auto && filtered?.length) setSelected(filtered[idx % filtered.length]);
+    if (!filtered?.length) return;
+    if (auto) setSelected(filtered[idx % filtered.length]);
+    else setSelected(filtered[0]);
   }, [auto, idx, filtered]);
 
   const pick = (b: Board) => {
@@ -170,9 +168,7 @@ export function SectorPanel({ className = "", ...zoomProps }: { className?: stri
                   pct={s.pct}
                   amount={s.amount > 0 ? fmtYuan(s.amount) : undefined}
                   turnover={s.turnover > 0 ? `${s.turnover.toFixed(1)}%` : undefined}
-                  spark
-                  boards
-                  flow
+                  spark boards flow
                 />
               ))}
               {stocks && <div className="px-1.5 pt-1 text-right text-[9px] text-slate-600">全量 {stocks.length} 只成分股</div>}
