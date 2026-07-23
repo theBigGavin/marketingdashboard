@@ -117,6 +117,7 @@ docker run -p 3000:3000 market-cockpit
 | `/api/mystery-select?query=...&limit=...` | 问财股票筛选（按概念/行业查询） |
 | `/api/chain-parse` | 产业链文本解析（按段落标题自动分配上中下游） |
 | `/api/openrouter-usage` | OpenRouter 日度榜单（厂商 Token 消耗量，本地缓存持久化积累） |
+| `/api/stock-search?q=...` | 股票搜索（名称/拼音首字母→代码，新浪建议代理） |
 | `/api/health` | 健康检查 |
 
 ## 🗂️ 项目结构
@@ -128,7 +129,9 @@ docker run -p 3000:3000 market-cockpit
 ├── src/
 │   ├── App.tsx        # 大屏布局与路由
 │   ├── components/
-│   │   ├── dash/      # 驾驶舱各面板（指数/板块/资金流/快讯/产业链…）
+│   │   ├── dash/      # 驾驶舱各面板（指数/板块/资金流/快讯/产业链/AI驾驶舱/自选股…）
+│   │   │   ├── Spark.tsx       # 日内分时迷你走势图（按交易时间计算宽度）
+│   │   │   └── WatchlistPanel.tsx  # 自选股面板（支持名称/拼音搜索，localStorage 持久化）
 │   │   └── ui/        # shadcn 风格基础组件库
 │   ├── config/        # 指数、商品、产业链等静态配置
 │   ├── hooks/         # usePolling 等通用钩子
