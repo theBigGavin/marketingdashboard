@@ -52,7 +52,7 @@ flowchart LR
 ```
 
 - 前端优先请求本站 Node 代理；代理不可用时，部分接口（腾讯系 / 见闻）自动降级为浏览器直连
-- 服务端按接口粒度设置缓存 TTL（行情 1.5s ~ 板块归属 24h），无数据库、无外部存储
+- 服务端按接口粒度设置缓存 TTL（行情 1.5s ~ 板块归属 24h），缓存容量有界（LRU + 定时清扫），无数据库、无外部存储
 - 生产环境单进程运行：同一端口同时提供 API 与前端静态文件
 
 ## 🚀 快速开始
@@ -120,6 +120,8 @@ docker run -p 3000:3000 market-cockpit
 | `/api/stock-search?q=...` | 股票搜索（名称/拼音首字母→代码，新浪建议代理） |
 | `/api/health` | 健康检查 |
 
+> 注：`/api/mystery-select` 与 `/api/openrouter-usage` 消耗服务端私有 API Key，仅接受同源页面请求（跨源 403）；POST 请求体上限 256KB；`/api/` 未命中路由返回 404 JSON。
+
 ## 🗂️ 项目结构
 
 ```
@@ -129,19 +131,18 @@ docker run -p 3000:3000 market-cockpit
 ├── src/
 │   ├── App.tsx        # 大屏布局与路由
 │   ├── components/
-│   │   ├── dash/      # 驾驶舱各面板（指数/板块/资金流/快讯/产业链/AI驾驶舱/自选股…）
-│   │   │   ├── Spark.tsx       # 日内分时迷你走势图（按交易时间计算宽度）
-│   │   │   └── WatchlistPanel.tsx  # 自选股面板（支持名称/拼音搜索，localStorage 持久化）
-│   │   └── ui/        # shadcn 风格基础组件库
+│   │   └── dash/      # 驾驶舱各面板（指数/板块/资金流/快讯/产业链/AI驾驶舱/自选股…）
+│   │       ├── Spark.tsx       # 日内分时迷你走势图（A股按交易时段 / 24h 品种按数据跨度计算宽度）
+│   │       └── WatchlistPanel.tsx  # 自选股面板（支持名称/拼音搜索，localStorage 持久化）
 │   ├── config/        # 指数、商品、产业链等静态配置
-│   ├── hooks/         # usePolling 等通用钩子
+│   ├── hooks/         # usePolling / useSharedPolling / useClock 等通用钩子
 │   └── lib/           # API 客户端与工具函数
 └── docs/              # 截图等文档资源
 ```
 
 ## 🛠️ 技术栈
 
-- **前端**：React 19 · Vite 7 · TypeScript · Tailwind CSS · Radix UI · Recharts
+- **前端**：React 19 · Vite 7 · TypeScript · Tailwind CSS · lucide-react 图标（图表为手写 SVG）
 - **后端**：Node.js 原生 `http`（无框架）· `curl` / `fetch`
 - **数据源**：腾讯 · 新浪 · 东方财富 · 华尔街见闻 · CNBC · Binance 等公开行情接口
 
