@@ -14,7 +14,7 @@ export function MoneyFlowPanel({ className = "", ...zoomProps }: { className?: s
     <Panel
       className={className}
       {...zoomProps}
-      title="实时资金流向 · 主力净流入"
+      title="主力净流入排行"
       icon="⇄"
       accent="#fb7185"
       right={

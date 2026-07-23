@@ -81,19 +81,19 @@ export function TreasuryPanel({ className = "", ...zoomProps }: { className?: st
         <div className="mb-2 grid grid-cols-3 gap-2">
           <div className="rounded border border-slate-700/30 bg-slate-800/20 px-2 py-1">
             <div className="text-[10px] text-slate-500">10Y 收益率</div>
-            <div className="text-[16px] font-bold text-violet-300" style={{ fontVariantNumeric: "tabular-nums" }}>
+            <div className="text-[14px] font-semibold text-violet-300" style={{ fontVariantNumeric: "tabular-nums" }}>
               {y10 ? `${y10.yield.toFixed(3)}%` : "——"}
             </div>
           </div>
           <div className="rounded border border-slate-700/30 bg-slate-800/20 px-2 py-1">
             <div className="text-[10px] text-slate-500">2s10s 利差</div>
-            <div className={`text-[16px] font-bold ${spread2s10s != null ? clsChg(spread2s10s) : "text-slate-500"}`} style={{ fontVariantNumeric: "tabular-nums" }}>
+            <div className={`text-[14px] font-semibold ${spread2s10s != null ? clsChg(spread2s10s) : "text-slate-500"}`} style={{ fontVariantNumeric: "tabular-nums" }}>
               {spread2s10s != null ? `${spread2s10s > 0 ? "+" : ""}${spread2s10s.toFixed(1)}bp` : "——"}
             </div>
           </div>
           <div className="rounded border border-slate-700/30 bg-slate-800/20 px-2 py-1">
             <div className="text-[10px] text-slate-500">3M-10Y {spread3m10y != null && spread3m10y < 0 ? "(倒挂)" : ""}</div>
-            <div className={`text-[16px] font-bold ${spread3m10y != null ? clsChg(spread3m10y) : "text-slate-500"}`} style={{ fontVariantNumeric: "tabular-nums" }}>
+            <div className={`text-[14px] font-semibold ${spread3m10y != null ? clsChg(spread3m10y) : "text-slate-500"}`} style={{ fontVariantNumeric: "tabular-nums" }}>
               {spread3m10y != null ? `${spread3m10y > 0 ? "+" : ""}${spread3m10y.toFixed(1)}bp` : "——"}
             </div>
           </div>

@@ -38,7 +38,7 @@ export function CommodityPanel({ className = "", ...zoomProps }: { className?: s
                 {m && m.points.length > 1 && <Spark points={m.points} prec={m.prec} width={100} height={22} fluid emptyLabel="—" session="h24" />}
               </div>
               <div className="w-[84px] shrink-0 text-right">
-                <div className={`text-[15px] font-bold leading-5 ${q ? clsChg(q.pct) : "text-slate-600"}`} style={{ fontVariantNumeric: "tabular-nums" }}>
+                <div className={`text-[12px] font-semibold leading-5 ${q ? clsChg(q.pct) : "text-slate-600"}`} style={{ fontVariantNumeric: "tabular-nums" }}>
                   {q ? fmtPrice(q.price) : "——"}
                 </div>
                 <div className={`text-[10px] font-semibold ${q ? clsChg(q.pct) : ""}`} style={{ fontVariantNumeric: "tabular-nums" }}>
