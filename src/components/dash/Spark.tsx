@@ -26,13 +26,20 @@ export function Spark({ points, prec, width = 120, height = 36, fluid = false }:
     const pad = (max - min) * 0.08;
     min -= pad;
     max += pad;
+    // 解析时间字符串，兼容 "0930" (A股) 和 "09:30" (期货) 两种格式
+    const parseTime = (t: string) => {
+      if (!t || typeof t !== "string") return NaN;
+      const s = t.replace(":", "");
+      return parseInt(s.slice(0, 2), 10) * 60 + parseInt(s.slice(2, 4), 10);
+    };
     // A股交易时间: 09:30-11:30(上午), 13:00-15:00(下午), 共240分钟
     const OPEN = 9 * 60 + 30; // 570
     const LUNCH_S = 11 * 60 + 30; // 690
     const LUNCH_E = 13 * 60; // 780
     const SESSION = 240; // 总交易分钟数
     const t2x = (t: string) => {
-      const m = parseInt(t.slice(0, 2), 10) * 60 + parseInt(t.slice(2, 4), 10);
+      const m = parseTime(t);
+      if (!Number.isFinite(m)) return 1;
       let e = m - OPEN;
       if (m > LUNCH_E) e -= LUNCH_E - LUNCH_S;
       return (Math.max(0, Math.min(e, SESSION)) / SESSION) * (width - 2) + 1;

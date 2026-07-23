@@ -482,15 +482,17 @@ function parseJsonp(text) {
 
 async function handleFutureMinute(code) {
   if (code === "BTCUSDT") {
-    const [klines, ticker] = await Promise.all([
-      fetchJsonAny(["https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=240"]),
-      fetchJsonAny(["https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT"]),
-    ]);
-    const pts = klines.map((k) => {
-      const d = new Date(k[0]);
-      return { t: `${String(d.getHours()).padStart(2, "0")}${String(d.getMinutes()).padStart(2, "0")}`, p: num(k[4]) };
-    });
-    return { code, prec: num(ticker.prevClosePrice), points: pts };
+    try {
+      const [klines, ticker] = await Promise.all([
+        fetchJsonAny(["https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=240"]),
+        fetchJsonAny(["https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT"]),
+      ]);
+      const pts = klines.map((k) => {
+        const d = new Date(k[0]);
+        return { t: `${String(d.getHours()).padStart(2, "0")}${String(d.getMinutes()).padStart(2, "0")}`, p: num(k[4]) };
+      });
+      return { code, prec: num(ticker.prevClosePrice), points: pts };
+    } catch { return { code, prec: 0, points: [] }; }
   }
   if (code.startsWith("hf_")) {
     const symbol = code.slice(3);
