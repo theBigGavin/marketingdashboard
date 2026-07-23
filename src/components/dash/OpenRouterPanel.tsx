@@ -56,6 +56,7 @@ function Chart({ allDays, days, mode }: { allDays: OrUsageDay[]; days: OrUsageDa
   const chart = useMemo(() => {
     if (!days || days.length < 2) return null;
     const { w: W, h: H } = size;
+    if (!W || !H || W < 100 || H < 50) return null;
     const ch = H - 36, PL = 50, PR = 18, PT = 8, PB = 34;
     const iw = W - PL - PR, ih = ch - PT - PB;
     if (iw < 40 || ih < 20) return null;

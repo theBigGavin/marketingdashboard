@@ -376,8 +376,24 @@ export const api = {
   boards: (type: "01" | "02", dir: 0 | 1 = 0, n = 30) =>
     withFallback(() => get<Board[]>(`/api/boards?type=${type}&dir=${dir}&n=${n}`), () => directBoards(type, dir, n)),
   boardStocks: (code: string, n = 12) => get<BoardStock[]>(`/api/board-stocks?code=${encodeURIComponent(code)}&n=${n}`),
-  futures: () =>
-    withFallback(() => get<Record<string, FutureQuote>>(`/api/futures`), () => directFutures()),
+  futures: async () => {
+    // 服务端获取期货, 浏览器直连 Binance 补 BTC
+    const data = await withFallback(
+      () => get<Record<string, FutureQuote>>(`/api/futures`),
+      () => directFutures()
+    );
+    if (!data.BTCUSDT) {
+      try {
+        const j = await (await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT")).json();
+        data.BTCUSDT = {
+          symbol: "BTCUSDT", name: "BTC/USDT", price: num(j.lastPrice), prev: num(j.prevClosePrice),
+          open: num(j.openPrice), high: num(j.highPrice), low: num(j.lowPrice),
+          change: num(j.priceChange), pct: num(j.priceChangePercent), time: "",
+        };
+      } catch { /* 浏览器直连也失败则放弃 */ }
+    }
+    return data;
+  },
   rank: (sort: "changepercent" | "amount" | "turnoverratio", asc: 0 | 1, n = 30) =>
     get<RankStock[]>(`/api/rank?sort=${sort}&asc=${asc}&n=${n}`),
   moneyflow: (n = 15) => get<FlowStock[]>(`/api/moneyflow?n=${n}`),

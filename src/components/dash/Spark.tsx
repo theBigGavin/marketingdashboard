@@ -10,7 +10,7 @@ interface SparkProps {
   fluid?: boolean;
 }
 
-/** 日内分时迷你走势图 */
+/** 日内分时迷你走势图 — X 轴按实际交易时间计算宽度 */
 export function Spark({ points, prec, width = 120, height = 36, fluid = false }: SparkProps) {
   const { line, area, refY, color } = useMemo(() => {
     if (!points || points.length < 2 || !prec) {
@@ -26,12 +26,22 @@ export function Spark({ points, prec, width = 120, height = 36, fluid = false }:
     const pad = (max - min) * 0.08;
     min -= pad;
     max += pad;
-    const X = (i: number) => (i / (points.length - 1)) * (width - 2) + 1;
+    // A股交易时间: 09:30-11:30(上午), 13:00-15:00(下午), 共240分钟
+    const OPEN = 9 * 60 + 30; // 570
+    const LUNCH_S = 11 * 60 + 30; // 690
+    const LUNCH_E = 13 * 60; // 780
+    const SESSION = 240; // 总交易分钟数
+    const t2x = (t: string) => {
+      const m = parseInt(t.slice(0, 2), 10) * 60 + parseInt(t.slice(2, 4), 10);
+      let e = m - OPEN;
+      if (m > LUNCH_E) e -= LUNCH_E - LUNCH_S;
+      return (Math.max(0, Math.min(e, SESSION)) / SESSION) * (width - 2) + 1;
+    };
     const Y = (v: number) => height - 3 - ((v - min) / (max - min)) * (height - 6);
     const last = ps[ps.length - 1];
     const color = hexChg(last - prec);
-    const line = points.map((d, i) => `${X(i).toFixed(1)},${Y(d.p).toFixed(1)}`).join(" ");
-    const area = `1,${height - 1} ${line} ${(width - 1).toFixed(1)},${height - 1}`;
+    const line = points.map((d) => `${t2x(d.t).toFixed(1)},${Y(d.p).toFixed(1)}`).join(" ");
+    const area = `${t2x(points[0].t).toFixed(1)},${height - 1} ${line} ${t2x(points[points.length - 1].t).toFixed(1)},${height - 1}`;
     return { line, area, refY: Y(prec), color };
   }, [points, prec, width, height]);
 
