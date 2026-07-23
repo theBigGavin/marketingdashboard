@@ -59,7 +59,7 @@ export function Spark({ points, prec, width = 120, height = 36, fluid = false, e
       xs = points.map((d) => {
         const m = toMinute(d.t);
         let e = m - OPEN;
-        if (m > LUNCH_E) e -= LUNCH_E - LUNCH_S;
+        if (m >= LUNCH_E) e -= LUNCH_E - LUNCH_S; // 13:00 整点也属下午时段
         return (Math.max(0, Math.min(e, SESSION)) / SESSION) * (width - 2) + 1;
       });
     }
