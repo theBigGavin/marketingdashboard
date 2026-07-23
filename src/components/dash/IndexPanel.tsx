@@ -21,7 +21,10 @@ function IndexRow({ def, q, minute }: { def: IndexDef; q?: Quote; minute?: Minut
         {q ? fmtPct(q.pct) : ""}
       </span>
       <span className="hidden min-w-0 flex-1 items-center px-1 md:flex">
-        {minute && minute.points.length > 1 && <Spark points={minute.points} prec={minute.prec} width={120} height={16} fluid />}
+        {minute && minute.points.length > 1 && (
+          // A股按交易时段映射; 港/美/汇率交易时段不同, 用连续交易时间轴
+          <Spark points={minute.points} prec={minute.prec} width={120} height={16} fluid session={def.region === "CN" ? "ashare" : "h24"} />
+        )}
       </span>
       <span className="hidden w-[52px] shrink-0 text-right text-[9px] text-slate-500 xl:block" style={TNUM}>
         {q?.amount && !def.code.startsWith("us") ? fmtWan(q.amount) : ""}

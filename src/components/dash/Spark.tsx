@@ -42,14 +42,18 @@ export function Spark({ points, prec, width = 120, height = 36, fluid = false, e
     max += pad;
     let xs: number[];
     if (session === "h24") {
-      // 24h 品种(商品/加密): 按数据自身时间跨度等比映射, 跨午夜补 1440 分钟
-      const first = toMinute(points[0].t);
-      const adj = points.map((d) => {
-        const m = toMinute(d.t);
-        return m < first - 720 ? m + 1440 : m;
-      });
-      const span = Math.max(adj[adj.length - 1] - adj[0], 1);
-      xs = adj.map((m) => ((m - adj[0]) / span) * (width - 2) + 1);
+      // 24h 品种(商品/加密): 连续交易时间轴 — 相邻间隔超阈值视为休市段并压缩,
+      // 兼容夜盘+日盘结构(如沪金 21:00→01:00→09:00→15:00)与跨午夜
+      const GAP_MIN = 5;
+      const tl = [0];
+      for (let i = 1; i < points.length; i++) {
+        let d = toMinute(points[i].t) - toMinute(points[i - 1].t);
+        if (d < -720) d += 1440; // 跨午夜
+        if (d < 0 || d > GAP_MIN) d = 1; // 休市段压缩为 1 分钟
+        tl.push(tl[i - 1] + d);
+      }
+      const span = Math.max(tl[tl.length - 1], 1);
+      xs = tl.map((v) => (v / span) * (width - 2) + 1);
     } else {
       // A股交易时间: 09:30-11:30(上午), 13:00-15:00(下午), 共240分钟
       const OPEN = 9 * 60 + 30; // 570

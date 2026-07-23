@@ -76,7 +76,7 @@ export function BoardFlowChart({ flows, progress = 1 }: { flows: BoardFlow[]; pr
       const v = max - f * (max - min);
       return { v, y: Y(v) };
     });
-    return { W, H, X, Y, min, max, lines, labels, ticks, labelW, idx, cursorT: series[0].points[idx].t };
+    return { W, H, X, Y, min, max, lines, labels, ticks, labelW, idx, cursorT: (series.find((s) => s.points.length > idx)?.points[idx])?.t ?? "" };
   }, [flows, size, progress]);
 
   return (
