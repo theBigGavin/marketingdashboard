@@ -3,6 +3,8 @@
  *  代理不可用时,腾讯系接口(qt.gtimg.cn / ifzq.gtimg.cn,天然 CORS)由浏览器直连兜底。
  */
 
+import { usePolling } from "@/hooks/usePolling";
+
 export interface Quote {
   symbol: string;
   name: string;
@@ -183,7 +185,7 @@ const num = (v: unknown) => {
 };
 
 async function get<T>(path: string): Promise<T> {
-  const r = await fetch(path);
+  const r = await fetch(path, { signal: AbortSignal.timeout(10000) });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   const j = await r.json();
   if (!j.ok) throw new Error(j.error || "api error");
@@ -191,7 +193,12 @@ async function get<T>(path: string): Promise<T> {
 }
 
 async function post<T>(path: string, body: unknown): Promise<T> {
-  const r = await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const r = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(10000),
+  });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   const j = await r.json();
   if (!j.ok) throw new Error(j.error || "api error");
@@ -224,11 +231,48 @@ function parseFuturesText(text: string): Record<string, FutureQuote> {
   return out;
 }
 
+/** 内盘期货(沪金等 nf_)直连解析: 字段布局与外盘 hf_ 不同, 与服务端 parseSinaDomestic 对齐 */
+function parseDomesticFuturesText(text: string): Record<string, FutureQuote> {
+  const out: Record<string, FutureQuote> = {};
+  const re = /(?:hq_str_|v_)(nf_\w+)="([^"]*)"/g;
+  let m;
+  while ((m = re.exec(text))) {
+    const f = m[2].split(",");
+    if (f.length < 17 || !f[0]) continue;
+    const prevSettle = num(f[8]); // f[8]=昨结算
+    let price = num(f[5]); // 最新价(夜盘可能为0)
+    if (!price) {
+      const bid = num(f[6]), ask = num(f[7]);
+      price = bid && ask ? +((bid + ask) / 2).toFixed(2) : (bid || ask || prevSettle);
+    }
+    out[m[1]] = {
+      symbol: m[1],
+      name: f[0],
+      price,
+      high: num(f[3]),
+      low: num(f[4]),
+      open: num(f[2]),
+      prev: prevSettle,
+      change: +(price - prevSettle).toFixed(4),
+      pct: prevSettle ? +(((price - prevSettle) / prevSettle) * 100).toFixed(3) : 0,
+      time: f[16],
+    };
+  }
+  return out;
+}
+
 async function directFutures(): Promise<Record<string, FutureQuote>> {
   const out: Record<string, FutureQuote> = {};
-  const r = await fetch(`https://qt.gtimg.cn/q=hf_GC,hf_SI,hf_CAD,hf_CL`);
+  // 外盘 hf_: 纽约金/银/铜/油 + 伦敦金(腾讯直连, CORS 开放)
+  const r = await fetch(`https://qt.gtimg.cn/q=hf_GC,hf_SI,hf_CAD,hf_CL,hf_XAU`);
   const text = new TextDecoder("gbk").decode(await r.arrayBuffer());
   Object.assign(out, parseFuturesText(text));
+  // 内盘 nf_: 沪金(同一接口, 字段布局不同)
+  try {
+    const rn = await fetch(`https://qt.gtimg.cn/q=nf_AU0`);
+    const textN = new TextDecoder("gbk").decode(await rn.arrayBuffer());
+    Object.assign(out, parseDomesticFuturesText(textN));
+  } catch { /* 忽略内盘直连失败 */ }
   // BTC(Binance 开放 CORS)
   try {
     const j = await (await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT`)).json();
@@ -411,32 +455,6 @@ export const api = {
     post<{ name: string; source: string; segments: { name: string; desc: string; stocks: { code: string; name: string }[] }[]; warnings?: string[] }>(`/api/chain-parse`, { name, content }),
   stockSearch: (q: string) => get<StockSearchResult[]>(`/api/stock-search?q=${encodeURIComponent(q)}`),
 };
-
-/** 轮询封装:自动管理 loading/error,组件卸载时停止 */
-import { useEffect, useState, useRef } from "react";
-export function usePolling<T>(fn: () => Promise<T>, intervalMs: number): { data: T | null; loading: boolean; error: string | null } {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const mounted = useRef(true);
-  useEffect(() => {
-    mounted.current = true;
-    const tick = async () => {
-      try {
-        const d = await fn();
-        if (mounted.current) { setData(d); setError(null); }
-      } catch (e: any) {
-        if (mounted.current) setError(String(e.message || e));
-      } finally {
-        if (mounted.current) setLoading(false);
-      }
-    };
-    tick();
-    const id = setInterval(tick, intervalMs);
-    return () => { mounted.current = false; clearInterval(id); };
-  }, [fn, intervalMs]);
-  return { data, loading, error };
-}
 
 /** OpenRouter 用量轮询(1 小时) */
 export function useOpenRouterUsage() {

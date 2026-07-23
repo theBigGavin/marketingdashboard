@@ -15,10 +15,12 @@ export function BoardFlowPanel({ className = "", ...zoomProps }: { className?: s
   const [playing, setPlaying] = useState(false);
   const [countdown, setCountdown] = useState(POLL_MS / 1000);
 
-  // 数据刷新时重置倒计时
-  useEffect(() => {
+  // 数据刷新时重置倒计时(render-time 派生态调整)
+  const [prevUpdated, setPrevUpdated] = useState(updated);
+  if (prevUpdated !== updated) {
+    setPrevUpdated(updated);
     setCountdown(POLL_MS / 1000);
-  }, [updated]);
+  }
 
   // 倒计时每秒递减
   useEffect(() => {

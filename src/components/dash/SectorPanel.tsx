@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Panel, type PanelZoomProps } from "./Panel";
 import { QuoteRow } from "./QuoteRow";
 import { usePolling } from "@/hooks/usePolling";
@@ -54,29 +54,41 @@ export function SectorPanel({ className = "", ...zoomProps }: { className?: stri
   const [idx, setIdx] = useState(0);
 
   const { data: boards, error } = usePolling(() => api.boards(kind, dir, kind === "01" ? 300 : 1000), 15000, [kind, dir]);
-  const { data: stocks } = usePolling(
-    () => (selected ? api.boardStocks(selected.code, 300) : Promise.resolve(null)),
-    15000,
-    [selected?.code]
-  );
 
-  const filtered = boards?.filter((b) => !q || b.name.includes(q));
+  const filtered = useMemo(() => boards?.filter((b) => !q || b.name.includes(q)), [boards, q]);
   const maxAbs = filtered ? Math.max(...filtered.map((b) => Math.abs(b.pct)), 0.01) : 1;
 
-  // 榜单/搜索变化时回到第一个板块
-  useEffect(() => { setIdx(0); }, [kind, dir, q]);
+  // 榜单/搜索变化时轮播索引归零(render-time 派生态调整)
+  const filterKey = `${kind}|${dir}|${q}`;
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+  if (prevFilterKey !== filterKey) {
+    setPrevFilterKey(filterKey);
+    setIdx(0);
+  }
+
   // 定时推进轮播索引
   useEffect(() => {
     if (!auto || !filtered?.length) return;
     const t = window.setInterval(() => setIdx((i) => i + 1), ROTATE_MS);
     return () => window.clearInterval(t);
   }, [auto, filtered?.length]);
-  // 轮播时选中当前板块；未轮播时默认选中第一
-  useEffect(() => {
-    if (!filtered?.length) return;
-    if (auto) setSelected(filtered[idx % filtered.length]);
-    else setSelected(filtered[0]);
-  }, [auto, idx, filtered]);
+
+  // 当前生效板块: 轮播取索引位; 非轮播保留用户手动选择, 仅当已不在 filtered 中(榜单/搜索变化)才回落到第一
+  const activeBoard = useMemo(() => {
+    if (!filtered?.length) return null;
+    if (auto) return filtered[idx % filtered.length];
+    if (selected) {
+      const cur = filtered.find((b) => b.code === selected.code);
+      if (cur) return cur;
+    }
+    return filtered[0];
+  }, [auto, filtered, idx, selected]);
+
+  const { data: stocks } = usePolling(
+    () => (activeBoard ? api.boardStocks(activeBoard.code, 300) : Promise.resolve(null)),
+    15000,
+    [activeBoard?.code]
+  );
 
   const pick = (b: Board) => {
     setAuto(false);
@@ -134,7 +146,7 @@ export function SectorPanel({ className = "", ...zoomProps }: { className?: stri
             <span>代码</span><span>板块 / 强度{filtered ? ` (${filtered.length})` : ""}</span><span className="text-right">涨跌幅</span><span className="text-right">领涨股</span>
           </div>
           {filtered?.map((b) => (
-            <BoardRow key={b.code} b={b} maxAbs={maxAbs} active={selected?.code === b.code}
+            <BoardRow key={b.code} b={b} maxAbs={maxAbs} active={activeBoard?.code === b.code}
               onClick={() => pick(b)} />
           ))}
           {!filtered && (
@@ -148,15 +160,15 @@ export function SectorPanel({ className = "", ...zoomProps }: { className?: stri
         </div>
 
         {/* 成分股侧栏 */}
-        {selected && (
+        {activeBoard && (
           <div className="w-[min(440px,52%)] shrink-0 overflow-y-auto border-l border-slate-700/40 p-2">
             <div className="mb-2 flex items-baseline justify-between">
-              <span className="text-[12px] font-semibold text-cyan-300">{selected.name}</span>
-              <span className={`text-[12px] font-semibold ${clsChg(selected.pct)}`}>{fmtPct(selected.pct)}</span>
+              <span className="text-[12px] font-semibold text-cyan-300">{activeBoard.name}</span>
+              <span className={`text-[12px] font-semibold ${clsChg(activeBoard.pct)}`}>{fmtPct(activeBoard.pct)}</span>
             </div>
             <div className="mb-2 grid grid-cols-2 gap-1 text-[10px] text-slate-500">
-              <span>5日 <span className={clsChg(selected.pct5)}>{fmtPct(selected.pct5)}</span></span>
-              <span>20日 <span className={clsChg(selected.pct20)}>{fmtPct(selected.pct20)}</span></span>
+              <span>5日 <span className={clsChg(activeBoard.pct5)}>{fmtPct(activeBoard.pct5)}</span></span>
+              <span>20日 <span className={clsChg(activeBoard.pct20)}>{fmtPct(activeBoard.pct20)}</span></span>
             </div>
             <div className="space-y-0.5">
               {stocks?.map((s) => (

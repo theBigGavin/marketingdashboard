@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Panel, type PanelZoomProps } from "./Panel";
 import { QuoteRow } from "./QuoteRow";
 import { usePolling } from "@/hooks/usePolling";
@@ -29,6 +29,34 @@ function normalizeCode(input: string): string | null {
   }
   return null;
 }
+
+/** 自选股行: 原始值 props + 稳定回调, 配合 memo 让未变化的行跳过重渲染 */
+const WatchRow = memo(function WatchRow({
+  code, name, price, pct, amount, turnover, onRemoveCode,
+}: {
+  code: string;
+  name: string;
+  price?: number;
+  pct?: number;
+  amount?: string;
+  turnover?: string;
+  onRemoveCode: (code: string) => void;
+}) {
+  return (
+    <QuoteRow
+      code={code}
+      name={name}
+      price={price}
+      pct={pct}
+      amount={amount}
+      turnover={turnover}
+      spark
+      boards
+      flow
+      onRemove={() => onRemoveCode(code)}
+    />
+  );
+});
 
 /** 自选股 / 持仓面板 — localStorage 持久化,5s 轮询 */
 export function WatchlistPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
@@ -85,7 +113,13 @@ export function WatchlistPanel({ className = "", ...zoomProps }: { className?: s
     add(s.code);
   };
 
+  const removeCode = useCallback((code: string) => {
+    setCodes((cs) => cs.filter((c) => c !== code));
+  }, []);
+
   const onKeyDown = (e: React.KeyboardEvent) => {
+    // 中文输入法选词期间的 Enter 不触发添加
+    if (e.nativeEvent.isComposing) return;
     if (e.key === "Enter") {
       if (showSuggest && highlightIdx >= 0 && highlightIdx < suggestions.length) {
         pickSuggestion(suggestions[highlightIdx]);
@@ -137,6 +171,15 @@ export function WatchlistPanel({ className = "", ...zoomProps }: { className?: s
             onKeyDown={onKeyDown}
             onFocus={() => suggestions.length > 0 && setShowSuggest(true)}
             placeholder="代码/名称/拼音, 如 688126 / 茅台 / gzmt"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={showSuggest}
+            aria-controls="watchlist-suggest"
+            aria-activedescendant={
+              highlightIdx >= 0 && suggestions[highlightIdx]
+                ? `watchlist-opt-${suggestions[highlightIdx].code}`
+                : undefined
+            }
             className={`min-w-0 flex-1 rounded border bg-slate-800/40 px-1.5 py-0.5 text-[11px] text-slate-200 outline-none placeholder:text-slate-600 ${
               invalid ? "border-rose-500/60" : "border-slate-700/50 focus:border-amber-500/50"
             }`}
@@ -151,11 +194,17 @@ export function WatchlistPanel({ className = "", ...zoomProps }: { className?: s
           {showSuggest && (
             <div
               ref={suggestRef}
+              id="watchlist-suggest"
+              role="listbox"
+              aria-label="股票搜索建议"
               className="absolute left-1.5 right-1.5 top-full z-50 mt-0.5 max-h-52 overflow-y-auto rounded border border-slate-600/50 bg-slate-800 shadow-lg"
             >
               {suggestions.map((s, i) => (
                 <button
                   key={s.code}
+                  id={`watchlist-opt-${s.code}`}
+                  role="option"
+                  aria-selected={i === highlightIdx}
                   onMouseDown={(e) => { e.preventDefault(); pickSuggestion(s); }}
                   onMouseEnter={() => setHighlightIdx(i)}
                   className={`flex w-full items-center gap-2 px-2 py-1 text-left text-[11px] transition-colors ${
@@ -175,7 +224,7 @@ export function WatchlistPanel({ className = "", ...zoomProps }: { className?: s
           {codes.map((code) => {
             const q = quotes?.[code];
             return (
-              <QuoteRow
+              <WatchRow
                 key={code}
                 code={code}
                 name={q?.name || code}
@@ -183,10 +232,7 @@ export function WatchlistPanel({ className = "", ...zoomProps }: { className?: s
                 pct={q?.pct}
                 amount={q && q.amount > 0 ? fmtWan(q.amount) : undefined}
                 turnover={q && q.turnover > 0 ? `${q.turnover.toFixed(1)}%` : undefined}
-                spark
-                boards
-                flow
-                onRemove={() => setCodes((cs) => cs.filter((c) => c !== code))}
+                onRemoveCode={removeCode}
               />
             );
           })}

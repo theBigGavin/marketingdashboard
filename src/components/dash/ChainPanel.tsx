@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Panel, type PanelZoomProps } from "./Panel";
 import { QuoteRow } from "./QuoteRow";
 import { usePolling } from "@/hooks/usePolling";
-import { api, type MysteryStock, type Quote } from "@/lib/api";
+import { useSharedPolling } from "@/hooks/useSharedPolling";
+import { api, type MysteryStock, type NewsItem, type Quote } from "@/lib/api";
 import { canonBoardName, unionBoards } from "@/lib/boards";
 import { CHAINS } from "@/config/dashboard";
 import type { Chain, ChainStock } from "@/config/dashboard";
@@ -60,7 +61,7 @@ export function ChainPanel({ className = "", ...zoomProps }: { className?: strin
     CHAINS.map((c) => {
       if (!chainOverrides[c.id]) return c;
       const segments = c.segments.map((seg, si) => {
-        const ov = chainOverrides[c.id!].segments[si];
+        const ov = chainOverrides[c.id].segments[si];
         return { ...seg, stocks: ov?.stocks || seg.stocks };
       });
       return { ...c, segments };
@@ -87,7 +88,7 @@ export function ChainPanel({ className = "", ...zoomProps }: { className?: strin
 
   const codes = useMemo(() => segmentData.flatMap((s) => s.stocks.map((x) => x.code)), [segmentData]);
   const { data: quotes } = usePolling(() => api.quotes(codes), 8000, [chainId]);
-  const { data: news } = usePolling(() => api.news(60), 20000);
+  const { data: news } = useSharedPolling<NewsItem[]>("news:60", () => api.news(60), 20000);
   const { data: boards } = usePolling(() => unionBoards(40), 25000);
 
   const chainNews = useMemo(() => {
@@ -99,6 +100,16 @@ export function ChainPanel({ className = "", ...zoomProps }: { className?: strin
     const keys = chain.keywords.map(canonBoardName);
     return boards.filter((b) => keys.some((k) => b.cname.includes(k) || k.includes(b.cname))).sort((a, b) => b.pct - a.pct).slice(0, 8);
   }, [boards, chain]);
+
+  // 编辑弹窗 Esc 关闭
+  useEffect(() => {
+    if (!editor) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setEditor(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [editor]);
 
   // 编辑保存（更新已有链）
   const submitEditor = async () => {

@@ -56,12 +56,15 @@ async function fetchText(url, { referer, gbk = false, timeout = 8000 } = {}) {
 
 function send(res, code, obj, extra = {}) {
   const body = typeof obj === "string" ? obj : JSON.stringify(obj);
-  res.writeHead(code, {
+  const headers = {
     "Content-Type": "application/json; charset=utf-8",
     "Access-Control-Allow-Origin": "*",
     "Cache-Control": "no-store",
     ...extra,
-  });
+  };
+  // extra 中值为 null 的头表示显式移除(用于私有端点不下发 ACAO:*)
+  for (const k of Object.keys(headers)) if (headers[k] == null) delete headers[k];
+  res.writeHead(code, headers);
   res.end(body);
 }
 
@@ -168,7 +171,7 @@ async function handleMinute(code) {
 
 /* ---------------- 腾讯板块榜(行业 t=01 / 概念 t=02) ---------------- */
 async function handleBoards(type, dir, n) {
-  const url = `https://ifzq.gtimg.cn/appstock/app/mktHs/rank?l=${n}&p=1&t=${type}/averatio&o=${dir}`;
+  const url = `https://ifzq.gtimg.cn/appstock/app/mktHs/rank?l=${encodeURIComponent(n)}&p=1&t=${encodeURIComponent(type)}/averatio&o=${encodeURIComponent(dir)}`;
   const text = await fetchText(url);
   const json = JSON.parse(text);
   return (json?.data || []).map((b) => ({
@@ -203,7 +206,7 @@ async function handleBoardStocks(code, dir, n) {
   });
   const out = [];
   for (let offset = 0; out.length < want; offset += 100) {
-    const url = `https://proxy.finance.qq.com/cgi/cgi-bin/rank/hs/getBoardRankList?board_code=${encodeURIComponent(code)}&sort_type=PriceRatio&direct=${dir}&offset=${offset}&count=100`;
+    const url = `https://proxy.finance.qq.com/cgi/cgi-bin/rank/hs/getBoardRankList?board_code=${encodeURIComponent(code)}&sort_type=PriceRatio&direct=${encodeURIComponent(dir)}&offset=${offset}&count=100`;
     const text = await fetchText(url);
     const json = JSON.parse(text);
     const list = json?.data?.rank_list || [];
@@ -268,7 +271,29 @@ function iwencaiErrorFromText(text) {
   if (clean.includes("Invalid") || clean.includes("Unauthorized") || clean.includes("鉴权") || clean.includes("权限")) {
     return "IWENCAI_AUTH_FAILED: 问财鉴权失败";
   }
-  return `IWENCAI_NON_JSON: ${clean.slice(0, 160)}`;
+  // 上游原文只记服务端日志, 不回显给客户端
+  console.error("[iwencai] non-json response:", clean.slice(0, 160));
+  return "IWENCAI_NON_JSON: 问财返回非JSON响应";
+}
+
+// 问财返回的列名带查询时日期区间(如 平均成交额[20260715-20260717]), 日期随查询变化, 硬编码会失效
+// 按基础列名 + 日期跨度匹配(targetDays 为目标自然日数), 无日期的纯 key 作为兜底
+function pickDatedValue(obj, baseNames, targetDays, fallbacks = []) {
+  let best;
+  let bestDiff = Infinity;
+  let plain;
+  const day = (s) => Date.parse(`${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`);
+  for (const [key, value] of Object.entries(obj || {})) {
+    const m = key.match(/^(.+?)\[(\d{8})-(\d{8})\]/);
+    if (m && baseNames.includes(m[1])) {
+      const span = (day(m[3]) - day(m[2])) / 86400000 + 1;
+      const diff = Math.abs(span - targetDays);
+      if (diff < bestDiff) { bestDiff = diff; best = value; }
+    } else if (!m && fallbacks.some((f) => key.includes(f))) {
+      plain = value;
+    }
+  }
+  return best !== undefined ? best : plain;
 }
 
 function normalizeIwencaiStock(item) {
@@ -278,9 +303,9 @@ function normalizeIwencaiStock(item) {
     price: parseMaybeNumber(item["最新价"] ?? item.price),
     pct: parseMaybeNumber(item["最新涨跌幅"] ?? pickValue(item, ["涨跌幅"]) ?? item.pct),
     ratio: parseMaybeNumber(pickRatioValue(item)),
-    avgAmount3: parseMaybeNumber(pickValue(item, ["平均成交额[20260715-20260717]", "区间日均成交额[20260715-20260717]", "最近3日区间日均成交额", "最近3日平均成交金额", "成交额平均值"])),
-    avgAmount20: parseMaybeNumber(pickValue(item, ["平均成交额[20260618-20260716]", "区间日均成交额[20260618-20260716]", "前20日区间日均成交额", "前20日平均成交金额"])),
-    rangePct5: parseMaybeNumber(pickValue(item, ["涨跌幅[20260713-20260717]", "最近5日区间涨跌幅"])),
+    avgAmount3: parseMaybeNumber(pickDatedValue(item, ["平均成交额", "区间日均成交额", "最近3日区间日均成交额"], 3, ["最近3日区间日均成交额", "最近3日平均成交金额", "成交额平均值"])),
+    avgAmount20: parseMaybeNumber(pickDatedValue(item, ["平均成交额", "区间日均成交额", "前20日区间日均成交额"], 28, ["前20日区间日均成交额", "前20日平均成交金额"])),
+    rangePct5: parseMaybeNumber(pickDatedValue(item, ["涨跌幅"], 5, ["最近5日区间涨跌幅"])),
     raw: item,
   };
 }
@@ -310,6 +335,7 @@ async function handleMysterySelect(query, limit = "30", page = "1") {
       "X-Claw-Trace-Id": traceId,
     },
     body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(15000), // 与其他上游一致, 防止无限挂起
   });
   const text = await resp.text();
   let json;
@@ -523,7 +549,7 @@ async function handleFutureMinute(code) {
 /* ---------------- 个股榜单(涨幅/跌幅/热门) — 新浪盘中 + 腾讯盘后双源 ---------------- */
 async function rankViaSina(sort, asc, want) {
   const fetchN = Math.min(100, Math.max(want * 3, 60));
-  const url = `https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData?page=1&num=${fetchN}&sort=${sort}&asc=${asc}&node=hs_a&symbol=&_s_r_a=page`;
+  const url = `https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData?page=1&num=${fetchN}&sort=${encodeURIComponent(sort)}&asc=${encodeURIComponent(asc)}&node=hs_a&symbol=&_s_r_a=page`;
   const arr = await fetchSinaJson(url);
   if (!Array.isArray(arr)) return [];
   return arr.filter((s) => num(s.trade) > 0).slice(0, want).map((s) => ({
@@ -550,7 +576,7 @@ async function rankViaSina(sort, asc, want) {
 async function rankViaTencent(sort, asc, want) {
   // 盘后新浪清零,腾讯保留收盘价;涨跌幅字段同样清零(返回0)
   const sortMap = { changepercent: "PriceRatio", amount: "volume", turnoverratio: "PriceRatio" };
-  const url = `https://proxy.finance.qq.com/cgi/cgi-bin/rank/hs/getBoardRankList?board_code=aStock&sort_type=${sortMap[sort] || "PriceRatio"}&direct=${asc === "1" ? "up" : "down"}&offset=0&count=${want}`;
+  const url = `https://proxy.finance.qq.com/cgi/cgi-bin/rank/hs/getBoardRankList?board_code=aStock&sort_type=${encodeURIComponent(sortMap[sort] || "PriceRatio")}&direct=${asc === "1" ? "up" : "down"}&offset=0&count=${want}`;
   const text = await fetchText(url);
   const json = JSON.parse(text);
   return (json?.data?.rank_list || [])
@@ -604,8 +630,18 @@ async function handleMoneyFlow(n) {
 /* ---------------- 个股所属板块(东财): 行业/地域/概念 ---------------- */
 /* 东财对突发请求会断连(WAF), 串行队列 + 双节点 + fetch/curl 双通道兜底 */
 let emQueue = Promise.resolve();
+let emPending = 0; // 排队+执行中的任务数
+const EM_QUEUE_MAX = 20;
 function emEnqueue(fn) {
-  const p = emQueue.then(fn, fn);
+  // 队列满直接拒绝, 不再无界排队(err.status 供路由层返回 503)
+  if (emPending >= EM_QUEUE_MAX) {
+    const err = new Error("busy, retry later");
+    err.status = 503;
+    return Promise.reject(err);
+  }
+  emPending++;
+  const run = () => fn().finally(() => { emPending--; });
+  const p = emQueue.then(run, run);
   emQueue = p.catch(() => {});
   return p;
 }
@@ -716,7 +752,7 @@ async function handleStockFlows(codesParam) {
         for (const d of diff) {
           const c = emSymbol(d.f12);
           const rec = { code: c, netIn: num(d.f62), netRatio: num(d.f184) };
-          cache.set(`sf:${c}`, { ts: Date.now(), data: rec, inflight: null });
+          cacheSet(`sf:${c}`, { ts: Date.now(), data: rec, inflight: null, ttl: 30000 });
           out[c] = rec;
         }
       }
@@ -806,7 +842,7 @@ async function fetchWscnNews(size) {
 }
 
 async function handleNews(page, size) {
-  const url = `https://zhibo.sina.com.cn/api/zhibo/feed?page=${page}&page_size=${size}&zhibo_id=152&tag_id=0`;
+  const url = `https://zhibo.sina.com.cn/api/zhibo/feed?page=${encodeURIComponent(page)}&page_size=${encodeURIComponent(size)}&zhibo_id=152&tag_id=0`;
   try {
     const json = await fetchSinaJson(url);
     const list = json?.result?.data?.feed?.list || [];
@@ -868,6 +904,36 @@ async function handleTreasuryHistory() {
 
 /* ---------------- TTL 缓存 + 并发合并(防上游限流) ---------------- */
 const cache = new Map();
+const CACHE_MAX = 2000; // 条目上限, 防止用户输入拼 key 导致无界增长
+
+// 清理过期/失效条目(过期按各条目自身 ttl 判断)
+function sweepCache() {
+  const now = Date.now();
+  for (const [k, v] of cache) {
+    if (!v.inflight && (v.data === undefined || now - v.ts > (v.ttl || 60000))) cache.delete(k);
+  }
+}
+
+// 写缓存: 超限先清过期项, 仍超则按 Map 插入序淘汰最旧条目
+function cacheSet(key, entry) {
+  if (cache.has(key)) cache.delete(key); // 重插以刷新插入序
+  cache.set(key, entry);
+  if (cache.size <= CACHE_MAX) return;
+  sweepCache();
+  while (cache.size > CACHE_MAX) {
+    let oldest;
+    for (const [k, v] of cache) {
+      if (!v.inflight) { oldest = k; break; }
+    }
+    if (oldest === undefined) break; // 全部在途, 不再淘汰
+    cache.delete(oldest);
+  }
+}
+
+// 定时 sweep, unref 避免阻止进程退出
+const cacheSweeper = setInterval(sweepCache, 60000);
+cacheSweeper.unref();
+
 async function cached(key, ttl, fn) {
   const now = Date.now();
   const hit = cache.get(key);
@@ -877,21 +943,21 @@ async function cached(key, ttl, fn) {
   }
   const inflight = fn()
     .then((data) => {
-      cache.set(key, { ts: Date.now(), data, inflight: null });
+      cacheSet(key, { ts: Date.now(), data, inflight: null, ttl });
       return data;
     })
     .catch((e) => {
       const c = cache.get(key);
-      cache.set(key, { ts: c?.ts || 0, data: c?.data, inflight: null });
+      cacheSet(key, { ts: c?.ts || 0, data: c?.data, inflight: null, ttl });
       if (c?.data !== undefined) return c.data; // 出错回退到旧数据
       throw e;
     });
-  cache.set(key, { ts: hit?.ts || 0, data: hit?.data, inflight });
+  cacheSet(key, { ts: hit?.ts || 0, data: hit?.data, inflight, ttl });
   return inflight;
 }
 
 /* ---------------- OpenRouter 大模型 Token 消耗量(厂商聚合) ---------------- */
-const OR_KEY = process.env.OPENROUTER_API_KEY || (() => { try { return require('fs').readFileSync(path.join(__dirname, '.env'), 'utf-8').split('\n').find(l => l.startsWith('OPENROUTER_API_KEY='))?.split('=').slice(1).join('=').trim() || ''; } catch { return ''; } })();
+const OR_KEY = process.env.OPENROUTER_API_KEY || ""; // .env 已在文件顶部统一加载
 const OR_DATA_FILE = path.join(__dirname, "data", "openrouter-usage.json");
 
 const VENDOR_MAP = {
@@ -967,7 +1033,7 @@ async function handleOpenRouterUsage() {
         const dt = r.date, v = vendorSlug(r.model_permaslug);
         if (cachedDates.has(dt)) continue;
         if (!byDV[dt]) byDV[dt] = {};
-        byDV[dt][v] = (byDV[dt][v] || 0n) + BigInt(r.total_tokens);
+        byDV[dt][v] = (byDV[dt][v] || 0n) + BigInt(Math.round(Number(r.total_tokens) || 0)); // 上游可能返回浮点/字符串, 直接 BigInt() 会 throw
       }
 
       for (const [dt, vMap] of Object.entries(byDV)) {
@@ -992,8 +1058,10 @@ async function handleOpenRouterUsage() {
     cached.sort((a, b) => a.date.localeCompare(b.date));
     try {
       fs.mkdirSync(path.dirname(OR_DATA_FILE), { recursive: true });
-      fs.writeFileSync(OR_DATA_FILE, JSON.stringify(cached));
-    } catch {}
+      await fs.promises.writeFile(OR_DATA_FILE, JSON.stringify(cached)); // 异步写, 不阻塞事件循环
+    } catch (e) {
+      console.error("[or-usage] save error:", e?.message || e); // 落盘失败不影响主流程
+    }
     return cached;
   } catch (e) {
     console.error("[or-usage] fetch error:", e?.message || e);
@@ -1187,8 +1255,11 @@ const routes = {
   "/api/health": async () => ({ status: "up", ts: Date.now(), cache: cache.size }),
   "/api/openrouter-usage": async () => cached("or-usage", 3600000, () => handleOpenRouterUsage()), // 1h cache
   "/api/mystery-select": async (q) =>
-    handleMysterySelect(q.get("query") || "", q.get("limit") || "30", q.get("page") || "1"),
-  "/api/stock-search": async (q) => handleStockSearch(q.get("q") || ""),
+    cached(`ms:${q.get("query")}:${q.get("limit")}:${q.get("page")}`, 60000, () =>
+      handleMysterySelect(q.get("query") || "", q.get("limit") || "30", q.get("page") || "1")
+    ),
+  "/api/stock-search": async (q) =>
+    cached(`ssearch:${q.get("q")}`, 5000, () => handleStockSearch(q.get("q") || "")), // 前端击键触发, 短缓存防新浪WAF
   "/api/chain-parse": async (_q, body) => handleChainParse(body || {}),
 };
 
@@ -1207,29 +1278,101 @@ const MIME = {
   ".mp4": "video/mp4",
 };
 
+/* ---------------- 私有 API key 端点的同源防护 ---------------- */
+const PROTECTED_ROUTES = new Set(["/api/mystery-select", "/api/openrouter-usage"]);
+
+// 带 Origin/Referer 时其 host 必须与请求 Host 一致; 都不带(curl/同源导航)则放行
+function isSameOrigin(req) {
+  const host = req.headers.host;
+  if (!host) return true;
+  for (const h of [req.headers.origin, req.headers.referer]) {
+    if (!h) continue;
+    try {
+      if (new URL(h).host !== host) return false;
+    } catch {
+      return false;
+    }
+  }
+  return true;
+}
+
+// 受保护端点不下发 ACAO:*; 同源且带 Origin 时反射该 Origin
+function corsHeadersFor(req, pathname) {
+  if (!PROTECTED_ROUTES.has(pathname)) return {};
+  const origin = req.headers.origin;
+  return { "Access-Control-Allow-Origin": origin && isSameOrigin(req) ? origin : null };
+}
+
+// 读取 POST body, 超过 limit 字节即停止累积({ tooBig: true }), 防止无限读入
+function readBodyWithLimit(req, limit) {
+  return new Promise((resolve) => {
+    const chunks = [];
+    let size = 0;
+    let settled = false;
+    const done = (r) => { if (!settled) { settled = true; resolve(r); } };
+    req.on("data", (chunk) => {
+      size += chunk.length;
+      if (size > limit) {
+        req.removeAllListeners("data");
+        req.resume(); // 排空剩余数据, 避免背压卡死连接
+        done({ tooBig: true });
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on("end", () => done({ buf: Buffer.concat(chunks) }));
+    req.on("error", () => done({ buf: Buffer.concat(chunks) }));
+    req.on("close", () => done({ buf: Buffer.concat(chunks) })); // 客户端中途断连兜底, 防止悬挂
+  });
+}
+
 const server = http.createServer(async (req, res) => {
   try {
     const u = new URL(req.url, "http://localhost");
     if (routes[u.pathname]) {
+      const cors = corsHeadersFor(req, u.pathname);
+      // 私有 API key 端点: 跨源请求直接拒绝, 防止被刷配额
+      if (PROTECTED_ROUTES.has(u.pathname) && !isSameOrigin(req)) {
+        send(res, 403, { ok: false, error: "forbidden" }, cors);
+        return;
+      }
+      // 用户输入参数长度上限(缓存 key 由参数拼接, 防止无界增长)
+      for (const v of u.searchParams.values()) {
+        if (v.length > 2000) {
+          send(res, 400, { ok: false, error: "param too long" }, cors);
+          return;
+        }
+      }
       try {
         let body;
         if (req.method === "POST") {
-          const chunks = [];
-          for await (const chunk of req) chunks.push(chunk);
-          try { body = JSON.parse(Buffer.concat(chunks).toString()); } catch { body = {}; }
+          const r = await readBodyWithLimit(req, 256 * 1024);
+          if (r.tooBig) {
+            res.on("finish", () => req.destroy()); // 响应送达后再回收连接
+            send(res, 413, { ok: false, error: "payload too large" }, cors);
+            return;
+          }
+          try { body = JSON.parse(r.buf.toString()); } catch { body = {}; }
         }
         const data = await routes[u.pathname](u.searchParams, body);
-        send(res, 200, { ok: true, data, ts: Date.now() });
+        send(res, 200, { ok: true, data, ts: Date.now() }, cors);
       } catch (e) {
-        send(res, 502, { ok: false, error: String(e.message || e) });
+        // 内部细节只记日志; err.status 由可预期的业务错误(如队列满)携带, 其 message 可安全回显
+        console.error("[api]", u.pathname, "error:", e?.message || e);
+        send(res, e?.status || 502, { ok: false, error: e?.status ? e.message : "upstream error" }, cors);
       }
+      return;
+    }
+    // /api/ 下未命中的路由返回 404 JSON, 不走 SPA fallback
+    if (u.pathname.startsWith("/api/")) {
+      send(res, 404, { ok: false, error: "not found" });
       return;
     }
     // 静态资源 + SPA fallback
     let p = decodeURIComponent(u.pathname);
     if (p === "/") p = "/index.html";
     const file = path.join(DIST, path.normalize(p));
-    if (!file.startsWith(DIST)) {
+    if (file !== DIST && !file.startsWith(DIST + path.sep)) {
       send(res, 403, { ok: false });
       return;
     }
@@ -1237,7 +1380,7 @@ const server = http.createServer(async (req, res) => {
       if (err) {
         fs.readFile(path.join(DIST, "index.html"), (e2, html) => {
           if (e2) return send(res, 404, { ok: false });
-          res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+          res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "X-Content-Type-Options": "nosniff" });
           res.end(html);
         });
         return;
@@ -1245,11 +1388,13 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, {
         "Content-Type": MIME[path.extname(file).toLowerCase()] || "application/octet-stream",
         "Cache-Control": file.includes("/assets/") ? "public, max-age=31536000, immutable" : "no-cache",
+        "X-Content-Type-Options": "nosniff",
       });
       res.end(buf);
     });
   } catch (e) {
-    send(res, 500, { ok: false, error: String(e.message || e) });
+    console.error("[server] error:", e?.message || e);
+    send(res, 500, { ok: false, error: "internal error" });
   }
 });
 

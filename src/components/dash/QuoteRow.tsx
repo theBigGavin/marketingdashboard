@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { memo, useEffect, useRef, useState, type ReactNode } from "react";
 import { usePolling } from "@/hooks/usePolling";
 import { api } from "@/lib/api";
 import { Spark } from "./Spark";
@@ -52,7 +52,7 @@ interface QuoteRowProps {
  *  布局: [排名?] [名称+代码(跨2行)] [分时(跨2列)/主力净额·净占比] [成交额/换手率] [现价/涨跌幅] [删除?]
  *  底部整行: 标签 · 行业 · 概念
  */
-export function QuoteRow({
+export const QuoteRow = memo(function QuoteRow({
   code, name, price, pct, tag, rank, amount, turnover, spark, boards, flow, variant = "plain", active, onClick, onRemove,
 }: QuoteRowProps) {
   // 行宽自适应: 实测宽度决定资金流标签形态(主力净额/净占比 ↔ 净/占)
@@ -67,36 +67,35 @@ export function QuoteRow({
   }, []);
   const compact = rowWidth > 0 && rowWidth < COMPACT_WIDTH;
 
-  // 可见性懒加载: 行进入视口后才启动分时/板块/资金流轮询(一旦加载不再关闭)
-  const [seen, setSeen] = useState(false);
+  // 可见性联动轮询: 行在视口内才启动分时/板块/资金流轮询, 离开视口即停, 回到视口恢复
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
     const el = rootRef.current;
-    if (!el || seen) return;
+    if (!el) return;
     const io = new IntersectionObserver((entries) => {
-      if (entries.some((e) => e.isIntersecting)) {
-        setSeen(true);
-        io.disconnect();
-      }
+      setVisible(entries.some((e) => e.isIntersecting));
     });
     io.observe(el);
     return () => io.disconnect();
-  }, [seen]);
+  }, []);
 
   const { data: minute } = usePolling(
-    () => (spark && seen ? api.minute(code) : Promise.resolve(null)),
+    () => (spark && visible ? api.minute(code) : Promise.resolve(null)),
     60000,
-    [code, spark, seen]
+    [code, spark, visible],
+    // 分时数据未变时复用旧引用, 避免 Spark 重算/重渲染
+    (a, b) => JSON.stringify(a) === JSON.stringify(b)
   );
   // 服务端 24h 缓存, 前端 5 分钟重试以容忍上游瞬时失败
   const { data: bd } = usePolling(
-    () => (boards && seen ? api.stockBoards(code) : Promise.resolve(null)),
+    () => (boards && visible ? api.stockBoards(code) : Promise.resolve(null)),
     5 * 60 * 1000,
-    [code, boards, seen]
+    [code, boards, visible]
   );
   const { data: fl } = usePolling(
-    () => (flow && seen ? api.stockFlow(code) : Promise.resolve(null)),
+    () => (flow && visible ? api.stockFlow(code) : Promise.resolve(null)),
     30000,
-    [code, flow, seen]
+    [code, flow, visible]
   );
 
   const Tag = onClick ? "button" : "div";
@@ -223,4 +222,4 @@ export function QuoteRow({
       )}
     </Tag>
   );
-}
+});

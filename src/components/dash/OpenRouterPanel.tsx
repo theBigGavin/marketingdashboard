@@ -10,20 +10,31 @@ function fmtT(t: number): string {
   return String(t);
 }
 
-const VENDOR_COLORS: Record<string, string> = [
+const PALETTE = [
   "#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f",
   "#edc948", "#b07aa1", "#ff9da7", "#9c755f", "#bab0ac",
   "#86bcb6", "#d4a6c8", "#f1ce63", "#a0cbe8", "#e377c2",
   "#7f7f7f", "#00bcd4", "#ff5722", "#8bc34a",
-].reduce((m, c, i) => {
-  const names = ["腾讯", "小米", "DeepSeek", "Anthropic", "Google", "OpenAI", "智谱GLM", "月之暗面", "MiniMax", "阶跃星辰", "NVIDIA", "Mistral", "Meta", "xAI", "Cohere", "通义千问", "Poolside", "inclusionai", "nex-agi", "字节跳动", "BAAI", "Perplexity"];
-  if (i < names.length) m[names[i]] = c;
-  return m;
-}, {} as Record<string, string>);
-VENDOR_COLORS["其他"] = "#64748b";
-VENDOR_COLORS["🇨🇳中国"] = "#ef4444";
-VENDOR_COLORS["🇺🇸美国"] = "#3b82f6";
-VENDOR_COLORS["🌍其他"] = "#64748b";
+];
+
+// 已知厂商/分组的固定配色(保持原视觉)
+const KNOWN_COLORS: Record<string, string> = {
+  腾讯: "#4e79a7", 小米: "#f28e2b", DeepSeek: "#e15759", Anthropic: "#76b7b2",
+  Google: "#59a14f", OpenAI: "#edc948", 智谱GLM: "#b07aa1", 月之暗面: "#ff9da7",
+  MiniMax: "#9c755f", 阶跃星辰: "#bab0ac", NVIDIA: "#86bcb6", Mistral: "#d4a6c8",
+  Meta: "#f1ce63", xAI: "#a0cbe8", Cohere: "#e377c2", 通义千问: "#7f7f7f",
+  Poolside: "#00bcd4", inclusionai: "#ff5722", "nex-agi": "#8bc34a",
+  其他: "#64748b", "🇨🇳中国": "#ef4444", "🇺🇸美国": "#3b82f6", "🌍其他": "#64748b",
+};
+
+/** 名字→颜色: 已知用固定色, 未知按名字哈希从调色板稳定取色 */
+function vendorColor(name: string): string {
+  const known = KNOWN_COLORS[name];
+  if (known) return known;
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
+  return PALETTE[Math.abs(h) % PALETTE.length];
+}
 
 function smoothPath(pts: { x: number; y: number }[]): string {
   if (pts.length < 2) return "";
@@ -73,104 +84,54 @@ function Chart({ allDays, days, mode }: { allDays: OrUsageDay[]; days: OrUsageDa
     // 将 openrouter 合并到"其他"
     topNames = topNames.filter((v) => v !== "openrouter");
 
-    if (mode === "vendor") {
-      // vendor mode: top N + other
-      const topV = topNames.slice(0, TOP_N);
-      const topSet = new Set(topV);
-      const stacked = days.map((d) => {
-        const m: Record<string, number> = {};
-        let other = 0;
-        for (const p of d[source])
-          if (topSet.has(p.name)) m[p.name] = p.tokens;
-          else other += p.tokens;
-        return { date: d.date, total: d.total, m, other };
-      });
+    // vendor 模式取 top N, country 模式保留全部国家; 其余并入"其他"
+    const keep = mode === "vendor" ? topNames.slice(0, TOP_N) : topNames;
+    const keepSet = new Set(keep);
+    const stacked = days.map((d) => {
+      const m: Record<string, number> = {};
+      let other = 0;
+      for (const p of d[source])
+        if (keepSet.has(p.name)) m[p.name] = p.tokens;
+        else other += p.tokens;
+      return { date: d.date, total: d.total, m, other };
+    });
 
-      const allVals = stacked.flatMap((s) => [s.total, ...Object.values(s.m), s.other]);
-      let lo = Math.min(...allVals) * 0.92, hi = Math.max(...allVals) * 1.08;
-      if (hi - lo < 1) { hi = lo + 1 || 1; lo = 0; }
-      const X = (i: number) => PL + (i / Math.max(n - 1, 1)) * iw;
-      const Y = (v: number) => PT + ih - ((v - lo) / (hi - lo)) * ih;
-      const ord = [...topV, "其他"];
+    const allVals = stacked.flatMap((s) => [s.total, ...Object.values(s.m), s.other]);
+    let lo = Math.min(...allVals) * 0.92, hi = Math.max(...allVals) * 1.08;
+    if (hi - lo < 1) { hi = lo + 1 || 1; lo = 0; }
+    const X = (i: number) => PL + (i / Math.max(n - 1, 1)) * iw;
+    const Y = (v: number) => PT + ih - ((v - lo) / (hi - lo)) * ih;
+    const ord = [...keep, "其他"];
 
-      const areas = ord.map((v) => {
-        const top: { x: number; y: number }[] = [], bot: { x: number; y: number }[] = [];
-        for (let i = 0; i < n; i++) {
-          const s = stacked[i];
-          let b = 0;
-          for (const o of ord) { if (o === v) break; b += o === "其他" ? s.other : (s.m[o] || 0); }
-          const val = v === "其他" ? s.other : (s.m[v] || 0);
-          top.push({ x: X(i), y: Y(b + val) });
-          bot.push({ x: X(i), y: Y(b) });
-        }
-        return { name: v, d: smoothPath(top) + smoothPath([...bot].reverse()).replace(/^M/, "L") + "Z" };
-      });
+    const areas = ord.map((v) => {
+      const top: { x: number; y: number }[] = [], bot: { x: number; y: number }[] = [];
+      for (let i = 0; i < n; i++) {
+        const s = stacked[i];
+        let b = 0;
+        for (const o of ord) { if (o === v) break; b += o === "其他" ? s.other : (s.m[o] || 0); }
+        const val = v === "其他" ? s.other : (s.m[v] || 0);
+        top.push({ x: X(i), y: Y(b + val) });
+        bot.push({ x: X(i), y: Y(b) });
+      }
+      return { name: v, d: smoothPath(top) + smoothPath([...bot].reverse()).replace(/^M/, "L") + "Z" };
+    });
 
-      const yTicks: { v: number; y: number }[] = [];
-      for (let i = 0; i <= 4; i++) yTicks.push({ v: lo + ((hi - lo) / 4) * i, y: Y(lo + ((hi - lo) / 4) * i) });
-      const xStep = Math.max(1, Math.floor(n / 8));
-      const xLabels: { label: string; x: number }[] = [];
-      const span = n > 1 ? (new Date(days[n-1].date).getTime() - new Date(days[0].date).getTime()) / 86400000 : 0;
-      const fmt = span > 200 ? (d: string) => d.slice(0, 7) : (d: string) => d.slice(5);
-      for (let i = 0; i < n; i += xStep) xLabels.push({ label: fmt(days[i].date), x: X(i) });
-      const lastX = X(n - 1);
-      if (!xLabels.length || xLabels[xLabels.length - 1].x < lastX - 20) xLabels.push({ label: fmt(days[n - 1].date), x: lastX });
-      const last = stacked[n - 1].total, first = stacked[0].total, chg = last - first;
-      const chgPct = first ? ((last / first) - 1) * 100 : 0;
-      const dayCount = n - 1;
-      const dailyRate = dayCount > 0 && first ? ((last / first) ** (1 / dayCount) - 1) * 100 : 0;
-      const avg7 = stacked.slice(-7).reduce((s, d) => s + d.total, 0) / Math.min(7, n);
-      const avg = stacked.reduce((s, d) => s + d.total, 0) / n;
-      return { W, H, PL, PR, PT, PB, areas, yTicks, xLabels, last, chg, chgPct, dailyRate, avg7, avg, dayCount };
-    } else {
-      // country mode: all countries (China, US, Other)
-      const stacked = days.map((d) => {
-        const m: Record<string, number> = {};
-        let other = 0;
-        for (const p of d[source]) {
-          if (topNames.includes(p.name)) m[p.name] = p.tokens;
-          else other += p.tokens;
-        }
-        return { date: d.date, total: d.total, m, other };
-      });
-
-      const allVals = stacked.flatMap((s) => [s.total, ...Object.values(s.m), s.other]);
-      let lo = Math.min(...allVals) * 0.92, hi = Math.max(...allVals) * 1.08;
-      if (hi - lo < 1) { hi = lo + 1 || 1; lo = 0; }
-      const X = (i: number) => PL + (i / Math.max(n - 1, 1)) * iw;
-      const Y = (v: number) => PT + ih - ((v - lo) / (hi - lo)) * ih;
-      const ord = [...topNames, "其他"];
-
-      const areas = ord.map((v) => {
-        const top: { x: number; y: number }[] = [], bot: { x: number; y: number }[] = [];
-        for (let i = 0; i < n; i++) {
-          const s = stacked[i];
-          let b = 0;
-          for (const o of ord) { if (o === v) break; b += o === "其他" ? s.other : (s.m[o] || 0); }
-          const val = v === "其他" ? s.other : (s.m[v] || 0);
-          top.push({ x: X(i), y: Y(b + val) });
-          bot.push({ x: X(i), y: Y(b) });
-        }
-        return { name: v, d: smoothPath(top) + smoothPath([...bot].reverse()).replace(/^M/, "L") + "Z" };
-      });
-
-      const yTicks: { v: number; y: number }[] = [];
-      for (let i = 0; i <= 4; i++) yTicks.push({ v: lo + ((hi - lo) / 4) * i, y: Y(lo + ((hi - lo) / 4) * i) });
-      const xStep = Math.max(1, Math.floor(n / 8));
-      const xLabels: { label: string; x: number }[] = [];
-      const span = n > 1 ? (new Date(days[n-1].date).getTime() - new Date(days[0].date).getTime()) / 86400000 : 0;
-      const fmt = span > 200 ? (d: string) => d.slice(0, 7) : (d: string) => d.slice(5);
-      for (let i = 0; i < n; i += xStep) xLabels.push({ label: fmt(days[i].date), x: X(i) });
-      const lastX = X(n - 1);
-      if (!xLabels.length || xLabels[xLabels.length - 1].x < lastX - 20) xLabels.push({ label: fmt(days[n - 1].date), x: lastX });
-      const last = stacked[n - 1].total, first = stacked[0].total, chg = last - first;
-      const chgPct = first ? ((last / first) - 1) * 100 : 0;
-      const dayCount = n - 1;
-      const dailyRate = dayCount > 0 && first ? ((last / first) ** (1 / dayCount) - 1) * 100 : 0;
-      const avg7 = stacked.slice(-7).reduce((s, d) => s + d.total, 0) / Math.min(7, n);
-      const avg = stacked.reduce((s, d) => s + d.total, 0) / n;
-      return { W, H, PL, PR, PT, PB, areas, yTicks, xLabels, last, chg, chgPct, dailyRate, avg7, avg, dayCount };
-    }
+    const yTicks: { v: number; y: number }[] = [];
+    for (let i = 0; i <= 4; i++) yTicks.push({ v: lo + ((hi - lo) / 4) * i, y: Y(lo + ((hi - lo) / 4) * i) });
+    const xStep = Math.max(1, Math.floor(n / 8));
+    const xLabels: { label: string; x: number }[] = [];
+    const span = n > 1 ? (new Date(days[n-1].date).getTime() - new Date(days[0].date).getTime()) / 86400000 : 0;
+    const fmt = span > 200 ? (d: string) => d.slice(0, 7) : (d: string) => d.slice(5);
+    for (let i = 0; i < n; i += xStep) xLabels.push({ label: fmt(days[i].date), x: X(i) });
+    const lastX = X(n - 1);
+    if (!xLabels.length || xLabels[xLabels.length - 1].x < lastX - 20) xLabels.push({ label: fmt(days[n - 1].date), x: lastX });
+    const last = stacked[n - 1].total, first = stacked[0].total, chg = last - first;
+    const chgPct = first ? ((last / first) - 1) * 100 : 0;
+    const dayCount = n - 1;
+    const dailyRate = dayCount > 0 && first ? ((last / first) ** (1 / dayCount) - 1) * 100 : 0;
+    const avg7 = stacked.slice(-7).reduce((s, d) => s + d.total, 0) / Math.min(7, n);
+    const avg = stacked.reduce((s, d) => s + d.total, 0) / n;
+    return { W, H, PL, PR, PT, PB, areas, yTicks, xLabels, last, chg, chgPct, dailyRate, avg7, avg, dayCount };
   }, [days, allDays, size, mode]);
 
   if (!chart) return <div className="flex h-full items-center justify-center text-[11px] text-slate-600">暂无数据</div>;
@@ -180,7 +141,7 @@ function Chart({ allDays, days, mode }: { allDays: OrUsageDay[]; days: OrUsageDa
       <div className="flex shrink-0 flex-wrap gap-x-3 gap-y-0.5 pb-1 text-[9px]">
         {chart.areas.map((a) => (
           <span key={a.name} className="flex items-center gap-1">
-            <span className="inline-block h-2 w-2 rounded-full" style={{ background: VENDOR_COLORS[a.name] || "#64748b" }} />
+            <span className="inline-block h-2 w-2 rounded-full" style={{ background: vendorColor(a.name) }} />
             {a.name}
           </span>
         ))}
@@ -199,7 +160,7 @@ function Chart({ allDays, days, mode }: { allDays: OrUsageDay[]; days: OrUsageDa
           <line key={i} x1={chart.PL} y1={t.y} x2={chart.W - chart.PR} y2={t.y} stroke="#1e293b" strokeWidth={0.5} />
         ))}
         {chart.areas.map((a) => (
-          <path key={a.name} d={a.d} fill={VENDOR_COLORS[a.name] || "#64748b"} />
+          <path key={a.name} d={a.d} fill={vendorColor(a.name)} />
         ))}
         {chart.xLabels.map((xl, i) => (
           <Fragment key={i}>

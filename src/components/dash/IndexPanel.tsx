@@ -1,6 +1,7 @@
 import { Panel, type PanelZoomProps } from "./Panel";
 import { Spark } from "./Spark";
 import { usePolling } from "@/hooks/usePolling";
+import { useSharedPolling } from "@/hooks/useSharedPolling";
 import { api, type Quote, type MinuteData } from "@/lib/api";
 import { INDICES, FOREX, type IndexDef } from "@/config/dashboard";
 import { bgChg, clsChg, fmtPct, fmtPrice, fmtWan } from "@/lib/format";
@@ -30,7 +31,8 @@ function IndexRow({ def, q, minute }: { def: IndexDef; q?: Quote; minute?: Minut
 }
 
 export function IndexPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
-  const { data: quotes } = usePolling(() => api.quotes(ALL_CODES), 5000);
+  // 与 App 的 Tape 共享同 key 轮询, 避免重复请求
+  const { data: quotes } = useSharedPolling(`quotes:${ALL_CODES.join(",")}`, () => api.quotes(ALL_CODES), 5000);
   const { data: minutes } = usePolling(
     async () => {
       const codes = ALL_CODES.filter((c) => !c.startsWith("wh"));
