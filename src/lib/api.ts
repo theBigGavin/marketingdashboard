@@ -170,6 +170,13 @@ export interface MinuteData {
   points: { t: string; p: number }[];
 }
 
+/** 股票搜索(名称/拼音首字母→代码) */
+export interface StockSearchResult {
+  code: string;
+  name: string;
+  pinyin: string;
+}
+
 const num = (v: unknown) => {
   const n = parseFloat(String(v));
   return Number.isFinite(n) ? n : 0;
@@ -386,6 +393,7 @@ export const api = {
     get<MysteryResult>(`/api/mystery-select?query=${encodeURIComponent(query)}&limit=${limit}${refresh ? "&refresh=1" : ""}`),
   parseChain: (name: string, content: string) =>
     post<{ name: string; source: string; segments: { name: string; desc: string; stocks: { code: string; name: string }[] }[]; warnings?: string[] }>(`/api/chain-parse`, { name, content }),
+  stockSearch: (q: string) => get<StockSearchResult[]>(`/api/stock-search?q=${encodeURIComponent(q)}`),
 };
 
 /** 轮询封装:自动管理 loading/error,组件卸载时停止 */

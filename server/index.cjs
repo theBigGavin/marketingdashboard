@@ -999,6 +999,25 @@ async function handleOpenRouterUsage() {
     return [{ date: todayStr, total: 0, providers: [], countries: [] }];
   }
 }
+/* ---------------- 股票搜索(名称/拼音首字母→代码) ---------------- */
+async function handleStockSearch(query) {
+  if (!query || query.length < 1) return [];
+  const url = `https://suggest3.sinajs.cn/suggest/type=&key=${encodeURIComponent(query)}`;
+  const resp = await fetch(url, { signal: AbortSignal.timeout(5000) });
+  const buf = await resp.arrayBuffer();
+  const text = new TextDecoder("gbk").decode(buf);
+  const m = text.match(/suggestvalue="([^"]+)"/);
+  if (!m) return [];
+  // 格式: name,type,code,fullCode,pinyin,...;
+  const results = [];
+  for (const part of m[1].split(";")) {
+    const f = part.split(",");
+    if (f.length >= 4 && /^(sh|sz|bj)\d{6}$/.test(f[3])) {
+      results.push({ code: f[3], name: f[0], pinyin: f[4] || "" });
+    }
+  }
+  return results.slice(0, 10);
+}
 /* ------------------------------------------------------------- */
 
 /* ---------------- 产业链股票解析(本地正则,无需LLM) ---------------- */
@@ -1167,6 +1186,7 @@ const routes = {
   "/api/openrouter-usage": async () => cached("or-usage", 3600000, () => handleOpenRouterUsage()), // 1h cache
   "/api/mystery-select": async (q) =>
     handleMysterySelect(q.get("query") || "", q.get("limit") || "30", q.get("page") || "1"),
+  "/api/stock-search": async (q) => handleStockSearch(q.get("q") || ""),
   "/api/chain-parse": async (_q, body) => handleChainParse(body || {}),
 };
 

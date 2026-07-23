@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Panel, type PanelZoomProps } from "./Panel";
 import { QuoteRow } from "./QuoteRow";
 import { usePolling } from "@/hooks/usePolling";
-import { api } from "@/lib/api";
+import { api, type StockSearchResult } from "@/lib/api";
 import { fmtWan } from "@/lib/format";
 
 const LS_KEY = "dash:watchlist";
@@ -35,27 +35,88 @@ export function WatchlistPanel({ className = "", ...zoomProps }: { className?: s
   const [codes, setCodes] = useState<string[]>(load);
   const [input, setInput] = useState("");
   const [invalid, setInvalid] = useState(false);
-  const dep = codes.join(",");
+  const [suggestions, setSuggestions] = useState<StockSearchResult[]>([]);
+  const [showSuggest, setShowSuggest] = useState(false);
+  const [highlightIdx, setHighlightIdx] = useState(-1);
+  const suggestRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const { data: quotes } = usePolling(
     () => (codes.length ? api.quotes(codes) : Promise.resolve(null)),
-    5000,
-    [dep]
+    5000
   );
 
   useEffect(() => {
     localStorage.setItem(LS_KEY, JSON.stringify(codes));
   }, [codes]);
 
-  const add = () => {
-    const code = normalizeCode(input);
-    if (!code) {
-      setInvalid(true);
+  // 防抖搜索
+  const triggerSearch = (val: string) => {
+    clearTimeout(timerRef.current);
+    const t = val.trim();
+    // 纯数字/代码格式不搜索
+    if (/^[\d]{3,6}$/.test(t) || /^(sh|sz|bj)\d{6}$/i.test(t)) {
+      setSuggestions([]);
+      setShowSuggest(false);
       return;
     }
+    if (t.length < 1) { setSuggestions([]); setShowSuggest(false); return; }
+    timerRef.current = setTimeout(async () => {
+      try {
+        const res = await api.stockSearch(t);
+        setSuggestions(res);
+        setShowSuggest(res.length > 0);
+        setHighlightIdx(-1);
+      } catch { setSuggestions([]); }
+    }, 200);
+  };
+
+  const add = (code?: string) => {
+    const c = code || normalizeCode(input);
+    if (!c) { setInvalid(true); return; }
     setInvalid(false);
     setInput("");
-    setCodes((cs) => (cs.includes(code) ? cs : [...cs, code]));
+    setSuggestions([]);
+    setShowSuggest(false);
+    setCodes((cs) => (cs.includes(c) ? cs : [...cs, c]));
   };
+
+  const pickSuggestion = (s: StockSearchResult) => {
+    add(s.code);
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      if (showSuggest && highlightIdx >= 0 && highlightIdx < suggestions.length) {
+        pickSuggestion(suggestions[highlightIdx]);
+        return;
+      }
+      add();
+      return;
+    }
+    if (!showSuggest || suggestions.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightIdx((i) => (i + 1) % suggestions.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightIdx((i) => (i <= 0 ? suggestions.length - 1 : i - 1));
+    } else if (e.key === "Escape") {
+      setShowSuggest(false);
+    }
+  };
+
+  // 点击外部关闭建议
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (suggestRef.current && !suggestRef.current.contains(e.target as Node) &&
+          inputRef.current && !inputRef.current.contains(e.target as Node)) {
+        setShowSuggest(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   return (
     <Panel
@@ -68,22 +129,46 @@ export function WatchlistPanel({ className = "", ...zoomProps }: { className?: s
     >
       <div className="flex h-full min-h-0 flex-col">
         {/* 添加 */}
-        <div className="flex shrink-0 gap-1 border-b border-slate-700/30 p-1.5">
+        <div className="relative flex shrink-0 gap-1 border-b border-slate-700/30 p-1.5">
           <input
+            ref={inputRef}
             value={input}
-            onChange={(e) => { setInput(e.target.value); setInvalid(false); }}
-            onKeyDown={(e) => e.key === "Enter" && add()}
-            placeholder="代码,如 688126"
+            onChange={(e) => { setInput(e.target.value); setInvalid(false); triggerSearch(e.target.value); }}
+            onKeyDown={onKeyDown}
+            onFocus={() => suggestions.length > 0 && setShowSuggest(true)}
+            placeholder="代码/名称/拼音, 如 688126 / 茅台 / gzmt"
             className={`min-w-0 flex-1 rounded border bg-slate-800/40 px-1.5 py-0.5 text-[11px] text-slate-200 outline-none placeholder:text-slate-600 ${
               invalid ? "border-rose-500/60" : "border-slate-700/50 focus:border-amber-500/50"
             }`}
           />
           <button
-            onClick={add}
+            onClick={() => add()}
             className="shrink-0 rounded bg-amber-500/20 px-2 text-[11px] text-amber-300 hover:bg-amber-500/30"
           >
             加
           </button>
+          {/* 建议下拉 */}
+          {showSuggest && (
+            <div
+              ref={suggestRef}
+              className="absolute left-1.5 right-1.5 top-full z-50 mt-0.5 max-h-52 overflow-y-auto rounded border border-slate-600/50 bg-slate-800 shadow-lg"
+            >
+              {suggestions.map((s, i) => (
+                <button
+                  key={s.code}
+                  onMouseDown={(e) => { e.preventDefault(); pickSuggestion(s); }}
+                  onMouseEnter={() => setHighlightIdx(i)}
+                  className={`flex w-full items-center gap-2 px-2 py-1 text-left text-[11px] transition-colors ${
+                    i === highlightIdx ? "bg-amber-500/20 text-amber-200" : "text-slate-300 hover:bg-slate-700/50"
+                  }`}
+                >
+                  <span className="font-medium text-slate-100">{s.name}</span>
+                  <span className="text-slate-500">{s.code}</span>
+                  {s.pinyin && <span className="ml-auto text-slate-600">{s.pinyin}</span>}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         {/* 列表 */}
         <div className="min-h-0 flex-1 overflow-y-auto p-1">
@@ -106,7 +191,7 @@ export function WatchlistPanel({ className = "", ...zoomProps }: { className?: s
             );
           })}
           {codes.length === 0 && (
-            <div className="p-4 text-center text-[10px] text-slate-600">列表为空,输入代码添加自选股</div>
+            <div className="p-4 text-center text-[10px] text-slate-600">列表为空,输入代码/名称/拼音添加自选股</div>
           )}
         </div>
       </div>
