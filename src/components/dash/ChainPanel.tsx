@@ -158,6 +158,24 @@ export function ChainPanel({ className = "", ...zoomProps }: { className?: strin
 
   const autoFetchChain = async () => {
     if (!editor || parseState.loading) return;
+    // add 模式: 问财选股只理解简单概念词, 用名称直接查询, 分段由用户人工整理
+    if (editor.mode === "add") {
+      const base = editor.name.trim().replace(/产业链\s*$/, "");
+      if (!base) { setParseState({ loading: false, error: "请先填写产业链名称。", warnings: [] }); return; }
+      setParseState({ loading: true, error: "", warnings: [] });
+      try {
+        const result = await api.mysterySelect(base, 30, true);
+        const rows = result.rows || [];
+        if (rows.length === 0) throw new Error("问财未返回匹配股票，请换个名称或手动粘贴内容");
+        const stockText = rows.slice(0, 30).map((r) => `${r.name}（${r.code}）`).join("、");
+        setEditor((cur) => cur && { ...cur, content: `${base}产业链\n\n${stockText}\n\n核心逻辑：${base}产业链\n数据来源：同花顺问财` });
+        setParseState({ loading: false, error: "", warnings: [`已获取 ${Math.min(rows.length, 30)} 只候选股，请按上游/中游/下游手动分段（参照上方格式示例），再点击「创建并保存」`] });
+      } catch (e) {
+        setParseState({ loading: false, error: `问财查询失败：${e instanceof Error ? e.message : e}`, warnings: [] });
+      }
+      return;
+    }
+    // update 模式: 用各环节配置的查询语分段获取
     if (!chain.segments.some((s) => s.query)) {
       setParseState({ loading: false, error: "该产业链未配置问财查询语", warnings: [] });
       return;
@@ -165,6 +183,7 @@ export function ChainPanel({ className = "", ...zoomProps }: { className?: strin
     setParseState({ loading: true, error: "", warnings: [] });
     const lines: string[] = [`${chain.name}产业链\n`];
     let total = 0;
+    let firstError = "";
     for (const seg of chain.segments) {
       if (!seg.query) { lines.push(`\n${seg.name}：\n（未配置问财查询语）\n`); continue; }
       try {
@@ -174,7 +193,13 @@ export function ChainPanel({ className = "", ...zoomProps }: { className?: strin
         const stockText = rows.slice(0, 10).map((r) => `${r.name}（${r.code}）`).join("、");
         lines.push(`\n${seg.name}：\n${stockText}\n`);
         total += Math.min(rows.length, 10);
-      } catch { lines.push(`\n${seg.name}：\n（查询失败）\n`); }
+      } catch (e) {
+        if (!firstError) firstError = e instanceof Error ? e.message : String(e);
+        lines.push(`\n${seg.name}：\n（查询失败）\n`); }
+    }
+    if (total === 0 && firstError) {
+      setParseState({ loading: false, error: `问财查询失败：${firstError}`, warnings: [] });
+      return;
     }
     lines.push(`\n核心逻辑：${chain.name}产业链\n数据来源：同花顺问财 | 分段查询`);
     setEditor((cur) => cur && { ...cur, content: lines.join("\n") });
@@ -305,7 +330,7 @@ export function ChainPanel({ className = "", ...zoomProps }: { className?: strin
                   className="h-9 w-full rounded border border-slate-700 bg-slate-950/80 px-3 text-[14px] text-slate-100 outline-none transition focus:border-cyan-400/70 placeholder:text-slate-600" />
               </label>
               <div className="flex justify-end">
-                <button type="button" onClick={autoFetchChain} disabled={parseState.loading || editor.mode === "add"}
+                <button type="button" onClick={autoFetchChain} disabled={parseState.loading}
                   className="rounded border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-[12px] font-semibold text-emerald-300 transition hover:bg-emerald-500/20 disabled:opacity-50">
                   {parseState.loading ? "查询中..." : "从问财获取"}
                 </button>

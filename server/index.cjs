@@ -312,7 +312,8 @@ function normalizeIwencaiStock(item) {
 
 async function handleMysterySelect(query, limit = "30", page = "1") {
   const apiKey = process.env.IWENCAI_API_KEY;
-  if (!apiKey) throw new Error("IWENCAI_NOT_CONFIGURED: IWENCAI_API_KEY is not configured");
+  // err.status 供路由层回显安全文案(见路由错误处理)
+  if (!apiKey) { const e = new Error("问财未配置 API Key(请在 server/.env 配置 IWENCAI_API_KEY)"); e.status = 500; throw e; }
   const base = (process.env.IWENCAI_BASE_URL || "https://openapi.iwencai.com").replace(/\/$/, "");
   const traceId = crypto.randomBytes(32).toString("hex");
   const payload = {

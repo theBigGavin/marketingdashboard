@@ -186,9 +186,9 @@ const num = (v: unknown) => {
 
 async function get<T>(path: string): Promise<T> {
   const r = await fetch(path, { signal: AbortSignal.timeout(10000) });
-  if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  const j = await r.json();
-  if (!j.ok) throw new Error(j.error || "api error");
+  const j = await r.json().catch(() => null);
+  if (!r.ok) throw new Error(j?.error || `HTTP ${r.status}`);
+  if (!j?.ok) throw new Error(j?.error || "api error");
   return j.data as T;
 }
 
@@ -199,9 +199,9 @@ async function post<T>(path: string, body: unknown): Promise<T> {
     body: JSON.stringify(body),
     signal: AbortSignal.timeout(10000),
   });
-  if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  const j = await r.json();
-  if (!j.ok) throw new Error(j.error || "api error");
+  const j = await r.json().catch(() => null);
+  if (!r.ok) throw new Error(j?.error || `HTTP ${r.status}`);
+  if (!j?.ok) throw new Error(j?.error || "api error");
   return j.data as T;
 }
 
