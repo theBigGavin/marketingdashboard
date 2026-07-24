@@ -1101,6 +1101,9 @@ async function handleOpenRouterUsage() {
 /* ---------------- 生意社现期对照表(现货价/期货价/基差) + 现货历史积累 ---------------- */
 const SPOT_DATA_FILE = path.join(__dirname, "data", "spot-history.json");
 
+// 现货积累按北京时间取日期(商品交易日历)
+const bjToday = () => new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+
 // 生意社华为云 HW_CHECK 质询绕过: 质询页 JS 内嵌 cookie 值, 提取后带 cookie 重试
 async function fetchSunsir(url, { timeout = 12000 } = {}) {
   const once = (cookie) => {
@@ -1161,7 +1164,7 @@ async function handleSpotTable() {
   // 现货价按日积累(与 openrouter-usage 同模式), 供现货趋势线使用
   let history = {};
   try { history = JSON.parse(fs.readFileSync(SPOT_DATA_FILE, "utf-8") || "{}"); } catch {}
-  const today = new Date().toISOString().slice(0, 10);
+  const today = bjToday();
   for (const r of rows) {
     if (!r.spot) continue;
     const arr = history[r.name] || (history[r.name] = []);
@@ -1201,7 +1204,7 @@ async function handleChemSpot(id, name) {
   let history = {};
   try { history = JSON.parse(fs.readFileSync(SPOT_DATA_FILE, "utf-8") || "{}"); } catch {}
   const arr = history[name] || (history[name] = []);
-  const today = new Date().toISOString().slice(0, 10);
+  const today = bjToday();
   if (arr.length && arr[arr.length - 1].t === today) arr[arr.length - 1].p = price;
   else arr.push({ t: today, p: price });
   if (arr.length > 400) arr.splice(0, arr.length - 400);
@@ -1211,6 +1214,27 @@ async function handleChemSpot(id, name) {
   } catch (e) { console.error("[chem-spot] write history error:", e?.message || e); }
   return { id, name, price, quotes: all.length, date: dm ? dm[1] : today, history: arr };
 }
+
+/* ---------------- 现货每日定时采集(服务端自驱, 无需前端在线) ---------------- */
+// 与前端 src/config/goods.ts 的 CHEM_SPOTS 保持一致
+const CHEM_SPOT_SEEDS = [["7250", "碳酸亚乙烯酯"]];
+
+async function collectSpotDaily() {
+  try {
+    await handleSpotTable();
+    console.log("[spot] 定时采集: 现期表完成");
+  } catch (e) { console.error("[spot] 定时采集: 现期表失败:", e?.message || e); }
+  for (const [id, name] of CHEM_SPOT_SEEDS) {
+    try {
+      await handleChemSpot(id, name);
+      console.log("[spot] 定时采集: 化工现货", name, "完成");
+    } catch (e) { console.error("[spot] 定时采集: 化工现货", name, "失败:", e?.message || e); }
+  }
+}
+// 生意社交易日 16:30 更新, 每 4 小时采集一轮保证覆盖; unref 不阻止进程退出
+setInterval(collectSpotDaily, 4 * 3600 * 1000).unref();
+// 启动 1 分钟后先补一轮(部署当日即有数据)
+setTimeout(collectSpotDaily, 60 * 1000).unref();
 
 /* ---------------- 股票搜索(名称/拼音首字母→代码) ---------------- */
 async function handleStockSearch(query) {
