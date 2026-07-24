@@ -548,7 +548,7 @@ async function handleFutureMinute(code) {
 }
 
 /* ---------------- 期货日线K线(新浪 内盘nf_/外盘hf_, 全历史免费) ---------------- */
-async function handleFutureDaily(code) {
+async function handleFutureDaily(code, n = 400) {
   const isGlobal = code.startsWith("hf_");
   const symbol = code.replace(/^(nf_|hf_)/, "");
   if (!symbol || (!code.startsWith("nf_") && !isGlobal)) throw new Error("bad code");
@@ -571,7 +571,8 @@ async function handleFutureDaily(code) {
       v: num(k.v ?? k.volume),
     }))
     .filter((p) => p.t && p.c);
-  return { code, points: pts };
+  // 只回最近 n 根(页面最大区间 365d): 全历史传输量 10 倍于所需, 是大 payload 超时的根因
+  return { code, points: pts.slice(-n) };
 }
 
 /* ---------------- 个股榜单(涨幅/跌幅/热门) — 新浪盘中 + 腾讯盘后双源 ---------------- */
@@ -1369,7 +1370,9 @@ const routes = {
   "/api/futures": async (q) =>
     cached(`futures:${q.get("list")}`, 15000, () => handleFutures(q.get("list") || "hf_GC,hf_XAU,hf_SI,hf_CAD,hf_CL,hf_VX,nf_AU0,BTCUSDT")),
   "/api/future-daily": async (q) =>
-    cached(`fdaily:${q.get("code")}`, 3600000, () => handleFutureDaily(q.get("code") || "")), // 日线K线, 1h缓存
+    cached(`fdaily:${q.get("code")}:${q.get("n") || ""}`, 3600000, () =>
+      handleFutureDaily(q.get("code") || "", Math.min(parseInt(q.get("n")) || 400, 5000))
+    ), // 日线K线(默认近400根), 1h缓存
   "/api/spot-table": async () => cached("spot:table", 8 * 3600000, () => handleSpotTable()), // 生意社现期表, 8h缓存(每日16:30更新)
   "/api/chem-spot": async (q) =>
     cached(`chem:${q.get("id")}`, 8 * 3600000, () => handleChemSpot(q.get("id") || "", q.get("name") || q.get("id") || "")), // 生意社化工现货, 8h缓存
