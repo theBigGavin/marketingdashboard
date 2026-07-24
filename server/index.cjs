@@ -1175,6 +1175,42 @@ async function handleSpotTable() {
   return { date, rows, history };
 }
 
+/* ---------------- 生意社化工现货(报价中心 plist 页, 中位数为代表价) ---------------- */
+async function handleChemSpot(id, name) {
+  const html = await fetchSunsir(`https://www.100ppi.com/mprice/plist-1-${encodeURIComponent(id)}-1.html`);
+  // 行结构: 品名/规格/产地/价格(元/吨)/价格类型/交货地/企业/日期
+  const market = []; // 市场价(真实行情)
+  const all = [];
+  for (const m of html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/g)) {
+    const row = m[1];
+    const pm = row.match(/>\s*([\d.]+)\s*元\/吨\s*</);
+    if (!pm || !row.includes("p-name")) continue;
+    const p = num(pm[1]);
+    all.push(p);
+    if (row.includes("市场价")) market.push(p);
+  }
+  if (!all.length) throw new Error("chem spot parse empty");
+  // 优先市场价中位数(出厂价多为厂商挂高价); 无市场价则全体中位数
+  const pool = market.length ? market : all;
+  pool.sort((a, b) => a - b);
+  const mid = pool.length >> 1;
+  const price = pool.length % 2 ? pool[mid] : +((pool[mid - 1] + pool[mid]) / 2).toFixed(2);
+  const dm = html.match(/>(20\d{2}-\d{2}-\d{2})</);
+  // 历史积累(与现货表同一文件)
+  let history = {};
+  try { history = JSON.parse(fs.readFileSync(SPOT_DATA_FILE, "utf-8") || "{}"); } catch {}
+  const arr = history[name] || (history[name] = []);
+  const today = new Date().toISOString().slice(0, 10);
+  if (arr.length && arr[arr.length - 1].t === today) arr[arr.length - 1].p = price;
+  else arr.push({ t: today, p: price });
+  if (arr.length > 400) arr.splice(0, arr.length - 400);
+  try {
+    fs.mkdirSync(path.dirname(SPOT_DATA_FILE), { recursive: true });
+    await fs.promises.writeFile(SPOT_DATA_FILE, JSON.stringify(history));
+  } catch (e) { console.error("[chem-spot] write history error:", e?.message || e); }
+  return { id, name, price, quotes: all.length, date: dm ? dm[1] : today, history: arr };
+}
+
 /* ---------------- 股票搜索(名称/拼音首字母→代码) ---------------- */
 async function handleStockSearch(query) {
   if (!query || query.length < 1) return [];
@@ -1335,6 +1371,8 @@ const routes = {
   "/api/future-daily": async (q) =>
     cached(`fdaily:${q.get("code")}`, 3600000, () => handleFutureDaily(q.get("code") || "")), // 日线K线, 1h缓存
   "/api/spot-table": async () => cached("spot:table", 8 * 3600000, () => handleSpotTable()), // 生意社现期表, 8h缓存(每日16:30更新)
+  "/api/chem-spot": async (q) =>
+    cached(`chem:${q.get("id")}`, 8 * 3600000, () => handleChemSpot(q.get("id") || "", q.get("name") || q.get("id") || "")), // 生意社化工现货, 8h缓存
   "/api/future-minute": async (q) =>
     cached(`fmin:${q.get("code")}`, 60000, () => handleFutureMinute(q.get("code") || "")),
   "/api/rank": async (q) =>

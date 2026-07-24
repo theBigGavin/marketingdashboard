@@ -81,3 +81,14 @@ export const EXCH_SHORT: Record<string, string> = {
   广州期货交易所: "广期所",
   上海国际能源交易中心: "上能所",
 };
+
+/** 化工现货(生意社报价中心, id 为其商品 ID; 代表价=市场价中位数) */
+export interface ChemSpotDef {
+  id: string;
+  name: string;
+  unit: string;
+}
+
+export const CHEM_SPOTS: ChemSpotDef[] = [
+  { id: "7250", name: "碳酸亚乙烯酯", unit: "元/吨" },
+];

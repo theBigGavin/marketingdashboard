@@ -205,6 +205,16 @@ export interface SpotTable {
   history: Record<string, { t: string; p: number }[]>;
 }
 
+/** 生意社化工现货(报价中心) */
+export interface ChemSpot {
+  id: string;
+  name: string;
+  price: number;
+  quotes: number;
+  date: string;
+  history: { t: string; p: number }[];
+}
+
 /** 股票搜索(名称/拼音首字母→代码) */
 export interface StockSearchResult {
   code: string;
@@ -492,6 +502,8 @@ export const api = {
     post<{ name: string; source: string; segments: { name: string; desc: string; stocks: { code: string; name: string }[] }[]; warnings?: string[] }>(`/api/chain-parse`, { name, content }),
   stockSearch: (q: string) => get<StockSearchResult[]>(`/api/stock-search?q=${encodeURIComponent(q)}`),
   spotTable: () => get<SpotTable>(`/api/spot-table`),
+  chemSpot: (id: string, name: string) =>
+    get<ChemSpot>(`/api/chem-spot?id=${encodeURIComponent(id)}&name=${encodeURIComponent(name)}`),
 };
 
 /** OpenRouter 用量轮询(1 小时) */
