@@ -547,6 +547,33 @@ async function handleFutureMinute(code) {
   throw new Error("bad code");
 }
 
+/* ---------------- 期货日线K线(新浪 内盘nf_/外盘hf_, 全历史免费) ---------------- */
+async function handleFutureDaily(code) {
+  const isGlobal = code.startsWith("hf_");
+  const symbol = code.replace(/^(nf_|hf_)/, "");
+  if (!symbol || (!code.startsWith("nf_") && !isGlobal)) throw new Error("bad code");
+  const api = isGlobal
+    ? `GlobalFuturesService.getGlobalFuturesDailyKLine?symbol=${encodeURIComponent(symbol)}`
+    : `InnerFuturesNewService.getDailyKLine?symbol=${encodeURIComponent(symbol)}`;
+  const text = await curlText(
+    `https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var%20t=/${api}`,
+    { referer: `https://finance.sina.com.cn/futures/quotes/${symbol}.shtml`, encoding: "utf-8" }
+  );
+  const arr = parseJsonp(text) || [];
+  // 内盘字段 d/o/h/l/c/v; 外盘 date/open/high/low/close/volume, 归一化
+  const pts = arr
+    .map((k) => ({
+      t: k.d || k.date,
+      o: num(k.o ?? k.open),
+      h: num(k.h ?? k.high),
+      l: num(k.l ?? k.low),
+      c: num(k.c ?? k.close),
+      v: num(k.v ?? k.volume),
+    }))
+    .filter((p) => p.t && p.c);
+  return { code, points: pts };
+}
+
 /* ---------------- 个股榜单(涨幅/跌幅/热门) — 新浪盘中 + 腾讯盘后双源 ---------------- */
 async function rankViaSina(sort, asc, want) {
   const fetchN = Math.min(100, Math.max(want * 3, 60));
@@ -1070,6 +1097,84 @@ async function handleOpenRouterUsage() {
     return [{ date: todayStr, total: 0, providers: [], countries: [] }];
   }
 }
+/* ---------------- 生意社现期对照表(现货价/期货价/基差) + 现货历史积累 ---------------- */
+const SPOT_DATA_FILE = path.join(__dirname, "data", "spot-history.json");
+
+// 生意社华为云 HW_CHECK 质询绕过: 质询页 JS 内嵌 cookie 值, 提取后带 cookie 重试
+async function fetchSunsir(url, { timeout = 12000 } = {}) {
+  const once = (cookie) => {
+    const headers = { "User-Agent": UA, Accept: "text/html" };
+    if (cookie) headers.Cookie = cookie;
+    return fetch(url, { headers, signal: AbortSignal.timeout(timeout) });
+  };
+  let resp = await once();
+  let text = await resp.text();
+  if (text.length < 4000 && text.includes("HW_CHECK")) {
+    const m = text.match(/=\s*"([0-9a-f]{16,})"/);
+    if (m) {
+      resp = await once(`HW_CHECK=${m[1]}`);
+      text = await resp.text();
+    }
+  }
+  if (text.includes("HW_CHECK") && text.length < 4000) throw new Error("sunsir waf challenge failed");
+  return text;
+}
+
+function parseSfTable(html) {
+  const parts = html.split(/<td colspan="8"[^>]*>([^<]+)<\/td>/i);
+  const rows = [];
+  for (let i = 1; i < parts.length; i += 2) {
+    const exchange = parts[i];
+    const body = parts[i + 1] || "";
+    const chunks = body.split(/<tr[^>]*bgcolor="#fafdff"[^>]*>/i);
+    for (let c = 1; c < chunks.length; c++) {
+      let chunk = chunks[c];
+      // 嵌套 table 内的 font 值依次为 基差1/基差率1/基差2/基差率2
+      const fonts = [...chunk.matchAll(/<font[^>]*>(-?[\d.,]+%?)<\/font>/g)].map((m) => m[1]);
+      chunk = chunk.replace(/<table[\s\S]*?<\/table>/g, "");
+      const cells = [...chunk.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)]
+        .map((m) => m[1].replace(/<[^>]+>/g, "").replace(/&nbsp;/g, "").trim())
+        .filter((v) => v !== "");
+      if (cells.length < 4 || !cells[0]) continue;
+      const basisPct1 = parseFloat(fonts[1]);
+      rows.push({
+        exchange,
+        name: cells[0],
+        spot: num(cells[1]),
+        contract: cells[2] || "",
+        futures: num(cells[3]),
+        basis: num(fonts[0]),
+        basisPct: Number.isFinite(basisPct1) ? basisPct1 : 0,
+      });
+    }
+  }
+  return rows;
+}
+
+async function handleSpotTable() {
+  const html = await fetchSunsir("https://www.100ppi.com/sf/");
+  const dm = html.match(/20\d{2}年\d{1,2}月\d{1,2}日/);
+  const date = dm ? dm[0].replace(/[年月]/g, "-").replace("日", "") : new Date().toISOString().slice(0, 10);
+  const rows = parseSfTable(html);
+  if (!rows.length) throw new Error("sunsir sf table parse empty");
+  // 现货价按日积累(与 openrouter-usage 同模式), 供现货趋势线使用
+  let history = {};
+  try { history = JSON.parse(fs.readFileSync(SPOT_DATA_FILE, "utf-8") || "{}"); } catch {}
+  const today = new Date().toISOString().slice(0, 10);
+  for (const r of rows) {
+    if (!r.spot) continue;
+    const arr = history[r.name] || (history[r.name] = []);
+    if (arr.length && arr[arr.length - 1].t === today) arr[arr.length - 1].p = r.spot;
+    else arr.push({ t: today, p: r.spot });
+    if (arr.length > 400) arr.splice(0, arr.length - 400);
+  }
+  try {
+    fs.mkdirSync(path.dirname(SPOT_DATA_FILE), { recursive: true });
+    await fs.promises.writeFile(SPOT_DATA_FILE, JSON.stringify(history)); // 异步写
+  } catch (e) { console.error("[spot] write history error:", e?.message || e); }
+  return { date, rows, history };
+}
+
 /* ---------------- 股票搜索(名称/拼音首字母→代码) ---------------- */
 async function handleStockSearch(query) {
   if (!query || query.length < 1) return [];
@@ -1227,6 +1332,9 @@ const routes = {
     ),
   "/api/futures": async (q) =>
     cached(`futures:${q.get("list")}`, 15000, () => handleFutures(q.get("list") || "hf_GC,hf_XAU,hf_SI,hf_CAD,hf_CL,hf_VX,nf_AU0,BTCUSDT")),
+  "/api/future-daily": async (q) =>
+    cached(`fdaily:${q.get("code")}`, 3600000, () => handleFutureDaily(q.get("code") || "")), // 日线K线, 1h缓存
+  "/api/spot-table": async () => cached("spot:table", 8 * 3600000, () => handleSpotTable()), // 生意社现期表, 8h缓存(每日16:30更新)
   "/api/future-minute": async (q) =>
     cached(`fmin:${q.get("code")}`, 60000, () => handleFutureMinute(q.get("code") || "")),
   "/api/rank": async (q) =>
