@@ -109,6 +109,7 @@ docker run -p 3000:3000 market-cockpit
 | `/api/future-minute?code=...` | 期货日内走势 |
 | `/api/future-daily?code=...` | 期货日线 K 线（新浪全历史，内盘 nf_ / 外盘 hf_） |
 | `/api/spot-table` | 生意社现期对照表（现货价 / 期货价 / 基差，现货历史逐日积累） |
+| `/api/chem-spot?id=...&name=...` | 生意社化工现货报价（市场价中位数，历史逐日积累） |
 | `/api/rank?sort=...&n=...` | 个股榜单（涨幅 / 成交额 / 换手率） |
 | `/api/moneyflow?n=...` | 个股主力净流入排行 |
 | `/api/stock-flows?codes=...` | 批量个股资金流 |
