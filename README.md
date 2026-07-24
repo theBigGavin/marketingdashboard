@@ -28,6 +28,7 @@
 - **💰 资金流向追踪** — 个股主力净流入 TOP 榜、板块资金分钟级累计曲线、热门股 / 涨幅 / 跌幅榜单
 - **⛓️ 产业链全景** — 半导体、AI 算力、新能源车、机器人、创新药等产业链，上中下游标的分层展示并联动行情。支持手动编辑或从问财自动获取股票列表
 - **🤖 AI 驾驶舱** — OpenRouter 日度榜单 API，追踪全球 50+ 大模型厂商 Token 消耗量趋势（支持 7d~1y 时间范围），按厂商/国家/地区堆叠面积图展示份额变化，支持 60 天以上超长历史回溯
+- **🏷️ 商品价格页（/goods）** — 贵金属 / 基本金属 / 黑色 / 能化 / 农产品 / 国际能源 6 大分组期货主力日线趋势（新浪全历史 K 线，30d~365d 区间切换），生意社现货日度报价（历史逐日积累）与现期基差对照表
 - **📰 7×24 快讯聚合** — 全球财经快讯滚动播报，宏观关键词与产业链关联新闻自动高亮
 - **🖥️ 可安装为桌面应用** — 内置 PWA 支持（Web Manifest + Service Worker），浏览器地址栏一键安装，独立窗口运行
 - **⚡ 零依赖数据服务** — 内置 Node 代理聚合公开行情接口，内存缓存减压，大部分接口无需 API Key，开箱即用
@@ -106,6 +107,8 @@ docker run -p 3000:3000 market-cockpit
 | `/api/board-stocks?code=...&n=...` | 板块成分股 |
 | `/api/futures?list=...` | 大宗商品 / 加密货币报价 |
 | `/api/future-minute?code=...` | 期货日内走势 |
+| `/api/future-daily?code=...` | 期货日线 K 线（新浪全历史，内盘 nf_ / 外盘 hf_） |
+| `/api/spot-table` | 生意社现期对照表（现货价 / 期货价 / 基差，现货历史逐日积累） |
 | `/api/rank?sort=...&n=...` | 个股榜单（涨幅 / 成交额 / 换手率） |
 | `/api/moneyflow?n=...` | 个股主力净流入排行 |
 | `/api/stock-flows?codes=...` | 批量个股资金流 |
@@ -129,10 +132,12 @@ docker run -p 3000:3000 market-cockpit
 │   ├── dev.cjs        # 开发入口：同时启动 Vite 与数据代理
 │   └── index.cjs      # 数据代理 + 生产静态文件服务
 ├── src/
-│   ├── App.tsx        # 大屏布局与路由
+│   ├── App.tsx        # 大屏布局与路由（/ 市场驾驶舱、/ai AI驾驶舱、/goods 商品价格）
+│   ├── AiDashboard.tsx    # AI 驾驶舱页
+│   ├── GoodsDashboard.tsx # 商品价格页（6 分组趋势面板 + 现货/基差面板）
 │   ├── components/
-│   │   └── dash/      # 驾驶舱各面板（指数/板块/资金流/快讯/产业链/AI驾驶舱/自选股…）
-│   │       ├── Spark.tsx       # 日内分时迷你走势图（A股按交易时段 / 24h 品种按数据跨度计算宽度）
+│   │   └── dash/      # 驾驶舱各面板（指数/板块/资金流/快讯/产业链/AI驾驶舱/自选股/商品趋势…）
+│   │       ├── Spark.tsx       # 迷你走势图（A股按交易时段 / 24h 连续时间轴 / 日线按点均分）
 │   │       └── WatchlistPanel.tsx  # 自选股面板（支持名称/拼音搜索，localStorage 持久化）
 │   ├── config/        # 指数、商品、产业链等静态配置
 │   ├── hooks/         # usePolling / useSharedPolling / useClock 等通用钩子
@@ -144,7 +149,7 @@ docker run -p 3000:3000 market-cockpit
 
 - **前端**：React 19 · Vite 7 · TypeScript · Tailwind CSS · lucide-react 图标（图表为手写 SVG）
 - **后端**：Node.js 原生 `http`（无框架）· `curl` / `fetch`
-- **数据源**：腾讯 · 新浪 · 东方财富 · 华尔街见闻 · CNBC · Binance 等公开行情接口
+- **数据源**：腾讯 · 新浪 · 东方财富 · 华尔街见闻 · CNBC · Binance · 生意社 等公开行情接口
 
 ## ⚠️ 免责声明
 
