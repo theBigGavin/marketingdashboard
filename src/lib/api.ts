@@ -172,6 +172,39 @@ export interface MinuteData {
   points: { t: string; p: number }[];
 }
 
+/** 期货日线K线(归一化) */
+export interface DailyBar {
+  t: string; // "2026-07-23"
+  o: number;
+  h: number;
+  l: number;
+  c: number;
+  v: number;
+}
+
+export interface FutureDaily {
+  code: string;
+  points: DailyBar[];
+}
+
+/** 生意社现期对照行 */
+export interface SpotRow {
+  exchange: string;
+  name: string;
+  spot: number;
+  contract: string;
+  futures: number;
+  basis: number;
+  basisPct: number;
+}
+
+export interface SpotTable {
+  date: string;
+  rows: SpotRow[];
+  /** 按品种名积累的现货日度历史 */
+  history: Record<string, { t: string; p: number }[]>;
+}
+
 /** 股票搜索(名称/拼音首字母→代码) */
 export interface StockSearchResult {
   code: string;
@@ -444,6 +477,10 @@ export const api = {
   stockBoards: (code: string) => get<StockBoards>(`/api/stock-boards?code=${encodeURIComponent(code)}`),
   stockFlow: (code: string) => flowLoader(code),
   futureMinute: (code: string) => get<MinuteData>(`/api/future-minute?code=${encodeURIComponent(code)}`),
+  futureDaily: (code: string) => get<FutureDaily>(`/api/future-daily?code=${encodeURIComponent(code)}`),
+  /** 批量期货实时报价(商品价格页全品种; 无浏览器直连兜底, 依赖服务端) */
+  futuresBatch: (codes: string[]) =>
+    get<Record<string, FutureQuote>>(`/api/futures?list=${codes.map(encodeURIComponent).join(",")}`),
   boardFlow: (n = 20) => get<BoardFlow[]>(`/api/board-flow?n=${n}`),
   news: (size = 60) => withFallback(() => get<NewsItem[]>(`/api/news?size=${size}`), () => directNews(size)),
   treasuries: () => get<Treasury[]>(`/api/treasuries`),
@@ -454,6 +491,7 @@ export const api = {
   parseChain: (name: string, content: string) =>
     post<{ name: string; source: string; segments: { name: string; desc: string; stocks: { code: string; name: string }[] }[]; warnings?: string[] }>(`/api/chain-parse`, { name, content }),
   stockSearch: (q: string) => get<StockSearchResult[]>(`/api/stock-search?q=${encodeURIComponent(q)}`),
+  spotTable: () => get<SpotTable>(`/api/spot-table`),
 };
 
 /** OpenRouter 用量轮询(1 小时) */

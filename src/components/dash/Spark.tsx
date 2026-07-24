@@ -10,8 +10,8 @@ interface SparkProps {
   fluid?: boolean;
   /** 无数据时的占位文案(默认"休市", 24h 品种传"—") */
   emptyLabel?: string;
-  /** X 轴时间映射: A股交易时段(默认) / 24h 品种按数据自身跨度 */
-  session?: "ashare" | "h24";
+  /** X 轴时间映射: A股交易时段(默认) / 24h 品种连续交易时间轴 / 日线按点均分 */
+  session?: "ashare" | "h24" | "daily";
 }
 
 /** 解析时间字符串为分钟数, 支持 "0930" / "09:30" / "2024-01-01 09:30" */
@@ -41,7 +41,10 @@ export function Spark({ points, prec, width = 120, height = 36, fluid = false, e
     min -= pad;
     max += pad;
     let xs: number[];
-    if (session === "h24") {
+    if (session === "daily") {
+      // 日线序列: 交易日天然不均匀, 迷你图按点均匀分布(prec 传区间首日收盘价即区间涨跌基准)
+      xs = points.map((_, i) => 1 + (i / (points.length - 1)) * (width - 2));
+    } else if (session === "h24") {
       // 24h 品种(商品/加密): 连续交易时间轴 — 相邻间隔超阈值视为休市段并压缩,
       // 兼容夜盘+日盘结构(如沪金 21:00→01:00→09:00→15:00)与跨午夜
       const GAP_MIN = 5;

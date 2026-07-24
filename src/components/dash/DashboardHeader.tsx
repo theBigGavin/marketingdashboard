@@ -23,6 +23,7 @@ export function DashboardHeader({
   tagline,
   linkTo,
   linkLabel,
+  links,
   linkBack = false,
   live = false,
   githubUrl,
@@ -35,6 +36,8 @@ export function DashboardHeader({
   tagline: string;
   linkTo: string;
   linkLabel: string;
+  /** 多个导航链接(传入时替代单个 linkTo/linkLabel, linkBack 仅作用于首个) */
+  links?: { to: string; label: string }[];
   /** 链接前是否带返回箭头 */
   linkBack?: boolean;
   /** 是否显示"实时行情"指示灯 */
@@ -65,13 +68,16 @@ export function DashboardHeader({
         <span>{tagline}</span>
       </div>
       <div className="ml-auto flex items-center gap-3">
-        <Link
-          to={linkTo}
-          className={`flex items-center gap-1 rounded border border-slate-700/60 bg-slate-800/40 px-2 py-1 text-[10px] text-slate-400 transition-colors ${LINK_HOVER_CLASS[accent]}`}
-        >
-          {linkBack && <ArrowLeft size={10} />}
-          {linkLabel}
-        </Link>
+        {(links ?? [{ to: linkTo, label: linkLabel }]).map((l, i) => (
+          <Link
+            key={l.to}
+            to={l.to}
+            className={`flex items-center gap-1 rounded border border-slate-700/60 bg-slate-800/40 px-2 py-1 text-[10px] text-slate-400 transition-colors ${LINK_HOVER_CLASS[accent]}`}
+          >
+            {linkBack && i === 0 && <ArrowLeft size={10} />}
+            {l.label}
+          </Link>
+        ))}
         {live && (
           <span className="flex items-center gap-1.5 text-[10px] text-emerald-400">
             <span className="relative flex h-1.5 w-1.5">
