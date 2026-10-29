@@ -127,7 +127,7 @@ module.exports = function createEastmoney(ctx) {
         `https://push2delay.eastmoney.com/api/qt/stock/get?secid=${market}.${m[2]}&fields=f57,f58,f127,f128,f129`,
         {
           referer: EM_REFERER,
-          hosts: ["push2.eastmoney.com"],
+          hosts: ["push2delay2.eastmoney.com", "push2test.eastmoney.com", "push2.eastmoney.com"],
           throttle: { ok: 60, err: 400 }, // 队列节流
           accept: (t) => { try { return !!JSON.parse(t)?.data; } catch { return false; } },
         }
@@ -146,10 +146,19 @@ module.exports = function createEastmoney(ctx) {
   const emMarketOf = (m) => (m === "sh" ? 1 : 0);
   const EM_FS = "m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048";
 
+  // 东财行情族按出口 IP 掐断是整族性的(push2/push2delay/82.push2/push2his 全 TLS 断连),
+  // 但同族兄弟主机并非同时被掐: push2delay2/push2test 实测(2026-10-29)仍返回完整数据
+  // (clist/ulist/stock.get/fflow.kline 分钟曲线全通)。所有 emGet 走主机回退链。
+  const EM_HOSTS = ["push2delay2.eastmoney.com", "push2test.eastmoney.com", "push2.eastmoney.com"];
+
   async function emGet(url) {
-    // fetch/curl 双通道 + 成功/失败节流, 统一走 fetchWithFallback(见 lib/fetch-any.cjs)
-    return JSON.parse(await fetchWithFallback(url, {
+    // fetch/curl 双通道 + 主机回退 + 成功/失败节流, 统一走 fetchWithFallback(见 lib/fetch-any.cjs)
+    // 主 URL 直接改写到链首主机(push2delay 已被掐, 每次先撞死主机白付一轮超时)
+    const u = new URL(url);
+    u.host = EM_HOSTS[0];
+    return JSON.parse(await fetchWithFallback(u.href, {
       referer: EM_REFERER,
+      hosts: EM_HOSTS.slice(1),
       throttle: { ok: 60, err: 400 }, // 队列节流
     }));
   }
