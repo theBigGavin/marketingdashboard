@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Navigate, Routes, Route } from "react-router";
 import { TickerTape, type TapeItem } from "@/components/dash/TickerTape";
 import { DashboardHeader } from "@/components/dash/DashboardHeader";
@@ -14,11 +14,6 @@ import { BoardFlowPanel } from "@/components/dash/BoardFlowPanel";
 import { NewsPanel } from "@/components/dash/NewsPanel";
 import { ChainPanel } from "@/components/dash/ChainPanel";
 import { WatchlistPanel } from "@/components/dash/WatchlistPanel";
-import AiDashboard from "./AiDashboard";
-import GoodsDashboard from "./GoodsDashboard";
-import FinDashboard from "./FinDashboard";
-import GoldDashboard from "./GoldDashboard";
-import ProLanding from "./ProLanding";
 import LoginPage from "./pages/LoginPage";
 import { hostingEnabled, hostingToken } from "@/lib/hosting";
 import { HostingContext, useHosting } from "@/lib/hosting-context";
@@ -28,6 +23,13 @@ import { useFullscreen } from "@/hooks/useFullscreen";
 import { api } from "@/lib/api";
 import { POLL } from "@/lib/intervals";
 import { INDICES, FOREX, COMMODITIES } from "@/config/dashboard";
+
+// 非首页按路由拆包，避免 AI、黄金、财报与 Pro 页面进入首屏主包。
+const AiDashboard = lazy(() => import("./AiDashboard"));
+const GoodsDashboard = lazy(() => import("./GoodsDashboard"));
+const FinDashboard = lazy(() => import("./FinDashboard"));
+const GoldDashboard = lazy(() => import("./GoldDashboard"));
+const ProLanding = lazy(() => import("./ProLanding"));
 
 function Tape() {
   const codes = useMemo(() => [...INDICES.map((i) => i.code), ...FOREX.map((i) => i.code)], []);
@@ -148,9 +150,11 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <HostingGate>
-      <AppRoutes />
-    </HostingGate>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-[#070b12] text-slate-500">页面加载中…</div>}>
+      <HostingGate>
+        <AppRoutes />
+      </HostingGate>
+    </Suspense>
   );
 }
 

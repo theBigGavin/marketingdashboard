@@ -50,7 +50,7 @@ export function WatchlistPanel({ className = "", ...zoomProps }: { className?: s
   const [codes, setCodes] = useState<string[]>(load);
   const [invalid, setInvalid] = useState(false);
   // 托管模式(登录态)标志 + 服务端首屏加载完成标志(避免初始覆盖用户本地自选)
-  const [hosted, setHosted] = useState<boolean | null>(null);
+  const [hosted, setHosted] = useState<boolean | null>(() => hostingToken() ? null : false);
   const suggestRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const {
@@ -63,7 +63,7 @@ export function WatchlistPanel({ className = "", ...zoomProps }: { className?: s
   // 托管模式: 挂载时从服务端拉取自选(按租户隔离, 不跨租户泄漏)
   // 服务端为准: 有值用服务端值, 空则空列表(不把本地 localStorage 残留写入租户库)
   useEffect(() => {
-    if (!hostingToken()) { setHosted(false); return; }
+    if (!hostingToken()) return;
     let alive = true;
     (async () => {
       try {

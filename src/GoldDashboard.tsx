@@ -447,9 +447,9 @@ function GoldRealRatePanel({ className = "", ...zoomProps }: { className?: strin
 
 function GoldCbTxPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
   const { data, error } = usePolling(() => api.gold(), POLL.MINUTE);
-  const txs = data?.central_bank?.transactions ?? [];
 
   const bars = useMemo(() => {
+    const txs = data?.central_bank?.transactions ?? [];
     if (!txs.length) return [];
     const max = Math.max(...txs.map((t) => Math.abs(t.tonnes)), 1);
     // 百分比宽度(基于 flex-1 条形容器), 不再用 W-90 像素估算 —— 像素估算在窄容器下
@@ -458,13 +458,13 @@ function GoldCbTxPanel({ className = "", ...zoomProps }: { className?: string } 
       ...t,
       pct: (Math.abs(t.tonnes) / max) * 100,
     }));
-  }, [txs]);
+  }, [data]);
 
   return (
     <Panel className={className} {...zoomProps} title="央行购金动态" icon={<Landmark size={14} />} accent={GOLD}
       right={<span className="text-[9px] text-slate-600">近 3 月 · WGC 月度统计</span>}>
       <div className="flex h-full flex-col p-2.5">
-        {!txs.length ? (
+        {!bars.length ? (
           <GoldEmpty what={error ? "央行购金" : "央行购金"} />
         ) : (
           <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto pr-1">
@@ -507,13 +507,13 @@ function GoldCbTxPanel({ className = "", ...zoomProps }: { className?: string } 
 
 function GoldCbTopPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
   const { data, error } = usePolling(() => api.gold(), POLL.MINUTE);
-  const top = data?.central_bank?.top10 ?? [];
 
   const rows = useMemo(() => {
+    const top = data?.central_bank?.top10 ?? [];
     if (!top.length) return [];
     const max = top[0]?.tonnes || 1;
     return top.map((t) => ({ ...t, pct: (t.tonnes / max) * 100 }));
-  }, [top]);
+  }, [data]);
 
   return (
     <Panel className={className} {...zoomProps} title="央行黄金储备 TOP10" icon={<Wallet size={14} />} accent={GOLD}

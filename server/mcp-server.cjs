@@ -14,6 +14,7 @@
  */
 "use strict";
 
+const { version: APP_VERSION } = require("../package.json");
 const { parseCsvParam } = require("./lib/netutil.cjs");
 
 // ---- JSON-RPC 2.0 helpers ----
@@ -200,7 +201,7 @@ function createMcpSession(ctx) {
         return jsonrpcResult(id, {
           protocolVersion: "2024-11-05",
           capabilities: { tools: {}, resources: {} },
-          serverInfo: { name: "mrd", version: "1.3.2" },
+          serverInfo: { name: "mrd", version: APP_VERSION },
         });
 
       case "tools/list":
@@ -360,7 +361,7 @@ function createMcpHandler(ctx) {
     if (req.method === "GET") {
       const meta = {
         name: "mrd",
-        version: "1.3.2",
+        version: APP_VERSION,
         description: "Market Research Dashboard MCP Server — A股/港股/美股/期货/资金流/快讯",
         endpoint: "/mcp",
         streamEndpoint: "/mcp/stream",

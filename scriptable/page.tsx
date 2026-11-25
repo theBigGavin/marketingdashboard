@@ -3,7 +3,7 @@
 // 本地开屏方案: 单WebView页 — loadHTML(本地开屏,含mrd logo动画) → 2s后 loadURL(mrd)
 // 消除: 第二个present切换白屏 + 网络加载白屏 + React state重渲染黑屏
 import {
-  WebView, Navigation, Script, Button, ZStack, Spacer, VStack, useEffect,
+  WebView, Navigation, Script, Button, ZStack, Spacer, VStack, useEffect, useMemo,
 } from "scripting"
 
 const BASE = "https://mrd.hermes.cc.cd/?tv=1"
@@ -67,7 +67,7 @@ const SPLASH_HTML = `<!doctype html>
 // WebView 页: 无 state, 永不重渲染; 本地开屏 → mrd
 function WebViewPage() {
   const dismiss = Navigation.useDismiss()
-  const controller = new WebViewController()
+  const controller = useMemo(() => new WebViewController(), [])
 
   useEffect(() => {
     // 1. 本地开屏立即渲染(无网络) 2. 停留 2s 后加载 mrd (期间 mrd body 已是深色, 无缝衔接)
@@ -75,7 +75,7 @@ function WebViewPage() {
       setTimeout(() => controller.loadURL(BASE), 2000)
     })
     return () => { controller.dispose() }
-  }, [])
+  }, [controller])
 
   return (
     <ZStack
