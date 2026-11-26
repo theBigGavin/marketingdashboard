@@ -13,7 +13,7 @@ const procs = [
     env: { ...process.env, PORT: "3001" },
     stdio: "inherit",
   }),
-  spawn(process.execPath, [path.join(root, "node_modules", "vite", "bin", "vite.js")], {
+  spawn(process.execPath, [path.join(root, "node_modules", "vite", "bin", "vite.js"), ...process.argv.slice(2)], {
     cwd: root,
     env: process.env,
     stdio: "inherit",
