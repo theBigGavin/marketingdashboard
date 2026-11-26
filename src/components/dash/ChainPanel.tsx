@@ -195,22 +195,22 @@ export function ChainPanel({ className = "", ...zoomProps }: { className?: strin
             {allChains.map((c) => (
               <div key={c.id} className="group relative">
                 <button onClick={() => setChainId(c.id)}
-                  className={`rounded px-2 py-0.5 text-[11px] transition-colors ${chainId === c.id ? "bg-emerald-500/20 font-semibold text-emerald-300" : "text-slate-400 hover:text-slate-200"}`}>
+                  className={`rounded px-2 py-0.5 text-body transition-colors ${chainId === c.id ? "bg-emerald-500/20 font-semibold text-emerald-300" : "text-db-tertiary hover:text-db-primary"}`}>
                   <span className="mr-1 opacity-70">{c.icon}</span>{c.name}
                 </button>
                 {/* 自定义链显示删除按钮 */}
                 {c.id.startsWith("custom_") && (
                   <button onClick={() => deleteCustomChain(c.id)}
-                    className="absolute -right-1 -top-1 hidden h-3.5 w-3.5 items-center justify-center rounded-full bg-rose-500/80 text-[8px] leading-none text-white group-hover:flex"
+                    className="absolute -right-1 -top-1 hidden h-3.5 w-3.5 items-center justify-center rounded-full bg-rose-500/80 text-micro leading-none text-white group-hover:flex"
                     title="删除此产业链">&times;</button>
                 )}
               </div>
             ))}
             <button onClick={() => { setParseState({ loading: false, error: "", warnings: [] }); setEditor({ mode: "add", name: "", content: "" }); }}
-              className="rounded border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-300 transition hover:border-emerald-400/60 hover:bg-emerald-500/20"
+              className="rounded border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 text-meta font-semibold text-emerald-300 transition hover:border-emerald-400/60 hover:bg-emerald-500/20"
               title="添加自定义产业链">+ 添加</button>
             <button onClick={() => { setParseState({ loading: false, error: "", warnings: [] }); setEditor({ mode: "update", name: chain.name, content: "" }); }}
-              className="rounded border border-cyan-500/25 bg-cyan-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-cyan-300 transition hover:border-cyan-400/50 hover:bg-cyan-500/20"
+              className="rounded border border-cyan-500/25 bg-cyan-500/10 px-1.5 py-0.5 text-meta font-semibold text-cyan-300 transition hover:border-cyan-400/50 hover:bg-cyan-500/20"
               title="粘贴问财结论，更新当前产业链股票">更新</button>
           </div>
         }
@@ -223,58 +223,58 @@ export function ChainPanel({ className = "", ...zoomProps }: { className?: strin
               return (
                 <div key={seg.name} className="flex min-h-0 flex-col">
                   <div className="mb-1.5 flex items-center gap-1.5">
-                    <span className={`flex h-4.5 w-4.5 items-center justify-center rounded text-[10px] font-bold ${si === 0 ? "bg-sky-500/20 text-sky-300" : si === 1 ? "bg-violet-500/20 text-violet-300" : "bg-amber-500/20 text-amber-300"}`} style={{ height: 18, width: 18 }}>
+                    <span className={`flex h-4.5 w-4.5 items-center justify-center rounded text-meta font-bold ${si === 0 ? "bg-sky-500/20 text-sky-300" : si === 1 ? "bg-violet-500/20 text-violet-300" : "bg-amber-500/20 text-amber-300"}`} style={{ height: 18, width: 18 }}>
                       {["上", "中", "下"][si] || si + 1}
                     </span>
                     <div className="min-w-0">
-                      <span className="text-[11px] font-semibold text-slate-200">{seg.name}</span>
-                      <span className="ml-1.5 hidden text-[9px] text-slate-500 xl:inline">{seg.desc}</span>
-                      {current?.source === "iwencai" && <span className="ml-1 text-[8px] text-emerald-500/60">问财</span>}
-                      {chainOverrides[chain.id] && <span className="ml-1 text-[8px] text-cyan-500/60">编辑</span>}
+                      <span className="text-body font-semibold text-db-primary">{seg.name}</span>
+                      <span className="ml-1.5 hidden text-caption text-db-muted xl:inline">{seg.desc}</span>
+                      {current?.source === "iwencai" && <span className="ml-1 text-micro text-emerald-500/60">问财</span>}
+                      {chainOverrides[chain.id] && <span className="ml-1 text-micro text-cyan-500/60">编辑</span>}
                     </div>
                   </div>
                   <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
-                    {!dynMatched && seg.query && refreshTick > 0 && <div className="flex h-9 items-center justify-center rounded border border-slate-700/30 bg-slate-800/15 text-[10px] text-slate-500">问财筛选中...</div>}
+                    {!dynMatched && seg.query && refreshTick > 0 && <div className="flex h-9 items-center justify-center rounded border border-db-border/30 bg-db-subtle/15 text-meta text-db-muted">问财筛选中...</div>}
                     {stocks.map((st) => (<StockCell key={st.code} code={st.code} name={st.name} tag={st.tag} />))}
-                    {dynMatched && stocks.length === 0 && <div className="flex h-9 items-center justify-center rounded border border-slate-700/30 bg-slate-800/15 text-[10px] text-slate-500">暂无匹配股票</div>}
+                    {dynMatched && stocks.length === 0 && <div className="flex h-9 items-center justify-center rounded border border-db-border/30 bg-db-subtle/15 text-meta text-db-muted">暂无匹配股票</div>}
                   </div>
                 </div>
               );
             })}
             {relatedBoards.length > 0 && (
-              <div className="col-span-3 rounded border border-slate-700/25 bg-slate-800/10 px-2.5 py-1.5">
-                <span className="mr-3 text-[10px] font-semibold text-slate-400">关联板块热度</span>
+              <div className="col-span-3 rounded border border-db-border/25 bg-db-subtle/10 px-2.5 py-1.5">
+                <span className="mr-3 text-meta font-semibold text-db-tertiary">关联板块热度</span>
                 <span className="inline-flex flex-wrap gap-x-4 gap-y-0.5">
                   {relatedBoards.map((b) => (
-                    <span key={b.code} className="text-[10px]" style={TNUM}>
-                      <span className={`mr-1 rounded-sm px-1 py-px text-[8px] ${b.kind === "industry" ? "bg-cyan-500/15 text-cyan-400" : "bg-violet-500/15 text-violet-400"}`}>{b.kind === "industry" ? "行业" : "概念"}</span>
-                      <span className="text-slate-300">{b.name}</span>
+                    <span key={b.code} className="text-meta" style={TNUM}>
+                      <span className={`mr-1 rounded-sm px-1 py-px text-micro ${b.kind === "industry" ? "bg-cyan-500/15 text-cyan-400" : "bg-violet-500/15 text-violet-400"}`}>{b.kind === "industry" ? "行业" : "概念"}</span>
+                      <span className="text-db-secondary">{b.name}</span>
                       <span className={`ml-1 font-semibold ${clsChg(b.pct)}`}>{fmtPct(b.pct)}</span>
-                      <span className="ml-1 text-[9px] text-slate-600">{b.leadName}</span>
+                      <span className="ml-1 text-caption text-db-faint">{b.leadName}</span>
                     </span>
                   ))}
                 </span>
               </div>
             )}
           </div>
-          <div className="flex w-[300px] shrink-0 flex-col border-l border-slate-700/40">
-            <div className="border-b border-slate-700/40 p-2">
-              <div className="mb-1 text-[10px] font-semibold text-slate-300">行业关键技术</div>
-              <div className="flex flex-wrap gap-1">{chain.tech.map((t) => (<span key={t} className="rounded border border-emerald-500/25 bg-emerald-500/10 px-1.5 py-px text-[9px] text-emerald-300">{t}</span>))}</div>
+          <div className="flex w-[300px] shrink-0 flex-col border-l border-db-border/40">
+            <div className="border-b border-db-border/40 p-2">
+              <div className="mb-1 text-meta font-semibold text-db-secondary">行业关键技术</div>
+              <div className="flex flex-wrap gap-1">{chain.tech.map((t) => (<span key={t} className="rounded border border-emerald-500/25 bg-emerald-500/10 px-1.5 py-px text-caption text-emerald-300">{t}</span>))}</div>
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto p-1.5">
-              <div className="mb-1 px-0.5 text-[10px] font-semibold text-slate-300">行业热点新闻 <span className="ml-1 text-[9px] font-normal text-slate-500">关键词匹配 · {chainNews.length}条</span></div>
+              <div className="mb-1 px-0.5 text-meta font-semibold text-db-secondary">行业热点新闻 <span className="ml-1 text-caption font-normal text-db-muted">关键词匹配 · {chainNews.length}条</span></div>
               <div className="space-y-0.5">
                 {chainNews.map((n) => (
-                  <div key={n.id} className="rounded px-1.5 py-1 hover:bg-slate-800/40">
-                    <div className="text-[9px] text-slate-500" style={TNUM}>{fmtTime(n.time)}</div>
-                    <div className="mt-0.5 text-[10px] leading-[1.5] text-slate-300 line-clamp-2">
-                      {n.title ? <span className="font-semibold text-slate-200">{n.title} </span> : null}{n.content}
+                  <div key={n.id} className="rounded px-1.5 py-1 hover:bg-db-subtle/40">
+                    <div className="text-caption text-db-muted" style={TNUM}>{fmtTime(n.time)}</div>
+                    <div className="mt-0.5 text-meta leading-[1.5] text-db-secondary line-clamp-2">
+                      {n.title ? <span className="font-semibold text-db-primary">{n.title} </span> : null}{n.content}
                     </div>
                   </div>
                 ))}
-                {news && chainNews.length === 0 && <div className="p-4 text-center text-[10px] text-slate-600">当前快讯流中暂无该产业链相关新闻</div>}
-                {!news && <div className="p-4 text-center text-[10px] text-slate-600">加载中…</div>}
+                {news && chainNews.length === 0 && <div className="p-4 text-center text-meta text-db-faint">当前快讯流中暂无该产业链相关新闻</div>}
+                {!news && <div className="p-4 text-center text-meta text-db-faint">加载中…</div>}
               </div>
             </div>
           </div>

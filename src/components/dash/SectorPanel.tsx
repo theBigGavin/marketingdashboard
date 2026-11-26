@@ -35,20 +35,20 @@ function BoardRow({ b, maxAbs, active, onClick }: { b: Board; maxAbs: number; ac
       ref={ref}
       onClick={onClick}
       className={`group grid w-full grid-cols-[24px_1fr_76px_96px] items-center gap-2 rounded px-2 py-[5px] text-left transition-colors ${
-        active ? "bg-cyan-500/10 ring-1 ring-cyan-500/40" : "hover:bg-slate-800/40"
+        active ? "bg-cyan-500/10 ring-1 ring-cyan-500/40" : "hover:bg-db-subtle/40"
       }`}
     >
-      <span className="text-[10px] text-slate-600">{b.code.slice(-4)}</span>
+      <span className="text-meta text-db-faint">{b.code.slice(-4)}</span>
       <span className="min-w-0">
-        <span className="block truncate text-[12px] text-slate-200 group-hover:text-cyan-300">{b.name}</span>
-        <span className="mt-0.5 block h-1 rounded-full bg-slate-800">
+        <span className="block truncate text-panel-title text-db-primary group-hover:text-cyan-300">{b.name}</span>
+        <span className="mt-0.5 block h-1 rounded-full bg-db-subtle">
           <span className="block h-1 rounded-full transition-all" style={{ width: `${w}%`, background: hexChg(b.pct) }} />
         </span>
       </span>
-      <span className={`text-right text-[12px] font-semibold ${clsChg(b.pct)}`} style={{ fontVariantNumeric: "tabular-nums" }}>
+      <span className={`text-right text-panel-title font-semibold ${clsChg(b.pct)}`} style={{ fontVariantNumeric: "tabular-nums" }}>
         {fmtPct(b.pct)}
       </span>
-      <span className="truncate text-right text-[11px] text-slate-400">
+      <span className="truncate text-right text-body text-db-tertiary">
         {b.leadName} <span className={clsChg(b.leadPct)}>{fmtPct(b.leadPct)}</span>
       </span>
     </button>
@@ -127,17 +127,17 @@ export function SectorPanel({ className = "", ...zoomProps }: { className?: stri
       icon={<Layers size={14} />}
       accent="#22d3ee"
       right={
-        <div className="flex items-center gap-1 text-[11px]">
+        <div className="flex items-center gap-1 text-body">
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="搜索板块"
-            className="w-20 rounded border border-slate-700/50 bg-slate-800/40 px-1.5 py-0.5 text-[11px] text-slate-200 outline-none placeholder:text-slate-600 focus:border-cyan-500/50"
+            className="w-20 rounded border border-db-border/50 bg-db-subtle/40 px-1.5 py-0.5 text-body text-db-primary outline-none placeholder:text-db-faint focus:border-cyan-500/50"
           />
           <button
             onClick={() => setAuto((a) => !a)}
             title={auto ? `轮播中(${ROTATE_MS / 1000}s),点击暂停` : "已暂停,点击恢复轮播"}
-            className={`rounded px-2 py-0.5 ${auto ? "bg-cyan-500/20 text-cyan-300" : "text-slate-400 hover:text-slate-200"}`}
+            className={`rounded px-2 py-0.5 ${auto ? "bg-cyan-500/20 text-cyan-300" : "text-db-tertiary hover:text-db-primary"}`}
           >
             轮播
           </button>
@@ -148,7 +148,7 @@ export function SectorPanel({ className = "", ...zoomProps }: { className?: stri
             accent="cyan"
             size="xs"
           />
-          <span className="mx-1 h-3 w-px bg-slate-700" />
+          <span className="mx-1 h-3 w-px bg-db-border" />
           <TabBar
             tabs={[{ key: 0 as const, label: "领涨" }, { key: 1 as const, label: "领跌" }]}
             active={dir}
@@ -163,22 +163,22 @@ export function SectorPanel({ className = "", ...zoomProps }: { className?: stri
         {/* 板块列表 */}
         <div className="min-w-0 flex-1 overflow-y-auto p-1.5">
           {/* 口径行: 明确写出榜单口径/层级与排序方式(不跨层级混排, 也不偷改口径) */}
-          <div className="px-2 pb-1 text-[10px] leading-4 text-slate-500">
-            <span className="text-slate-400">口径 </span>
-            <span className="text-slate-300">{scopeLine || (kind === "01" ? "申万行业" : "概念板块")}</span>
-            <span className="mx-1 text-slate-700">·</span>
+          <div className="px-2 pb-1 text-meta leading-4 text-db-muted">
+            <span className="text-db-tertiary">口径 </span>
+            <span className="text-db-secondary">{scopeLine || (kind === "01" ? "申万行业" : "概念板块")}</span>
+            <span className="mx-1 text-db-border">·</span>
             <span>{pctRankNote(dir)}</span>
-            <span className="mx-1 text-slate-700">·</span>
+            <span className="mx-1 text-db-border">·</span>
             <span>仅同层内比较</span>
           </div>
-          <div className="grid grid-cols-[24px_1fr_76px_96px] gap-2 px-2 py-1 text-[10px] text-slate-500">
+          <div className="grid grid-cols-[24px_1fr_76px_96px] gap-2 px-2 py-1 text-meta text-db-muted">
             <span>代码</span><span>板块 / 强度{filtered ? ` (${filtered.length})` : ""}</span><span className="text-right">涨跌幅</span><span className="text-right">领涨股</span>
           </div>
           {groups?.map((g) => (
             <div key={g.key}>
               {/* 多层级时才出现分组头; 单层级榜单不额外占位 */}
               {groups.length > 1 && (
-                <div className="mx-1 mt-1 rounded bg-slate-800/60 px-2 py-0.5 text-[10px] text-cyan-300/90">
+                <div className="mx-1 mt-1 rounded bg-db-subtle/60 px-2 py-0.5 text-meta text-cyan-300/90">
                   {g.label} · {g.items.length} 个 · 同层内排序
                 </div>
               )}
@@ -187,30 +187,30 @@ export function SectorPanel({ className = "", ...zoomProps }: { className?: stri
                   onClick={() => pick(b)} />
               ))}
               {g.items.length > MAX_BOARD_ROWS && (
-                <div className="p-2 text-center text-[10px] text-slate-600">
+                <div className="p-2 text-center text-meta text-db-faint">
                   {g.label}仅显示前 {MAX_BOARD_ROWS} / 共 {g.items.length} 个, 搜索可定位其余
                 </div>
               )}
             </div>
           ))}
           {!filtered && (
-            <div className="p-6 text-center text-[11px] text-slate-600">
+            <div className="p-6 text-center text-body text-db-faint">
               {error ? <span className="text-rose-400/80">数据源连接失败,自动重试中…<br />{error}</span> : "板块数据加载中…"}
             </div>
           )}
           {filtered?.length === 0 && (
-            <div className="p-6 text-center text-[11px] text-slate-600">无匹配「{q}」的板块</div>
+            <div className="p-6 text-center text-body text-db-faint">无匹配「{q}」的板块</div>
           )}
         </div>
 
         {/* 成分股侧栏 */}
         {activeBoard && (
-          <div className="w-[min(440px,52%)] shrink-0 overflow-y-auto border-l border-slate-700/40 p-2">
+          <div className="w-[min(440px,52%)] shrink-0 overflow-y-auto border-l border-db-border/40 p-2">
             <div className="mb-2 flex items-baseline justify-between">
-              <span className="text-[12px] font-semibold text-cyan-300">{activeBoard.name}</span>
-              <span className={`text-[12px] font-semibold ${clsChg(activeBoard.pct)}`}>{fmtPct(activeBoard.pct)}</span>
+              <span className="text-panel-title font-semibold text-cyan-300">{activeBoard.name}</span>
+              <span className={`text-panel-title font-semibold ${clsChg(activeBoard.pct)}`}>{fmtPct(activeBoard.pct)}</span>
             </div>
-            <div className="mb-2 grid grid-cols-2 gap-1 text-[10px] text-slate-500">
+            <div className="mb-2 grid grid-cols-2 gap-1 text-meta text-db-muted">
               <span>5日 <span className={clsChg(activeBoard.pct5)}>{fmtPct(activeBoard.pct5)}</span></span>
               <span>20日 <span className={clsChg(activeBoard.pct20)}>{fmtPct(activeBoard.pct20)}</span></span>
             </div>
@@ -225,8 +225,8 @@ export function SectorPanel({ className = "", ...zoomProps }: { className?: stri
                   spark boards flow
                 />
               ))}
-              {stocks && <div className="px-1.5 pt-1 text-right text-[9px] text-slate-600">领涨前 {stocks.length} 只成分股</div>}
-              {!stocks && <div className="p-4 text-center text-[10px] text-slate-600">成分股加载中…</div>}
+              {stocks && <div className="px-1.5 pt-1 text-right text-caption text-db-faint">领涨前 {stocks.length} 只成分股</div>}
+              {!stocks && <div className="p-4 text-center text-meta text-db-faint">成分股加载中…</div>}
             </div>
           </div>
         )}

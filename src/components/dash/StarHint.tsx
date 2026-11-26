@@ -29,9 +29,9 @@ export function StarHint({ githubUrl }: { githubUrl: string }) {
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex items-center gap-3 rounded-xl border border-slate-700/60 bg-slate-900/95 px-4 py-3 shadow-xl shadow-black/40 backdrop-blur">
+    <div className="fixed bottom-5 right-5 z-50 flex items-center gap-3 rounded-xl border border-db-border/60 bg-db-elevated/95 px-4 py-3 shadow-xl shadow-black/40 backdrop-blur">
       <Star className="h-4 w-4 shrink-0 fill-amber-400 text-amber-400" />
-      <p className="text-[13px] leading-snug text-slate-200">
+      <p className="text-subtitle leading-snug text-db-primary">
         觉得不错？去 GitHub 点个 <span className="font-bold text-amber-300">Star</span> 支持一下 ⭐
       </p>
       <a
@@ -39,7 +39,7 @@ export function StarHint({ githubUrl }: { githubUrl: string }) {
         target="_blank"
         rel="noopener noreferrer"
         onClick={dismiss}
-        className="rounded-md border border-cyan-500/50 bg-cyan-500/10 px-2.5 py-1 text-[12px] font-semibold text-cyan-300 transition-colors hover:bg-cyan-500/20"
+        className="rounded-md border border-cyan-500/50 bg-cyan-500/10 px-2.5 py-1 text-panel-title font-semibold text-cyan-300 transition-colors hover:bg-cyan-500/20"
       >
         去 Star
       </a>
@@ -47,7 +47,7 @@ export function StarHint({ githubUrl }: { githubUrl: string }) {
         onClick={dismiss}
         title="关闭"
         aria-label="关闭"
-        className="flex h-5 w-5 items-center justify-center rounded text-slate-500 transition-colors hover:text-slate-300"
+        className="flex h-5 w-5 items-center justify-center rounded text-db-muted transition-colors hover:text-db-secondary"
       >
         <X size={14} />
       </button>

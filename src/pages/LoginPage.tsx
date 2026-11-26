@@ -36,12 +36,12 @@ export default function LoginPage({ onAuthed }: Props) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#070b12] p-4 text-slate-200">
-      <div className="w-full max-w-sm rounded-xl border border-slate-700/50 bg-slate-900/60 p-6 shadow-xl">
-        <div className="mb-1 text-lg font-semibold text-slate-100">市场研究驾驶舱</div>
-        <div className="mb-5 text-[11px] uppercase tracking-widest text-slate-500">MARKET RESEARCH COCKPIT · 内测版</div>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-db-canvas p-4 text-db-primary">
+      <div className="w-full max-w-sm rounded-xl border border-db-border/50 bg-db-elevated/60 p-6 shadow-xl">
+        <div className="mb-1 text-lg font-semibold text-db-strong">市场研究驾驶舱</div>
+        <div className="mb-5 text-body uppercase tracking-widest text-db-muted">MARKET RESEARCH COCKPIT · 内测版</div>
         <form onSubmit={submit} className="flex flex-col gap-3">
-          <label className="flex flex-col gap-1 text-[12px] text-slate-400">
+          <label className="flex flex-col gap-1 text-panel-title text-db-tertiary">
             邮箱
             <input
               type="email"
@@ -49,10 +49,10 @@ export default function LoginPage({ onAuthed }: Props) {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               autoComplete="email"
-              className="rounded border border-slate-700/60 bg-slate-800/50 px-2.5 py-1.5 text-[13px] text-slate-100 outline-none placeholder:text-slate-600 focus:border-cyan-500/60"
+              className="rounded border border-db-border/60 bg-db-subtle/50 px-2.5 py-1.5 text-subtitle text-db-strong outline-none placeholder:text-db-faint focus:border-cyan-500/60"
             />
           </label>
-          <label className="flex flex-col gap-1 text-[12px] text-slate-400">
+          <label className="flex flex-col gap-1 text-panel-title text-db-tertiary">
             密码
             <input
               type="password"
@@ -60,12 +60,12 @@ export default function LoginPage({ onAuthed }: Props) {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="至少 8 位"
               autoComplete={mode === "login" ? "current-password" : "new-password"}
-              className="rounded border border-slate-700/60 bg-slate-800/50 px-2.5 py-1.5 text-[13px] text-slate-100 outline-none placeholder:text-slate-600 focus:border-cyan-500/60"
+              className="rounded border border-db-border/60 bg-db-subtle/50 px-2.5 py-1.5 text-subtitle text-db-strong outline-none placeholder:text-db-faint focus:border-cyan-500/60"
             />
           </label>
           {mode === "register" && (
-            <label className="flex flex-col gap-1 text-[12px] text-slate-400">
-              邀请码<span className="text-[10px] text-slate-600">（内测名单发放，一次性使用）</span>
+            <label className="flex flex-col gap-1 text-panel-title text-db-tertiary">
+              邀请码<span className="text-meta text-db-faint">（内测名单发放，一次性使用）</span>
               <input
                 type="text"
                 value={inviteCode}
@@ -73,20 +73,20 @@ export default function LoginPage({ onAuthed }: Props) {
                 placeholder="请输入 12 位邀请码"
                 autoComplete="off"
                 spellCheck={false}
-                className="rounded border border-slate-700/60 bg-slate-800/50 px-2.5 py-1.5 text-[13px] text-slate-100 outline-none placeholder:text-slate-600 focus:border-cyan-500/60"
+                className="rounded border border-db-border/60 bg-db-subtle/50 px-2.5 py-1.5 text-subtitle text-db-strong outline-none placeholder:text-db-faint focus:border-cyan-500/60"
               />
             </label>
           )}
-          {error && <div className="rounded border border-rose-500/40 bg-rose-500/10 px-2 py-1.5 text-[12px] text-rose-300">{error}</div>}
+          {error && <div className="rounded border border-rose-500/40 bg-rose-500/10 px-2 py-1.5 text-panel-title text-rose-300">{error}</div>}
           <button
             type="submit"
             disabled={busy}
-            className="mt-1 rounded bg-cyan-600/80 py-2 text-[13px] font-medium text-white hover:bg-cyan-500 disabled:opacity-50"
+            className="mt-1 rounded bg-cyan-600/80 py-2 text-subtitle font-medium text-white hover:bg-cyan-500 disabled:opacity-50"
           >
             {busy ? "请稍候…" : mode === "login" ? "登 录" : "注 册 并 登 录"}
           </button>
         </form>
-        <div className="mt-4 text-center text-[12px] text-slate-500">
+        <div className="mt-4 text-center text-panel-title text-db-muted">
           {mode === "login" ? (
             <>
               还没有账号？{" "}
@@ -99,7 +99,7 @@ export default function LoginPage({ onAuthed }: Props) {
             </>
           )}
         </div>
-        <div className="mt-4 border-t border-slate-700/40 pt-3 text-center text-[10px] leading-relaxed text-slate-600">
+        <div className="mt-4 border-t border-db-border/40 pt-3 text-center text-meta leading-relaxed text-db-faint">
           托管版内测实例 · 仅限内测名单访问
           <br />
           行情数据为公开聚合 · 个性化数据按租户隔离

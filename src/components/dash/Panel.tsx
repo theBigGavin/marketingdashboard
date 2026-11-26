@@ -68,9 +68,9 @@ export function Panel({
       <section
         ref={measureRef}
         style={overlayStyle}
-        className={`flex min-h-0 flex-col rounded-md border bg-[#0c1320]/90 shadow-[0_0_24px_rgba(0,0,0,0.35)] backdrop-blur transition-all duration-300 ${
-          isZoomed ? "border-cyan-500/50 shadow-[0_0_32px_rgba(34,211,238,0.18)]" : "border-slate-700/40"
-        } ${tvOverlay ? "bg-[#0c1320]" : ""} ${className}`}
+        className={`flex min-h-0 flex-col rounded-md border bg-db-panel/90 shadow-[0_0_24px_rgba(0,0,0,0.35)] backdrop-blur transition-all duration-300 ${
+          isZoomed ? "border-cyan-500/50 shadow-[0_0_32px_rgba(34,211,238,0.18)]" : "border-db-border/40"
+        } ${tvOverlay ? "bg-db-panel" : ""} ${className}`}
       {...(isTv && panelId && onToggleZoom
         ? {
             // TV 模式: 面板整体可聚焦, OK 键 = 放大(还原仅通过缩小按钮/返回键)
@@ -121,11 +121,11 @@ export function Panel({
         : {})}
     >
       <ZoomCtx.Provider value={zoom}>
-        <header className="flex h-8 shrink-0 items-center gap-2 border-b border-slate-700/40 px-2.5">
+        <header className="flex h-8 shrink-0 items-center gap-2 border-b border-db-border/40 px-2.5">
           <span className="inline-block h-3.5 w-1 shrink-0 rounded-sm" style={{ background: accent }} />
           {icon && <span className="shrink-0" style={{ color: accent, display: "inline-flex", alignItems: "center" }}>{icon}</span>}
           {/* min-w-0 + truncate: 长标题收缩省略, 不再把右侧控件挤出面板 */}
-          <h2 className="min-w-0 flex-1 truncate text-[12px] font-semibold tracking-wide text-slate-200">{title}</h2>
+          <h2 className="min-w-0 flex-1 truncate text-panel-title font-semibold tracking-wide text-db-primary">{title}</h2>
           <div className="flex shrink-0 items-center gap-2">
             {right}
             {panelId && onToggleZoom && (
@@ -136,7 +136,7 @@ export function Panel({
                 className={`flex h-[22px] w-[22px] items-center justify-center rounded border transition-colors ${
                   isZoomed
                     ? "border-cyan-500/60 bg-cyan-500/10 text-cyan-300"
-                    : "border-slate-700/60 bg-slate-800/40 text-slate-400 hover:border-cyan-500/60 hover:text-cyan-300"
+                    : "border-db-border/60 bg-db-subtle/40 text-db-tertiary hover:border-cyan-500/60 hover:text-cyan-300"
                 }`}
               >
                 {isZoomed ? <ZoomOut size={12} /> : <ZoomIn size={12} />}

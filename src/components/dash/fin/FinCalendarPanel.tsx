@@ -107,11 +107,11 @@ export function FinCalendarPanel({ className = "", ...zoomProps }: { className?:
       accent="#38bdf8"
       right={
         data && (
-          <span className="flex items-center gap-2 text-[10px] text-slate-500" style={TNUM}>
+          <span className="flex items-center gap-2 text-meta text-db-muted" style={TNUM}>
             <span>
               今日 <span className="font-semibold text-amber-400">{view.todayCount}</span> 家 · 峰值 {view.peak} 家
             </span>
-            <span className="flex items-center gap-0.5 text-[9px] text-slate-600">
+            <span className="flex items-center gap-0.5 text-caption text-db-faint">
               <Star size={9} className="text-amber-400" /> 净利TOP300
             </span>
           </span>
@@ -209,12 +209,12 @@ export function FinCalendarPanel({ className = "", ...zoomProps }: { className?:
             </svg>
           </div>
           {/* 双列流式披露清单: 名称 11px / 期 9px / 重磅 ★ amber */}
-          <div className="flex shrink-0 items-center gap-1 border-t border-slate-800/60 px-2 pt-1">
-            <span className="text-[9px] text-amber-400">{activeListLabel}</span>
+          <div className="flex shrink-0 items-center gap-1 border-t border-db-subtle/60 px-2 pt-1">
+            <span className="text-caption text-amber-400">{activeListLabel}</span>
             {selDate && (
               <button
                 onClick={() => setSelDate(null)}
-                className="text-[8px] text-slate-500 hover:text-slate-300"
+                className="text-micro text-db-muted hover:text-db-secondary"
               >
                 × 返回自动
               </button>
@@ -222,7 +222,7 @@ export function FinCalendarPanel({ className = "", ...zoomProps }: { className?:
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto py-0.5">
             {activeList.length === 0 ? (
-              <div className="flex h-full items-center justify-center text-[11px] text-slate-600">
+              <div className="flex h-full items-center justify-center text-body text-db-faint">
                 {selDate ? `${selDate.slice(5).replace("-", "/")} 无披露安排` : "暂无披露安排"}
               </div>
             ) : (
@@ -240,7 +240,7 @@ export function FinCalendarPanel({ className = "", ...zoomProps }: { className?:
                       {
                         // 星标 + 期 第一列(上:重磅★, 下:期)
                         top: view.heavy.has(it.code) ? <Star size={10} className="text-amber-400" /> : <span />,
-                        bottom: <span className="text-[9px] text-slate-500">{quarterLabel(it.period)}</span>,
+                        bottom: <span className="text-caption text-db-muted">{quarterLabel(it.period)}</span>,
                         w: 40,
                       },
                     ]}

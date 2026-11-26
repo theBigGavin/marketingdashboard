@@ -1,0 +1,47 @@
+{
+  "version": "v2",
+  "title": "市场研究驾驶舱 · 研究工作台概念",
+  "size": [
+    1680,
+    828
+  ],
+  "theme": {
+    "colors": {
+      "bg": "#090D12",
+      "rail": "#0B1118",
+      "header": "#0B1118",
+      "surface": "#0E151E",
+      "surface2": "#111B25",
+      "line": "#1D2935",
+      "soft": "#151F29",
+      "text": "#E8EDF3",
+      "sub": "#94A3B4",
+      "muted": "#607185",
+      "blue": "#78A9F8",
+      "blueSoft": "#78A9F814",
+      "blueBorder": "#35587C",
+      "red": "#F1777B",
+      "redSoft": "#F1777B14",
+      "green": "#43B891",
+      "greenSoft": "#43B89112",
+      "amber": "#D2A65D",
+      "track": "#1B2631",
+      "cyan": "#5FB5C7"
+    },
+    "textStyles": {
+      "body": {
+        "fontSize": 11,
+        "color": "$text",
+        "fontFamily": "MiSans"
+      },
+      "caption": {
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans"
+      }
+    }
+  },
+  "pages": [
+    "pages/1_dashboard.page"
+  ]
+}

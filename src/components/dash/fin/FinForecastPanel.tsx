@@ -30,19 +30,19 @@ function Row({ it }: { it: FinForecastItem }) {
       sparkExtra={
         <>
           <span className="flex min-w-0 items-center gap-1">
-            <span className="shrink-0 text-[9px] text-slate-600">净利</span>
-            <span className="truncate text-[11px] text-slate-300" style={TNUM}>{fmtYi(it.profitLow)}~{fmtYi(it.profitHigh)}</span>
+            <span className="shrink-0 text-caption text-db-faint">净利</span>
+            <span className="truncate text-body text-db-secondary" style={TNUM}>{fmtYi(it.profitLow)}~{fmtYi(it.profitHigh)}</span>
           </span>
           <span className="flex min-w-0 items-center gap-1">
-            <span className="shrink-0 text-[9px] text-slate-600">同比</span>
-            <span className={`truncate text-[11px] ${yoyCls}`} style={TNUM}>{fmtPct(it.yoyLow, 1)}~{fmtPct(it.yoyHigh, 1)}</span>
+            <span className="shrink-0 text-caption text-db-faint">同比</span>
+            <span className={`truncate text-body ${yoyCls}`} style={TNUM}>{fmtPct(it.yoyLow, 1)}~{fmtPct(it.yoyHigh, 1)}</span>
           </span>
         </>
       }
       leadingCols={[
         {
           // 日期 + 趋势 pill 同列第一列(上:日期, 下:类型徽标)
-          top: <span className="text-[9px] text-slate-500" style={TNUM}>{it.date.slice(5)}</span>,
+          top: <span className="text-caption text-db-muted" style={TNUM}>{it.date.slice(5)}</span>,
           bottom: (
             <ToneChip tone={tone === "good" ? "rose" : tone === "bad" ? "emerald" : "slate"} dot={it.type === "首亏"}>
               {it.type}
@@ -75,10 +75,10 @@ export function FinForecastPanel({ className = "", ...zoomProps }: { className?:
       right={
         stats &&
         hasItems && (
-          <div className="flex items-center gap-2 text-[10px]" style={TNUM}>
+          <div className="flex items-center gap-2 text-meta" style={TNUM}>
             <span className="text-rose-400">预喜 {stats.good}▲</span>
             <span className="text-emerald-400">预悲 {stats.bad}▼</span>
-            <span className="text-slate-500">未定 {stats.neutral}</span>
+            <span className="text-db-muted">未定 {stats.neutral}</span>
           </div>
         )
       }

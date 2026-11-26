@@ -67,35 +67,35 @@ function TrendChart({ reports, tab, mainopHistory }: { reports: FinanceReport[];
             // 全量兜底期: 无主营段, 只显示财务全量 + 合计净利
             ...(p.fallback
               ? [
-                  <span key="full" className="flex items-center gap-1.5 text-slate-400" style={TNUM}>
+                  <span key="full" className="flex items-center gap-1.5 text-db-tertiary" style={TNUM}>
                     <span className="inline-block h-[6px] w-2 rounded-sm" style={{ background: "repeating-linear-gradient(45deg, #94a3b8 0 1px, #475569 1px 3px)" }} />
-                    全量营收 <b className="text-slate-200">{fmtYi(p.fullRev ?? 0)}</b>
-                    <span className="text-slate-500">全量净利 {fmtYi(p.fullNet ?? 0)}</span>
-                    <i className="not-italic text-[8px] text-slate-500">未披露主营构成</i>
+                    全量营收 <b className="text-db-primary">{fmtYi(p.fullRev ?? 0)}</b>
+                    <span className="text-db-muted">全量净利 {fmtYi(p.fullNet ?? 0)}</span>
+                    <i className="not-italic text-micro text-db-muted">未披露主营构成</i>
                   </span>,
                 ]
               : []),
             ...(p.fallback ? [] : p.segs.map((s, si) => (
-              <span key={s.name} className="flex items-center gap-1.5 text-slate-400" style={TNUM}>
+              <span key={s.name} className="flex items-center gap-1.5 text-db-tertiary" style={TNUM}>
                 <span className="inline-block h-[6px] w-2 rounded-sm" style={{ background: SEG_COLORS[si] }} />
-                {s.name} <b className="text-slate-200">{fmtYi(s.income)}</b>
+                {s.name} <b className="text-db-primary">{fmtYi(s.income)}</b>
                 {p.yoy[si] != null && <i className={`not-italic ${clsChg(p.yoy[si]!)}`}>{fmtPct(p.yoy[si]!)}</i>}
-                <span className="text-slate-500">利 {fmtYi(s.profit)}</span>
+                <span className="text-db-muted">利 {fmtYi(s.profit)}</span>
               </span>
             ))),
             ...(p.fallback ? [] : [
-              <span key="other" className="flex items-center gap-1.5 text-slate-400" style={TNUM}>
+              <span key="other" className="flex items-center gap-1.5 text-db-tertiary" style={TNUM}>
                 <span className="inline-block h-[6px] w-2 rounded-sm" style={{ background: SEG_COLORS[SEG_COLORS.length - 1] }} />
-                其他 <b className="text-slate-200">{fmtYi(p.other.income)}</b>
-                <span className="text-slate-500">利 {fmtYi(p.other.profit)}</span>
+                其他 <b className="text-db-primary">{fmtYi(p.other.income)}</b>
+                <span className="text-db-muted">利 {fmtYi(p.other.profit)}</span>
               </span>,
             ]),
             ...(p.totalNet != null
               ? [
-                  <span key="total" className="flex items-center gap-1.5 text-slate-400" style={TNUM}>
+                  <span key="total" className="flex items-center gap-1.5 text-db-tertiary" style={TNUM}>
                     合计净利
                     <b className={p.totalNet >= 0 ? "text-cyan-400" : "text-rose-400"}>{fmtYi(p.totalNet)}</b>
-                    {p.totalNet < 0 && <i className="not-italic text-[8px] text-slate-500">主营外亏空</i>}
+                    {p.totalNet < 0 && <i className="not-italic text-micro text-db-muted">主营外亏空</i>}
                   </span>,
                 ]
               : []),
@@ -107,14 +107,14 @@ function TrendChart({ reports, tab, mainopHistory }: { reports: FinanceReport[];
           const f = hov;
           return chart.mode === "quality"
             ? [
-                <span key="r" className="text-slate-400" style={TNUM}>ROE <b className="text-slate-200">{f.roe.toFixed(1)}%</b></span>,
-                <span key="g" className="text-slate-400" style={TNUM}>毛利率 <b className="text-slate-200">{f.grossMargin.toFixed(1)}%</b></span>,
-                <span key="n" className="text-slate-400" style={TNUM}>净利率 <b className="text-slate-200">{f.netMargin.toFixed(1)}%</b></span>,
+                <span key="r" className="text-db-tertiary" style={TNUM}>ROE <b className="text-db-primary">{f.roe.toFixed(1)}%</b></span>,
+                <span key="g" className="text-db-tertiary" style={TNUM}>毛利率 <b className="text-db-primary">{f.grossMargin.toFixed(1)}%</b></span>,
+                <span key="n" className="text-db-tertiary" style={TNUM}>净利率 <b className="text-db-primary">{f.netMargin.toFixed(1)}%</b></span>,
               ]
             : [
-                <span key="d" className="text-slate-400" style={TNUM}>资产负债率 <b className="text-slate-200">{f.debtRatio.toFixed(1)}%</b></span>,
-                <span key="r" className="text-slate-400" style={TNUM}>ROIC <b className="text-slate-200">{f.roic.toFixed(1)}%</b></span>,
-                <span key="o" className="text-slate-400" style={TNUM}>每股OCF <b className="text-slate-200">{f.ocfPerShare.toFixed(2)}</b></span>,
+                <span key="d" className="text-db-tertiary" style={TNUM}>资产负债率 <b className="text-db-primary">{f.debtRatio.toFixed(1)}%</b></span>,
+                <span key="r" className="text-db-tertiary" style={TNUM}>ROIC <b className="text-db-primary">{f.roic.toFixed(1)}%</b></span>,
+                <span key="o" className="text-db-tertiary" style={TNUM}>每股OCF <b className="text-db-primary">{f.ocfPerShare.toFixed(2)}</b></span>,
               ];
         })()
     : null;
@@ -122,7 +122,7 @@ function TrendChart({ reports, tab, mainopHistory }: { reports: FinanceReport[];
   return (
     <div className="flex h-full min-h-0 flex-col">
       {/* 图例 */}
-      <div className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-0.5 px-0.5 pb-0.5 text-[9px] text-slate-500">
+      <div className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-0.5 px-0.5 pb-0.5 text-caption text-db-muted">
         {legend.map((l) => (
           <span key={l.label} className="flex items-center gap-1">
             <span className={l.cls} style={l.style} />
@@ -334,8 +334,8 @@ function TrendChart({ reports, tab, mainopHistory }: { reports: FinanceReport[];
       </svg>
       {/* 悬停数值 */}
       {hov && hovLines && (
-        <div className="pointer-events-none absolute left-1/2 top-0 z-10 -translate-x-1/2 rounded border border-slate-700/60 px-2 py-1 text-[9px] leading-4 shadow" style={{ background: TOOLTIP_BG + "F2" }}>
-          <div className="font-semibold text-slate-200">{quarterLabel(hov.date)}</div>
+        <div className="pointer-events-none absolute left-1/2 top-0 z-10 -translate-x-1/2 rounded border border-db-border/60 px-2 py-1 text-caption leading-4 shadow" style={{ background: TOOLTIP_BG + "F2" }}>
+          <div className="font-semibold text-db-primary">{quarterLabel(hov.date)}</div>
           <div className={chart.mode === "perf" ? "flex flex-col gap-0.5" : "flex items-center gap-2"}>{hovLines}</div>
         </div>
       )}
@@ -366,10 +366,10 @@ export function FinTrendPanel({ className = "", ...zoomProps }: { className?: st
         <div className="relative h-full p-3">
           <div className="flex h-full items-end gap-2 opacity-40">
             {[40, 55, 38, 62, 48, 70, 58, 76, 66, 82, 74, 90].map((h, i) => (
-              <div key={i} className="flex-1 rounded-sm bg-slate-700/50" style={{ height: `${h}%` }} />
+              <div key={i} className="flex-1 rounded-sm bg-db-border/50" style={{ height: `${h}%` }} />
             ))}
           </div>
-          <div className="absolute inset-0 flex items-center justify-center text-[11px] text-slate-600">
+          <div className="absolute inset-0 flex items-center justify-center text-body text-db-faint">
             ← 先在左侧选择公司
           </div>
         </div>

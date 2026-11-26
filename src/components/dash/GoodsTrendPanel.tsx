@@ -46,12 +46,12 @@ export function GoodsTrendPanel({ group, title, accent, className = "", ...zoomP
       icon={<TrendingUp size={14} />}
       accent={accent}
       right={
-        <div className="flex items-center gap-1 text-[11px]">
+        <div className="flex items-center gap-1 text-body">
           {RANGES.map((r) => (
             <button
               key={r}
               onClick={() => setRange(r)}
-              className={`rounded px-1.5 py-0.5 ${range === r ? "bg-cyan-500/20 text-cyan-300" : "text-slate-400 hover:text-slate-200"}`}
+              className={`rounded px-1.5 py-0.5 ${range === r ? "bg-cyan-500/20 text-cyan-300" : "text-db-tertiary hover:text-db-primary"}`}
             >
               {r}d
             </button>
@@ -59,7 +59,7 @@ export function GoodsTrendPanel({ group, title, accent, className = "", ...zoomP
         </div>
       }
     >
-      <div className="flex h-full min-h-0 flex-col divide-y divide-slate-800/60 overflow-y-auto p-1">
+      <div className="flex h-full min-h-0 flex-col divide-y divide-db-subtle/60 overflow-y-auto p-1">
         {defs.map((g) => {
           const daily = (dailies?.[g.code] || []).slice(-range);
           const q = quotes?.[g.sina];
@@ -76,7 +76,7 @@ export function GoodsTrendPanel({ group, title, accent, className = "", ...zoomP
             />
           );
         })}
-        {!dailies && <div className="p-4 text-center text-[10px] text-slate-600">日线数据加载中…</div>}
+        {!dailies && <div className="p-4 text-center text-meta text-db-faint">日线数据加载中…</div>}
       </div>
     </Panel>
   );

@@ -32,7 +32,7 @@ export function MoneyFlowPanel({
       right={
         <span className="flex items-center gap-2">
           {sectorFilter && (
-            <span className="flex items-center gap-1 rounded bg-rose-500/15 px-1.5 py-0.5 text-[10px] text-rose-300">
+            <span className="flex items-center gap-1 rounded bg-rose-500/15 px-1.5 py-0.5 text-meta text-rose-300">
               {sectorFilter.name}
               <button
                 type="button"
@@ -44,7 +44,7 @@ export function MoneyFlowPanel({
               </button>
             </span>
           )}
-          <span className="text-[10px] text-slate-500">
+          <span className="text-meta text-db-muted">
             {sectorFilter ? `板块内 ${data?.length ?? 0} 只` : `TOP15 合计`}
             <span className={clsChg(total)}> {fmtYuan(total)}</span>
           </span>
@@ -52,7 +52,7 @@ export function MoneyFlowPanel({
       }
     >
       <div className="h-full overflow-y-auto p-1.5">
-        <div className="flex items-center justify-between px-2 py-1 text-[10px] text-slate-500">
+        <div className="flex items-center justify-between px-2 py-1 text-meta text-db-muted">
           <span>个股 · 主力净额/净占比</span>
           <span>成交额 · 现价</span>
         </div>
@@ -69,12 +69,12 @@ export function MoneyFlowPanel({
           />
         ))}
         {data && data.length === 0 && sectorFilter && (
-          <div className="p-6 text-center text-[11px] text-slate-600">
+          <div className="p-6 text-center text-body text-db-faint">
             该板块暂无成分股主力净流入数据（可能已退市/停牌或无交易）
           </div>
         )}
         {!data && (
-          <div className="p-6 text-center text-[11px] text-slate-600">
+          <div className="p-6 text-center text-body text-db-faint">
             {error ? <span className="text-rose-400/80">资金流数据源连接失败,自动重试中…<br />{error}</span> : "资金流数据加载中…"}
           </div>
         )}

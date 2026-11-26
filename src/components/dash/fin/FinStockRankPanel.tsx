@@ -42,9 +42,9 @@ export function FinStockRankPanel({ className = "", ...zoomProps }: { className?
       icon={<BarChart3 size={14} />}
       accent={SERIES[1]}
       right={
-        <div className="flex items-center gap-2 text-[10px]">
+        <div className="flex items-center gap-2 text-meta">
           <PeriodTabs />
-          <span className="h-3 w-px bg-slate-700" />
+          <span className="h-3 w-px bg-db-border" />
           <TabBar tabs={TABS} active={tab} onChange={setTab} accent="cyan" />
         </div>
       }
@@ -93,34 +93,34 @@ function RankRow({
           tab === "profit" ? (
             <>
               <span className="flex min-w-0 items-center gap-1">
-                <span className="shrink-0 text-[9px] text-slate-600">净利</span>
-                <span className="truncate text-[11px] font-semibold text-slate-200" style={TNUM}>{fmtYi(s.netProfit)}</span>
+                <span className="shrink-0 text-caption text-db-faint">净利</span>
+                <span className="truncate text-body font-semibold text-db-primary" style={TNUM}>{fmtYi(s.netProfit)}</span>
               </span>
               <span className="flex min-w-0 items-center gap-1">
-                <span className="shrink-0 text-[9px] text-slate-600">增速</span>
-                <span className={`truncate text-[11px] font-semibold ${s.profitYoY >= 0 ? "text-rose-400" : "text-emerald-400"}`} style={TNUM}>{fmtPct(s.profitYoY, 1)}</span>
+                <span className="shrink-0 text-caption text-db-faint">增速</span>
+                <span className={`truncate text-body font-semibold ${s.profitYoY >= 0 ? "text-rose-400" : "text-emerald-400"}`} style={TNUM}>{fmtPct(s.profitYoY, 1)}</span>
               </span>
               <span className="flex min-w-0 items-center gap-1">
-                <span className="shrink-0 text-[9px] text-slate-600">ROE</span>
-                <span className="truncate text-[11px] text-slate-400" style={TNUM}>{s.roe.toFixed(1)}%</span>
+                <span className="shrink-0 text-caption text-db-faint">ROE</span>
+                <span className="truncate text-body text-db-tertiary" style={TNUM}>{s.roe.toFixed(1)}%</span>
               </span>
             </>
           ) : (
             <>
               <span className="flex min-w-0 items-center gap-1">
-                <span className="shrink-0 text-[9px] text-slate-600">增速</span>
-                <span className={`truncate text-[11px] font-semibold ${s.profitYoY >= 0 ? "text-rose-400" : "text-emerald-400"}`} style={TNUM}>{fmtPct(s.profitYoY, 1)}</span>
+                <span className="shrink-0 text-caption text-db-faint">增速</span>
+                <span className={`truncate text-body font-semibold ${s.profitYoY >= 0 ? "text-rose-400" : "text-emerald-400"}`} style={TNUM}>{fmtPct(s.profitYoY, 1)}</span>
               </span>
               <span className="flex min-w-0 items-center gap-1">
-                <span className="shrink-0 text-[9px] text-slate-600">净利</span>
-                <span className="truncate text-[11px] text-slate-400" style={TNUM}>{fmtYi(s.netProfit)}</span>
+                <span className="shrink-0 text-caption text-db-faint">净利</span>
+                <span className="truncate text-body text-db-tertiary" style={TNUM}>{fmtYi(s.netProfit)}</span>
               </span>
               {loss ? (
-                <span className={`truncate text-[11px] ${s.profitYoY > 0 ? "text-amber-400" : "text-emerald-400"}`}>{s.profitYoY > 0 ? "扭亏" : "亏损"}</span>
+                <span className={`truncate text-body ${s.profitYoY > 0 ? "text-amber-400" : "text-emerald-400"}`}>{s.profitYoY > 0 ? "扭亏" : "亏损"}</span>
               ) : (
                 <span className="flex min-w-0 items-center gap-1">
-                  <span className="shrink-0 text-[9px] text-slate-600">ROE</span>
-                  <span className="truncate text-[11px] text-slate-400" style={TNUM}>{s.roe.toFixed(1)}%</span>
+                  <span className="shrink-0 text-caption text-db-faint">ROE</span>
+                  <span className="truncate text-body text-db-tertiary" style={TNUM}>{s.roe.toFixed(1)}%</span>
                 </span>
               )}
             </>

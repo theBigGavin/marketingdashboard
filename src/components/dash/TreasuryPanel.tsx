@@ -87,25 +87,25 @@ export function TreasuryPanel({ className = "", ...zoomProps }: { className?: st
 
   return (
     <Panel className={className} {...zoomProps} title="美债国债市场" icon={<Landmark size={14} />} accent="#a78bfa"
-      right={<span className="text-[10px] text-slate-500">CNBC · 60s</span>}>
+      right={<span className="text-meta text-db-muted">CNBC · 60s</span>}>
       <div className="flex h-full flex-col p-2.5">
         {/* 利差指标 */}
         <div className="mb-2 grid grid-cols-3 gap-2">
-          <div className="rounded border border-slate-700/30 bg-slate-800/20 px-2 py-1">
-            <div className="text-[10px] text-slate-500">10Y 收益率</div>
-            <div className="text-[14px] font-semibold text-violet-300" style={{ fontVariantNumeric: "tabular-nums" }}>
+          <div className="rounded border border-db-border/30 bg-db-subtle/20 px-2 py-1">
+            <div className="text-meta text-db-muted">10Y 收益率</div>
+            <div className="text-metric-sm font-semibold text-violet-300" style={{ fontVariantNumeric: "tabular-nums" }}>
               {y10 ? `${y10.yield.toFixed(3)}%` : "——"}
             </div>
           </div>
-          <div className="rounded border border-slate-700/30 bg-slate-800/20 px-2 py-1">
-            <div className="text-[10px] text-slate-500">2s10s 利差</div>
-            <div className={`text-[14px] font-semibold ${spread2s10s != null ? clsChg(spread2s10s) : "text-slate-500"}`} style={{ fontVariantNumeric: "tabular-nums" }}>
+          <div className="rounded border border-db-border/30 bg-db-subtle/20 px-2 py-1">
+            <div className="text-meta text-db-muted">2s10s 利差</div>
+            <div className={`text-metric-sm font-semibold ${spread2s10s != null ? clsChg(spread2s10s) : "text-db-muted"}`} style={{ fontVariantNumeric: "tabular-nums" }}>
               {spread2s10s != null ? `${spread2s10s > 0 ? "+" : ""}${spread2s10s.toFixed(1)}bp` : "——"}
             </div>
           </div>
-          <div className="rounded border border-slate-700/30 bg-slate-800/20 px-2 py-1">
-            <div className="text-[10px] text-slate-500">3M-10Y {spread3m10y != null && spread3m10y < 0 ? "(倒挂)" : ""}</div>
-            <div className={`text-[14px] font-semibold ${spread3m10y != null ? clsChg(spread3m10y) : "text-slate-500"}`} style={{ fontVariantNumeric: "tabular-nums" }}>
+          <div className="rounded border border-db-border/30 bg-db-subtle/20 px-2 py-1">
+            <div className="text-meta text-db-muted">3M-10Y {spread3m10y != null && spread3m10y < 0 ? "(倒挂)" : ""}</div>
+            <div className={`text-metric-sm font-semibold ${spread3m10y != null ? clsChg(spread3m10y) : "text-db-muted"}`} style={{ fontVariantNumeric: "tabular-nums" }}>
               {spread3m10y != null ? `${spread3m10y > 0 ? "+" : ""}${spread3m10y.toFixed(1)}bp` : "——"}
             </div>
           </div>
@@ -113,7 +113,7 @@ export function TreasuryPanel({ className = "", ...zoomProps }: { className?: st
 
         {/* 收益率曲线(叠加历史同期曲线) */}
         {highlights.length > 0 && (
-          <div className="mb-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[8px] leading-none text-slate-500">
+          <div className="mb-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-micro leading-none text-db-muted">
             {highlights.map((m) => (
               <span key={m.date} className="flex items-center gap-1">
                 <i className="inline-block h-[2px] w-2.5 rounded" style={{ background: m.color }} />
@@ -124,7 +124,7 @@ export function TreasuryPanel({ className = "", ...zoomProps }: { className?: st
               <i className="inline-block h-[2px] w-2.5 rounded" style={{ background: "#c4b5fd" }} />
               当前
             </span>
-            <span className="ml-auto text-slate-600">历年{Number(currentMonth)}月曲线 · 财政部存档</span>
+            <span className="ml-auto text-db-faint">历年{Number(currentMonth)}月曲线 · 财政部存档</span>
           </div>
         )}
         <div ref={boxRef} className="min-h-[110px] flex-1">
@@ -163,18 +163,18 @@ export function TreasuryPanel({ className = "", ...zoomProps }: { className?: st
               ))}
             </svg>
           ) : (
-            <div className="flex h-full items-center justify-center text-[11px] text-slate-600">
+            <div className="flex h-full items-center justify-center text-body text-db-faint">
               {error ? <span className="text-rose-400/80">美债数据源连接失败,自动重试中…</span> : "收益率曲线加载中…"}
             </div>
           )}
         </div>
 
         {/* 各期限列表 */}
-        <div className="mt-2 flex shrink-0 flex-wrap content-start gap-x-4 gap-y-1 border-t border-slate-700/30 pt-2">
+        <div className="mt-2 flex shrink-0 flex-wrap content-start gap-x-4 gap-y-1 border-t border-db-border/30 pt-2">
           {rows.map((r) => (
-            <span key={r.symbol} className="text-[10px]" style={{ fontVariantNumeric: "tabular-nums" }}>
-              <span className="text-slate-500">{LABEL[r.symbol]} </span>
-              <span className="text-slate-300">{r.yield.toFixed(3)}</span>
+            <span key={r.symbol} className="text-meta" style={{ fontVariantNumeric: "tabular-nums" }}>
+              <span className="text-db-muted">{LABEL[r.symbol]} </span>
+              <span className="text-db-secondary">{r.yield.toFixed(3)}</span>
               <span className={clsChg(r.change)}> {r.change > 0 ? "+" : ""}{r.change.toFixed(3)}</span>
             </span>
           ))}

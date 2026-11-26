@@ -31,7 +31,8 @@ const TREND_SERIES = [
 ] as const;
 
 function TtsiChart({ points }: { points: SpendIndexResp["points"] }) {
-  const { ref, size } = useElementSize();
+  // 紧凑网格下绘图区可能恰为 60px；禁用默认阈值，避免一直使用 400×260 初始尺寸。
+  const { ref, size } = useElementSize(0);
   const [hover, setHover] = useState<number | null>(null);
   const W = size.w;
   const H = size.h;
@@ -67,7 +68,7 @@ function TtsiChart({ points }: { points: SpendIndexResp["points"] }) {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div ref={ref} className="relative min-h-0 flex-1">
+      <div ref={ref} className="relative min-h-0 flex-1 overflow-hidden">
         <svg width={W} height={H} className="block" onMouseMove={(e) => {
           const z = parseFloat(getComputedStyle(e.currentTarget).getPropertyValue("--tv-zoom") || "1") || 1;
           const i = Math.round((((e.nativeEvent.offsetX / z) - PAD.l) / (W - PAD.l - PAD.r)) * (n - 1));
@@ -100,12 +101,12 @@ function TtsiChart({ points }: { points: SpendIndexResp["points"] }) {
         </svg>
         {hp && hover != null && (
           <div
-            className="pointer-events-none absolute top-1 z-10 rounded border border-slate-700/60 px-2 py-1 text-[9px] leading-4 shadow"
+            className="pointer-events-none absolute top-1 z-10 rounded border border-db-border/60 px-2 py-1 text-caption leading-4 shadow"
             style={{ left: Math.min(x(hover) + 8, W - 130), background: TOOLTIP_BG + "F2" }}
           >
-            <div className="font-semibold text-slate-200">{hp.date}</div>
+            <div className="font-semibold text-db-primary">{hp.date}</div>
             <div style={TNUM}><span className="text-violet-300">加权</span> {fmtUsd(hp.ttsi)}{hp.pct != null && <span className={hp.pct >= 0 ? "text-rose-400" : "text-emerald-400"}> {hp.pct >= 0 ? "+" : ""}{hp.pct}%</span>}</div>
-            <div style={TNUM}><span className="text-[#d95926]">闭源</span> {fmtUsd(hp.closed)} · <span className="text-[#199e70]">开源</span> {fmtUsd(hp.open)}</div>
+            <div style={TNUM}><span className="text-model-closed">闭源</span> {fmtUsd(hp.closed)} · <span className="text-model-open">开源</span> {fmtUsd(hp.open)}</div>
             <div style={TNUM}>点位 {hp.indexPoint ?? "—"} · 溢价 {hp.premium ?? "—"}×</div>
           </div>
         )}
@@ -113,12 +114,12 @@ function TtsiChart({ points }: { points: SpendIndexResp["points"] }) {
       {/* 图例: 三系列固定色相 */}
       <div className="flex flex-wrap items-center gap-3 pt-0.5">
         {TREND_SERIES.map((s) => (
-          <span key={s.key} className="flex items-center gap-1 text-[9px] text-slate-500">
+          <span key={s.key} className="flex items-center gap-1 text-caption text-db-muted">
             <span className="h-[2px] w-3 rounded-full" style={{ background: s.color }} />
             {s.label}
           </span>
         ))}
-        <span className="ml-auto text-[9px] text-slate-600">$/M tokens</span>
+        <span className="ml-auto text-caption text-db-faint">$/M tokens</span>
       </div>
     </div>
   );
@@ -149,7 +150,7 @@ export const TtsiTrendPanel = memo(function TtsiTrendPanel({ className = "", ...
             <button
               key={r.key}
               onClick={() => setRange(r.key)}
-              className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors ${range === r.key ? "bg-violet-500/20 text-violet-300" : "text-slate-500 hover:text-slate-300"}`}
+              className={`rounded px-1.5 py-0.5 text-meta font-medium transition-colors ${range === r.key ? "bg-violet-500/20 text-violet-300" : "text-db-muted hover:text-db-secondary"}`}
             >
               {r.label}
             </button>
@@ -161,15 +162,15 @@ export const TtsiTrendPanel = memo(function TtsiTrendPanel({ className = "", ...
         <AsyncContent loading={loading} error={error} empty={false} onRetry={retry}>
           {si && (
             <div className="flex h-full min-h-0 flex-col gap-1">
-              <div className="flex items-baseline gap-3 px-0.5 text-[10px] text-slate-400">
-                <span>最新 <b className="text-[13px] text-violet-300" style={TNUM}>{fmtUsd(last?.ttsi ?? null)}</b>/M</span>
-                <span>指数点位 <b className="text-slate-200" style={TNUM}>{last?.indexPoint ?? "—"}</b></span>
-                <span>前沿溢价 <b className="text-slate-200" style={TNUM}>{last?.premium ?? "—"}×</b></span>
+              <div className="flex items-baseline gap-3 px-0.5 text-meta text-db-tertiary">
+                <span>最新 <b className="text-subtitle text-violet-300" style={TNUM}>{fmtUsd(last?.ttsi ?? null)}</b>/M</span>
+                <span>指数点位 <b className="text-db-primary" style={TNUM}>{last?.indexPoint ?? "—"}</b></span>
+                <span>前沿溢价 <b className="text-db-primary" style={TNUM}>{last?.premium ?? "—"}×</b></span>
               </div>
               <div className="min-h-0 flex-1">
                 <TtsiChart points={points} />
               </div>
-              <div className="text-[9px] text-slate-600">数据: {si.source} · {si.points.length} 天 · 模型级价格历史自今日积累</div>
+              <div className="text-caption text-db-faint">数据: {si.source} · {si.points.length} 天 · 模型级价格历史自今日积累</div>
             </div>
           )}
         </AsyncContent>
@@ -184,17 +185,17 @@ export const EventPanel = memo(function EventPanel({ className = "", ...zoomProp
   const events = si?.events ?? [];
   return (
     <Panel className={className} {...zoomProps} title="模型降价事件" icon={<Bell size={14} />} accent={SERIES[3]}
-      right={<span className="text-[9px] text-slate-500">{events.length} 条</span>}>
+      right={<span className="text-caption text-db-muted">{events.length} 条</span>}>
       <div className="flex h-full flex-col p-2 pt-1">
         <AsyncContent loading={loading} error={error} empty={false} onRetry={retry}>
           {events.length === 0 ? (
-            <div className="flex h-full items-center justify-center text-[10px] text-slate-600">暂无价格事件</div>
+            <div className="flex h-full items-center justify-center text-meta text-db-faint">暂无价格事件</div>
           ) : (
             <div className="min-h-0 flex-1 space-y-1 overflow-y-auto">
               {events.map((e, i) => (
-                <div key={i} className="flex items-center gap-2 rounded px-1.5 py-1 text-[10px] transition-colors hover:bg-slate-800/40">
-                  <span className="shrink-0 rounded bg-slate-700/50 px-1 py-px text-[9px] text-slate-400" style={TNUM}>{e.date}</span>
-                  <span className="text-slate-300">{e.text}</span>
+                <div key={i} className="flex items-center gap-2 rounded px-1.5 py-1 text-meta transition-colors hover:bg-db-subtle/40">
+                  <span className="shrink-0 rounded bg-db-border/50 px-1 py-px text-caption text-db-tertiary" style={TNUM}>{e.date}</span>
+                  <span className="text-db-secondary">{e.text}</span>
                 </div>
               ))}
             </div>
@@ -223,17 +224,17 @@ function PriceTable({ models }: { models: AaModel[] }) {
   const head = (key: typeof sortKey, label: string) => (
     <th
       onClick={() => { if (sortKey === key) setDir((d) => (d === -1 ? 1 : -1)); else { setSortKey(key); setDir(-1); } }}
-      className={`cursor-pointer select-none px-1 py-1 text-right text-[9px] font-medium ${sortKey === key ? "text-violet-300" : "text-slate-500 hover:text-slate-300"}`}
+      className={`cursor-pointer select-none px-1 py-1 text-right text-caption font-medium ${sortKey === key ? "text-violet-300" : "text-db-muted hover:text-db-secondary"}`}
     >
       {label}{sortKey === key ? (dir === -1 ? " ↓" : " ↑") : ""}
     </th>
   );
   return (
     <div className="min-h-0 flex-1 overflow-y-auto">
-      <table className="w-full text-[10px]">
+      <table className="w-full text-meta">
         <thead className="sticky top-0 z-10" style={{ background: CHART_BG }}>
           <tr>
-            <th className="px-1 py-1 text-left text-[9px] font-medium text-slate-500">模型</th>
+            <th className="px-1 py-1 text-left text-caption font-medium text-db-muted">模型</th>
             {head("intel", "智能")}
             {head("input", "输入$")}
             {head("output", "输出$")}
@@ -242,15 +243,15 @@ function PriceTable({ models }: { models: AaModel[] }) {
         </thead>
         <tbody>
           {rows.map((m) => (
-            <tr key={m.slug} className="border-t border-slate-800/50 hover:bg-slate-800/30">
+            <tr key={m.slug} className="border-t border-db-subtle/50 hover:bg-db-subtle/30">
               <td className="max-w-[150px] px-1 py-[3px]">
-                <div className="truncate text-slate-200">{m.name}</div>
-                <div className="truncate text-[9px] text-slate-500">{m.vendor}</div>
+                <div className="truncate text-db-primary">{m.name}</div>
+                <div className="truncate text-caption text-db-muted">{m.vendor}</div>
               </td>
-              <td className="px-1 text-right text-slate-300" style={TNUM}>{m.intel != null ? m.intel.toFixed(1) : "—"}</td>
-              <td className="px-1 text-right text-slate-400" style={TNUM}>{fmtUsd(m.input)}</td>
-              <td className="px-1 text-right font-semibold text-slate-200" style={TNUM}>{fmtUsd(m.output)}</td>
-              <td className="px-1 text-right text-slate-400" style={TNUM}>{fmtUsd(m.taskCost)}</td>
+              <td className="px-1 text-right text-db-secondary" style={TNUM}>{m.intel != null ? m.intel.toFixed(1) : "—"}</td>
+              <td className="px-1 text-right text-db-tertiary" style={TNUM}>{fmtUsd(m.input)}</td>
+              <td className="px-1 text-right font-semibold text-db-primary" style={TNUM}>{fmtUsd(m.output)}</td>
+              <td className="px-1 text-right text-db-tertiary" style={TNUM}>{fmtUsd(m.taskCost)}</td>
             </tr>
           ))}
         </tbody>
@@ -263,12 +264,12 @@ export const ModelPricePanel = memo(function ModelPricePanel({ className = "", .
   const { data: aa, loading, error, retry } = useRetryPolling(() => api.aaModels(), POLL.AA_MODELS);
   return (
     <Panel className={className} {...zoomProps} title="大模型价格表" icon={<Table2 size={14} />} accent={SERIES[2]}
-      right={<span className="text-[9px] text-slate-500">{aa ? aa.models.filter((m) => m.output != null || m.input != null).length : "—"} 个</span>}>
+      right={<span className="text-caption text-db-muted">{aa ? aa.models.filter((m) => m.output != null || m.input != null).length : "—"} 个</span>}>
       <div className="flex h-full flex-col p-2 pt-1">
         <AsyncContent loading={loading} error={error} empty={false} onRetry={retry}>
           {aa && <PriceTable models={aa.models} />}
         </AsyncContent>
-        <div className="pt-1 text-right text-[9px] text-slate-600">{aa?.source ?? ""}</div>
+        <div className="pt-1 text-right text-caption text-db-faint">{aa?.source ?? ""}</div>
       </div>
     </Panel>
   );
@@ -286,9 +287,9 @@ function ValueScatter({ models, vendors }: { models: AaModel[]; vendors: string[
   if (W < 120) return <div ref={ref} className="h-full w-full" />;
   if (pts.length === 0)
     return (
-      <div ref={ref} className="flex h-full w-full flex-col items-center justify-center gap-1 text-slate-500">
-        <div className="text-[11px]">智能指数数据暂不可用</div>
-        <div className="text-[9px]">AA API 上游限流, 恢复后自动显示</div>
+      <div ref={ref} className="flex h-full w-full flex-col items-center justify-center gap-1 text-db-muted">
+        <div className="text-body">智能指数数据暂不可用</div>
+        <div className="text-caption">AA API 上游限流, 恢复后自动显示</div>
       </div>
     );
 
@@ -341,21 +342,21 @@ function ValueScatter({ models, vendors }: { models: AaModel[]; vendors: string[
           ))}
         </svg>
         {hover && (
-          <div className="pointer-events-none absolute left-2 top-1 z-10 rounded border border-slate-700/60 px-2 py-1 text-[9px] leading-4 shadow" style={{ background: TOOLTIP_BG + "F2" }}>
-            <div className="font-semibold text-slate-200">{hover.name}</div>
-            <div className="text-slate-500">{hover.vendor}</div>
+          <div className="pointer-events-none absolute left-2 top-1 z-10 rounded border border-db-border/60 px-2 py-1 text-caption leading-4 shadow" style={{ background: TOOLTIP_BG + "F2" }}>
+            <div className="font-semibold text-db-primary">{hover.name}</div>
+            <div className="text-db-muted">{hover.vendor}</div>
             <div style={TNUM}>智能 {hover.intel?.toFixed(1)} · 任务成本 <b style={{ color: colorOf(hover) }}>{fmtUsd(hover.taskCost)}</b></div>
           </div>
         )}
       </div>
       <div className="flex flex-wrap gap-x-2.5 gap-y-0.5 pt-1">
         {vendors.map((v, i) => (
-          <span key={v} className="flex items-center gap-1 text-[9px] text-slate-500">
+          <span key={v} className="flex items-center gap-1 text-caption text-db-muted">
             <span className="h-2 w-2 rounded-full" style={{ background: VENDOR_COLORS[i] }} />
             {v}
           </span>
         ))}
-        <span className="flex items-center gap-1 text-[9px] text-slate-500">
+        <span className="flex items-center gap-1 text-caption text-db-muted">
           <span className="h-2 w-2 rounded-full" style={{ background: CROSSHAIR }} />其他
         </span>
       </div>
@@ -368,12 +369,12 @@ export const ValueScatterPanel = memo(function ValueScatterPanel({ className = "
   const vendors = useMemo(() => vendorsOf(aa), [aa]);
   return (
     <Panel className={className} {...zoomProps} title="智能 × 任务成本" icon={<Gauge size={14} />} accent={SERIES[6]}
-      right={<span className="text-[9px] text-slate-500">{aa ? aa.models.filter((m) => m.intel != null && m.taskCost != null).length : "—"} 个</span>}>
+      right={<span className="text-caption text-db-muted">{aa ? aa.models.filter((m) => m.intel != null && m.taskCost != null).length : "—"} 个</span>}>
       <div className="flex h-full flex-col p-2 pt-1">
         <AsyncContent loading={loading} error={error} empty={false} onRetry={retry}>
           {aa && <ValueScatter models={aa.models} vendors={vendors} />}
         </AsyncContent>
-        <div className="pt-1 text-right text-[9px] text-slate-600">{aa?.source ?? ""}</div>
+        <div className="pt-1 text-right text-caption text-db-faint">{aa?.source ?? ""}</div>
       </div>
     </Panel>
   );

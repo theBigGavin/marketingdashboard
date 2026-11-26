@@ -33,11 +33,11 @@ export function IndexPanel({ className = "", ...zoomProps }: { className?: strin
 
   return (
     <Panel className={className} {...zoomProps} title="全球关键指数" icon={<Globe size={14} />} accent="#38bdf8"
-      right={<span className="text-[10px] text-slate-500">5s</span>}>
+      right={<span className="text-meta text-db-muted">5s</span>}>
       <div className="flex h-full flex-col justify-between overflow-y-auto p-1">
         {groups.map((g) => (
           <div key={g.name}>
-            <div className="px-1 pb-0.5 pt-1 text-[9px] font-medium uppercase tracking-widest text-slate-500">{g.name}</div>
+            <div className="px-1 pb-0.5 pt-1 text-caption font-medium uppercase tracking-widest text-db-muted">{g.name}</div>
             {g.defs.map((d) => {
               const m = minutes?.[d.code];
               const q = quotes?.[d.code];

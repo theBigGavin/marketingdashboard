@@ -102,7 +102,7 @@ export default function GoodsDashboard() {
   const { isFullscreen, toggle } = useFullscreen();
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#070b12] text-slate-200 lg:h-screen lg:overflow-hidden">
+    <div className="flex min-h-screen flex-col bg-db-canvas text-db-primary lg:h-screen lg:overflow-hidden">
       <DashboardHeader
         title="商品价格"
         subtitle="COMMODITY PRICES"

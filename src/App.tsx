@@ -63,7 +63,7 @@ function Tape() {
     return list;
   }, [quotes, futures, treasuries]);
 
-  if (items.length === 0) return <div className="h-7 border-b border-slate-700/40 bg-[#0a101c]" />;
+  if (items.length === 0) return <div className="h-7 border-b border-db-border/40 bg-db-ticker" />;
   return <TickerTape items={items} />;
 }
 
@@ -110,7 +110,7 @@ function Dashboard() {
   }, [hosting]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#070b12] text-slate-200 lg:h-screen lg:overflow-hidden">
+    <div className="flex min-h-screen flex-col bg-db-canvas text-db-primary lg:h-screen lg:overflow-hidden">
       <DashboardHeader
         title="市场研究驾驶舱"
         subtitle="MARKET RESEARCH COCKPIT"
@@ -150,7 +150,7 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-[#070b12] text-slate-500">页面加载中…</div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-db-canvas text-db-muted">页面加载中…</div>}>
       <HostingGate>
         <AppRoutes />
       </HostingGate>
@@ -184,7 +184,7 @@ function HostingGate({ children }: { children: React.ReactNode }) {
     if (hosting) document.getElementById("mrd-foot")?.remove();
   }, [hosting]);
   if (state === "checking") {
-    return <div className="flex min-h-screen items-center justify-center bg-[#070b12] text-slate-500">加载中…</div>;
+    return <div className="flex min-h-screen items-center justify-center bg-db-canvas text-db-muted">加载中…</div>;
   }
   if (state === "login") {
     return <LoginPage onAuthed={() => setState("open")} />;

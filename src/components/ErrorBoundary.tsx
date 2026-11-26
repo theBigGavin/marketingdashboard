@@ -23,11 +23,11 @@ export class ErrorBoundary extends Component<Props, State> {
     const { error } = this.state;
     if (error) {
       return (
-        <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#070b12] text-slate-400">
-          <div className="text-[13px]">页面渲染异常：{error.message}</div>
+        <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-db-canvas text-db-tertiary">
+          <div className="text-subtitle">页面渲染异常：{error.message}</div>
           <button
             onClick={() => window.location.reload()}
-            className="rounded border border-slate-700 px-3 py-1 text-[12px] transition hover:border-cyan-500/50 hover:text-cyan-300"
+            className="rounded border border-db-border px-3 py-1 text-panel-title transition hover:border-cyan-500/50 hover:text-cyan-300"
           >
             重新加载
           </button>

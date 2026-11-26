@@ -97,7 +97,7 @@ export function FinPeerPanel({ className = "", ...zoomProps }: { className?: str
       }
     >
       {!company.code ? (
-        <div className="flex h-full items-center justify-center text-[11px] text-slate-600">
+        <div className="flex h-full items-center justify-center text-body text-db-faint">
           ← 从榜单选入公司
         </div>
       ) : (
@@ -105,21 +105,21 @@ export function FinPeerPanel({ className = "", ...zoomProps }: { className?: str
           {peerData && finData && (mode === "table" ? (
         <div className="flex h-full min-h-0 flex-col">
           {/* 行业头部 */}
-          <div className="flex shrink-0 items-center gap-2 border-b border-slate-800/60 px-2 py-1">
-            <span className="text-[11px] font-semibold text-violet-300">{peerData.industry}</span>
-            <span className="text-[9px] text-slate-500">
+          <div className="flex shrink-0 items-center gap-2 border-b border-db-subtle/60 px-2 py-1">
+            <span className="text-body font-semibold text-violet-300">{peerData.industry}</span>
+            <span className="text-caption text-db-muted">
               共 {peerData.count} 家
               {peerData.inBoard && !peerData.usePrev && peerData.count > 0 ? " · 排名第" : ""}
             </span>
             {!peerData.inBoard && (
-              <span className="text-[8px] text-amber-400/70">(未入榜,仅对比均值)</span>
+              <span className="text-micro text-amber-400/70">(未入榜,仅对比均值)</span>
             )}
             {peerData.usePrev && (
-              <span className="text-[8px] text-amber-400/70">(当期样本不足,引用上期全市场数据)</span>
+              <span className="text-micro text-amber-400/70">(当期样本不足,引用上期全市场数据)</span>
             )}
           </div>
           {/* 表头 */}
-          <div className="flex shrink-0 items-center gap-2 border-b border-slate-800/60 px-2 py-0.5 text-[9px] text-slate-500">
+          <div className="flex shrink-0 items-center gap-2 border-b border-db-subtle/60 px-2 py-0.5 text-caption text-db-muted">
             <span className="w-[48px] shrink-0">指标</span>
             <span className="min-w-0 flex-1 text-right">{finData.name.length > 6 ? finData.name.slice(0, 6) : finData.name}</span>
             <span className="w-[52px] shrink-0 text-right">行业均值</span>
@@ -130,16 +130,16 @@ export function FinPeerPanel({ className = "", ...zoomProps }: { className?: str
             {peerData.metrics.map((m, i) => {
               const f = formatMetric(m, peerData.count);
               return (
-                <div key={m.label} className="flex flex-col border-b border-slate-800/60 px-2 py-1 hover:bg-slate-800/40">
+                <div key={m.label} className="flex flex-col border-b border-db-subtle/60 px-2 py-1 hover:bg-db-subtle/40">
                   <div className="flex items-center gap-2">
-                    <span className="w-[48px] shrink-0 text-[10px] text-slate-400">{m.label}</span>
-                    <span className={`min-w-0 flex-1 text-right text-[11px] font-semibold ${f.colorCls ?? "text-slate-200"}`} style={TNUM}>
+                    <span className="w-[48px] shrink-0 text-meta text-db-tertiary">{m.label}</span>
+                    <span className={`min-w-0 flex-1 text-right text-body font-semibold ${f.colorCls ?? "text-db-primary"}`} style={TNUM}>
                       {f.companyStr}
                     </span>
-                    <span className="w-[52px] shrink-0 text-right text-[10px] text-slate-500" style={TNUM}>
+                    <span className="w-[52px] shrink-0 text-right text-meta text-db-muted" style={TNUM}>
                       {f.peerStr}
                     </span>
-                    <span className="w-[36px] shrink-0 text-right text-[9px] text-slate-400" style={TNUM}>
+                    <span className="w-[36px] shrink-0 text-right text-caption text-db-tertiary" style={TNUM}>
                       {f.rankStr}
                     </span>
                   </div>
@@ -168,7 +168,7 @@ function RadarChart({ axes, companyName }: { axes: { label: string; company: num
   const n = axes.length;
   const { ref: boxRef, size } = useElementSize();
 
-  if (n < 3) return <div className="flex h-full items-center justify-center text-[11px] text-slate-600">需要至少 3 项指标</div>;
+  if (n < 3) return <div className="flex h-full items-center justify-center text-body text-db-faint">需要至少 3 项指标</div>;
 
   const { w: W, h: H } = size;
   const padding = 28;
@@ -247,16 +247,16 @@ function RadarChart({ axes, companyName }: { axes: { label: string; company: num
           );
         })}
       </svg>
-      <div className="flex shrink-0 items-center gap-4 text-[10px]" style={{ height: legendH }}>
+      <div className="flex shrink-0 items-center gap-4 text-meta" style={{ height: legendH }}>
         <span className="flex items-center gap-1">
           <span className="inline-block h-2 w-3 rounded-sm bg-violet-400/40" />
-          <span className="text-slate-400">
+          <span className="text-db-tertiary">
             {companyName.length > 6 ? companyName.slice(0, 6) : companyName}
           </span>
         </span>
         <span className="flex items-center gap-1">
           <span className="inline-block h-2 w-3 rounded-sm border border-amber-400/50 bg-amber-400/10" />
-          <span className="text-slate-500">行业均值</span>
+          <span className="text-db-muted">行业均值</span>
         </span>
       </div>
     </div>

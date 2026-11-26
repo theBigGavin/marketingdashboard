@@ -30,7 +30,7 @@ export function TabBar<T extends string | number>({
     emerald: "bg-emerald-500/20 text-emerald-300",
     rose: "bg-rose-500/20 text-rose-300",
   };
-  const baseCls = size === "xs" ? "text-[10px] px-1.5 py-0.5" : "text-[11px] px-2 py-0.5";
+  const baseCls = size === "xs" ? "text-meta px-1.5 py-0.5" : "text-body px-2 py-0.5";
 
   return (
     <div className="flex items-center gap-1">
@@ -38,7 +38,7 @@ export function TabBar<T extends string | number>({
         <button
           key={t.key}
           onClick={() => onChange(t.key)}
-          className={`rounded ${baseCls} transition-colors ${active === t.key ? ACTIVE_CLS[accent] : "text-slate-400 hover:text-slate-200"}`}
+          className={`rounded ${baseCls} transition-colors ${active === t.key ? ACTIVE_CLS[accent] : "text-db-tertiary hover:text-db-primary"}`}
         >
           {t.label}
         </button>
@@ -69,17 +69,17 @@ export function AsyncContent({
     return (
       <div className="flex h-full flex-col gap-[6px] p-2">
         {Array.from({ length: skeletonRows }, (_, i) => (
-          <div key={i} className="h-3 shrink-0 rounded bg-slate-800/40" style={{ width: `${88 - (i % 3) * 12}%` }} />
+          <div key={i} className="h-3 shrink-0 rounded bg-db-subtle/40" style={{ width: `${88 - (i % 3) * 12}%` }} />
         ))}
-        <div className="mt-auto pt-1 text-center text-[11px] text-slate-600">数据加载中…</div>
+        <div className="mt-auto pt-1 text-center text-body text-db-faint">数据加载中…</div>
       </div>
     );
   }
 
   if (error && !loading) {
     return (
-      <div className="flex h-full items-center justify-center text-[11px]">
-        <button className="h-full w-full text-slate-500 transition-colors hover:text-slate-300" onClick={onRetry}>
+      <div className="flex h-full items-center justify-center text-body">
+        <button className="h-full w-full text-db-muted transition-colors hover:text-db-secondary" onClick={onRetry}>
           数据获取失败，点击重试{error ? `(${error})` : ""}
         </button>
       </div>
@@ -88,7 +88,7 @@ export function AsyncContent({
 
   if (empty) {
     return (
-      <div className="flex h-full items-center justify-center text-[11px] text-slate-600">
+      <div className="flex h-full items-center justify-center text-body text-db-faint">
         {emptyMessage || "暂无数据"}
       </div>
     );
@@ -104,7 +104,7 @@ const TONE_MAP: Record<string, string> = {
   emerald: "border-emerald-400/60 bg-emerald-400/10 text-emerald-300",
   cyan: "border-cyan-400/60 bg-cyan-400/10 text-cyan-300",
   amber: "border-amber-400/60 bg-amber-400/10 text-amber-300",
-  slate: "border-slate-500/60 bg-slate-500/10 text-slate-400",
+  slate: "border-slate-500/60 bg-slate-500/10 text-db-tertiary",
 };
 
 /** 彩色边框徽标: 预喜/预悲/未定/宏观/政策 等 */
@@ -112,7 +112,7 @@ export function ToneChip({ tone, children, dot }: {
   tone: keyof typeof TONE_MAP; children: ReactNode; dot?: boolean;
 }) {
   return (
-    <span className={`flex shrink-0 items-center justify-center gap-0.5 rounded border px-0.5 text-[9px] leading-[12px] ${TONE_MAP[tone]}`}>
+    <span className={`flex shrink-0 items-center justify-center gap-0.5 rounded border px-0.5 text-caption leading-[12px] ${TONE_MAP[tone]}`}>
       {dot && <span className="inline-block h-[3px] w-[3px] rounded-full bg-amber-400" />}
       {children}
     </span>

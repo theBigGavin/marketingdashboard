@@ -46,7 +46,7 @@ function QuotaBar() {
   }, [hosting]);
   if (!hosting || !quota) return null;
   return (
-    <div className="flex items-center justify-between border-b border-slate-700/40 bg-[#0a101c] px-4 py-1.5 text-xs text-slate-400">
+    <div className="flex items-center justify-between border-b border-db-border/40 bg-db-ticker px-4 py-1.5 text-xs text-db-tertiary">
       <span>本租户 AI 额度：今日 {quota.limit} 次 · 已用 {quota.used}</span>
     </div>
   );
@@ -56,7 +56,7 @@ export default function AiDashboard() {
   const { isFullscreen, toggle } = useFullscreen();
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#070b12] text-slate-200 lg:h-screen lg:overflow-hidden">
+    <div className="flex min-h-screen flex-col bg-db-canvas text-db-primary lg:h-screen lg:overflow-hidden">
       <DashboardHeader
         title="人工智能行业观察"
         subtitle="AI INDUSTRY WATCH"

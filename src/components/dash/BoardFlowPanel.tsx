@@ -83,13 +83,13 @@ export function BoardFlowPanel({
           {stale && (
             <span
               title={`上游数据源不可达, 服务端返回上次成功数据${staleAt ? `(快照 ${staleAt})` : ""}`}
-              className="rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] text-amber-300"
+              className="rounded bg-amber-500/15 px-1.5 py-0.5 text-meta text-amber-300"
             >
               旧数据{staleAt ? ` ${staleAt}` : ""}
             </span>
           )}
           {!isTv && (
-            <span className="font-mono text-[10px] text-slate-500" style={{ fontVariantNumeric: "tabular-nums" }}>
+            <span className="font-mono text-meta text-db-muted" style={{ fontVariantNumeric: "tabular-nums" }}>
               {countdown}s
             </span>
           )}
@@ -97,7 +97,7 @@ export function BoardFlowPanel({
             type="button"
             onClick={() => setLabelMode((m) => (m === "end" ? "legend" : "end"))}
             title={labelMode === "end" ? "切换为图例" : "切换为端点标签"}
-            className="rounded px-1.5 py-0.5 text-[10px] text-slate-400 transition hover:bg-slate-800 hover:text-slate-200"
+            className="rounded px-1.5 py-0.5 text-meta text-db-tertiary transition hover:bg-db-subtle hover:text-db-primary"
           >
             {labelMode === "end" ? "图例" : "标签"}
           </button>
@@ -111,7 +111,7 @@ export function BoardFlowPanel({
                 setPlaying((p) => !p);
               }
             }}
-            className="rounded px-1.5 py-0.5 text-[10px] text-slate-400 transition hover:bg-slate-800 hover:text-slate-200"
+            className="rounded px-1.5 py-0.5 text-meta text-db-tertiary transition hover:bg-db-subtle hover:text-db-primary"
           >
             {label}
           </button>
@@ -122,16 +122,16 @@ export function BoardFlowPanel({
         {flows ? (
           <div className="flex h-full min-h-0 flex-col">
             {/* 口径行: 写清"行业"是哪个口径/层级 + 排序口径, 避免跨源跨层级混读 */}
-            <div className="flex shrink-0 items-center gap-1 px-1 py-0.5 text-[10px] text-slate-500" title={scope.note}>
+            <div className="flex shrink-0 items-center gap-1 px-1 py-0.5 text-meta text-db-muted" title={scope.note}>
               <span>口径</span>
-              <span className="text-slate-300">{scope.label}</span>
-              <span className="text-slate-700">·</span>
+              <span className="text-db-secondary">{scope.label}</span>
+              <span className="text-db-border">·</span>
               <span>{scope.singleLevel ? "单一口径(不分层)" : "多层级混排"}</span>
-              <span className="text-slate-700">·</span>
+              <span className="text-db-border">·</span>
               <span className="truncate">{FLOW_RANK_NOTE}</span>
             </div>
             {noCurve && (
-              <div className="shrink-0 px-1 py-0.5 text-[10px] text-amber-300/80">
+              <div className="shrink-0 px-1 py-0.5 text-meta text-amber-300/80">
                 上游板块分时曲线不可用(替代源仅提供板块主力净额) — 选中板块仍可查看成分股资金流
               </div>
             )}
@@ -140,7 +140,7 @@ export function BoardFlowPanel({
             </div>
           </div>
         ) : (
-          <div className="flex h-full items-center justify-center text-[11px] text-slate-600">
+          <div className="flex h-full items-center justify-center text-body text-db-faint">
             {error ? <span className="text-rose-400/80">板块资金流连接失败,自动重试中…</span> : "板块资金流加载中…"}
           </div>
         )}

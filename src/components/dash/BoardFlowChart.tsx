@@ -187,12 +187,12 @@ export function BoardFlowChart({ flows, progress = 1, labelMode = "end", selecte
               {chart.lines.map((l) => (
                 <span
                   key={l.s.code}
-                  className="flex cursor-pointer items-center gap-1 text-[9px] leading-none"
+                  className="flex cursor-pointer items-center gap-1 text-caption leading-none"
                   style={{ opacity: sel == null || sel === l.s.code ? 1 : 0.3 }}
                   onClick={() => toggle(l.s.code, l.s.name)}
                 >
                   <span className="h-[5px] w-[10px] shrink-0 rounded-sm" style={{ background: l.color }} />
-                  <span className="shrink-0 text-slate-400">{l.s.name}</span>
+                  <span className="shrink-0 text-db-tertiary">{l.s.name}</span>
                   <span className="font-semibold" style={{ color: l.color, fontVariantNumeric: "tabular-nums" }}>
                     {l.lastV >= 0 ? "+" : ""}{(l.lastV / 1e8).toFixed(0)}
                   </span>
@@ -202,7 +202,7 @@ export function BoardFlowChart({ flows, progress = 1, labelMode = "end", selecte
           )}
         </>
       ) : (
-        <div className="flex h-full items-center justify-center text-[11px] text-slate-600">板块资金流加载中…</div>
+        <div className="flex h-full items-center justify-center text-body text-db-faint">板块资金流加载中…</div>
       )}
     </div>
   );

@@ -130,9 +130,9 @@ export function FinIndustryPanel({ className = "", ...zoomProps }: { className?:
       accent={SERIES[3]}
       right={
         !empty && (
-          <div className="flex items-center gap-2 text-[10px]">
+          <div className="flex items-center gap-2 text-meta">
             <PeriodTabs />
-            <span className="h-3 w-px bg-slate-700" />
+            <span className="h-3 w-px bg-db-border" />
             <TabBar
               tabs={[{ key: "bar" as const, label: "条形" }, { key: "tree" as const, label: "树状" }]}
               active={mode}
@@ -141,7 +141,7 @@ export function FinIndustryPanel({ className = "", ...zoomProps }: { className?:
               size="xs"
             />
             {data?.disclosed != null && (
-              <span className="text-[9px] text-slate-500" style={TNUM}>
+              <span className="text-caption text-db-muted" style={TNUM}>
                 已披露{data.disclosed}家
               </span>
             )}

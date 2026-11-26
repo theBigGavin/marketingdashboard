@@ -57,15 +57,15 @@ export function BasisPanel({ className = "", ...zoomProps }: { className?: strin
       title="现期对照 · 基差"
       icon={<Table size={14} />}
       accent="#38bdf8"
-      right={<span className="text-[10px] text-slate-500">{data ? `${data.rows.length} 品种` : ""}</span>}
+      right={<span className="text-meta text-db-muted">{data ? `${data.rows.length} 品种` : ""}</span>}
     >
       <div className="h-full min-h-0 overflow-y-auto p-1">
-        <div className="grid grid-cols-[72px_minmax(0,1fr)_110px_110px] gap-1 px-2 py-1 text-[10px] text-slate-500">
+        <div className="grid grid-cols-[72px_minmax(0,1fr)_110px_110px] gap-1 px-2 py-1 text-meta text-db-muted">
           {COLS.map((c, i) => (
             <button
               key={c.label}
               onClick={() => clickSort(i)}
-              className={`text-left hover:text-slate-300 ${colIdx === i ? "text-cyan-300" : ""} ${i > 0 ? "col-start-" + (i + 2) : ""}`}
+              className={`text-left hover:text-db-secondary ${colIdx === i ? "text-cyan-300" : ""} ${i > 0 ? "col-start-" + (i + 2) : ""}`}
             >
               {c.label}
               {colIdx === i ? (keyIdx > 0 ? `·${c.keys[keyIdx] === "futures" ? "期货" : c.keys[keyIdx] === "basisPct" ? "基差率" : ""} ` : " ") + (sortDir === 1 ? "↑" : "↓") : ""}
@@ -86,7 +86,7 @@ export function BasisPanel({ className = "", ...zoomProps }: { className?: strin
             />
           );
         })}
-        {!data && <div className="p-4 text-center text-[10px] text-slate-600">现期数据加载中…</div>}
+        {!data && <div className="p-4 text-center text-meta text-db-faint">现期数据加载中…</div>}
       </div>
     </Panel>
   );
