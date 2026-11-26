@@ -7,10 +7,13 @@ export const SERIES = ["#22d3ee", "#fb7185", "#38bdf8", "#34d399", "#fbbf24", "#
 // 主营构成堆叠段色(深色 CVD 验证: 蓝/橙/青/黄/品红 + 其他灰)
 export const SEG_COLORS = ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#64748b"] as const;
 
-// 涨/跌/平
-export const UP = "#fb7185";
-export const DOWN = "#34d399";
-export const FLAT = "#94a3b8";
+// 涨/跌/平：与 Tailwind change-* 类共用 index.css 中的语义 token。
+export const UP = "rgb(var(--change-up))";
+export const DOWN = "rgb(var(--change-down))";
+export const FLAT = "rgb(var(--change-flat))";
+export const UP_SOFT = "rgb(var(--change-up-soft))";
+export const DOWN_SOFT = "rgb(var(--change-down-soft))";
+export const FLAT_SOFT = "rgb(var(--change-flat-soft))";
 
 // 背景(任意值背景统一)
 export const CHART_BG = "#0b1120";
