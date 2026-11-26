@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { DashboardHeader } from "@/components/dash/DashboardHeader";
 import {
   DashboardLayout,
@@ -8,7 +8,7 @@ import { Panel, type PanelZoomProps } from "@/components/dash/Panel";
 import { usePolling } from "@/hooks/usePolling";
 import { useElementSize } from "@/hooks/useElementSize";
 import { useFullscreen } from "@/hooks/useFullscreen";
-import { api } from "@/lib/api";
+import { api, type GoldResp } from "@/lib/api";
 import { TNUM, clsChg, bgChg, fmtPct } from "@/lib/format";
 import { POLL } from "@/lib/intervals";
 import {
@@ -17,23 +17,51 @@ import {
 const GOLD = "#f5c542";
 const GOLD_DIM = "#b45309";
 
-/** 空态提示(用户硬要求: 诚实空态, 绝不伪造曲线/硬编码死值) */
-function GoldEmpty({ what }: { what: string }) {
+/** 页面级共享黄金聚合查询：7 个面板消费同一份数据，不再各自轮询 /api/gold。 */
+const GoldSummaryCtx = createContext<{ data: GoldResp | null; error: string | null }>({ data: null, error: null });
+function useGoldSummary() {
+  return useContext(GoldSummaryCtx);
+}
+
+const GOLD_REASONS: Record<string, string> = {
+  DATA_DIR_NOT_FOUND: "本地目录不存在，且在线回退暂不可用",
+  DATA_DIR_UNREADABLE: "本地目录无法读取，且在线回退暂不可用",
+  DATA_FILE_NOT_FOUND: "本地尚未生成数据文件，且在线回退暂不可用",
+  DATA_FILE_INVALID: "本地最新数据文件无法解析，且在线回退暂不可用",
+  DB_NOT_FOUND: "本地央行数据库不存在，且在线储备回退暂不可用",
+  DB_UNAVAILABLE: "本地央行数据库无法读取，且在线储备回退暂不可用",
+  HISTORY_WINDOW_EMPTY: "所选时间窗口内没有历史数据点",
+  HISTORY_INSUFFICIENT_POINTS: "所选时间窗口内历史数据点不足",
+  UPSTREAM_STALE: "上游正在提供最近可用快照，并非实时更新",
+  ONLINE_UNAVAILABLE: "在线数据源故障，当前展示最近成功快照",
+  ONLINE_HISTORY_UNAVAILABLE: "在线历史源故障，当前展示最近成功快照",
+  ONLINE_SNAPSHOT_PARTIAL: "部分字段来自最近成功快照",
+  ONLINE_SPOT_UNAVAILABLE: "在线金价源暂不可用",
+  ONLINE_TREASURY_UNAVAILABLE: "美国财政部收益率源暂不可用",
+  ONLINE_FRED_UNAVAILABLE: "FRED 宏观数据源暂不可用",
+  ONLINE_NEWS_UNAVAILABLE: "新闻 RSS 源暂不可用",
+};
+
+/** 空态必须区分传输失败、来源缺失与真实空窗口，绝不伪造曲线/硬编码死值。 */
+function GoldEmpty({ what, reason, error }: { what: string; reason?: string | null; error?: string | null }) {
+  const detail = error
+    ? "黄金接口请求失败"
+    : reason
+      ? GOLD_REASONS[reason] || "黄金数据源暂不可用"
+      : "本地资产与在线回退均未返回数据";
   return (
-    <div className="flex h-full min-h-[80px] items-center justify-center px-3 text-center text-[11px] leading-relaxed text-slate-600">
-      <span>
-        {what}数据暂不可用，gold-monitor 管道未落盘，恢复后自动显示
-      </span>
+    <div className="flex h-full min-h-[80px] items-center justify-center px-3 text-center text-body leading-relaxed text-db-faint">
+      <span>{what}数据暂不可用，{detail}，恢复后自动显示</span>
     </div>
   );
 }
 
-/** 时间戳角标(数据诚实性: 标注数据来自管道 + 时间) */
-function GoldStamp({ text }: { text: string | null | undefined }) {
-  if (!text) return null;
+/** 时间戳角标：来源与快照状态分开标注，不能把在线回退伪装成本地管道。 */
+function GoldStamp({ text, stale = false, source = null }: { text: string | null | undefined; stale?: boolean; source?: string | null }) {
+  if (!text && !stale && !source) return null;
   return (
-    <span className="text-[9px] text-slate-600" style={TNUM}>
-      数据来自 gold-monitor 管道 · {text}
+    <span className={`text-caption ${stale ? "text-amber-500/80" : "text-db-faint"}`} style={TNUM}>
+      {stale ? "非实时快照" : source}{text ? ` · ${text}` : ""}
     </span>
   );
 }
@@ -48,48 +76,48 @@ function tvZoom(el: Element | null): number {
 /* ================= 面板 1: 金价实时(hero) ================= */
 
 function GoldHeroPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
-  const { data, error } = usePolling(() => api.gold(), POLL.MINUTE);
+  const { data, error } = useGoldSummary();
   const g = data?.gold ?? null;
 
   return (
     <Panel className={className} {...zoomProps} title="金价实时" icon={<Coins size={14} />} accent={GOLD}
-      right={<GoldStamp text={g?.ts ? new Date(g.ts).toLocaleString("zh-CN", { hour12: false }) : data?.fetched_at || null} />}>
+      right={<GoldStamp stale={data?.sources.monitor.status === "stale"} source={data?.providers.gold || "gold-monitor 管道"} text={g?.ts ? new Date(g.ts).toLocaleString("zh-CN", { hour12: false }) : data?.fetched_at || null} />}>
       <div className="flex h-full flex-col p-2.5">
         {!g ? (
-          <GoldEmpty what={error ? "金价" : "金价"} />
+          <GoldEmpty reason={data?.reason} error={error} what={error ? "金价" : "金价"} />
         ) : (
           <>
             {/* 主价: USD/oz */}
             <div className="flex items-baseline gap-2">
-              <span className="text-[10px] text-slate-500">USD/oz</span>
-              <span className="text-[26px] font-bold leading-none" style={{ ...TNUM, color: g.usd != null ? "#fef3c7" : "#64748b" }}>
+              <span className="text-meta text-db-muted">USD/oz</span>
+              <span className="text-display font-bold leading-none" style={{ ...TNUM, color: g.usd != null ? "#fef3c7" : "#64748b" }}>
                 {g.usd != null ? g.usd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "——"}
               </span>
               {g.changePct != null && (
-                <span className={`rounded px-1.5 py-0.5 text-[11px] font-semibold ${bgChg(g.changePct)}`} style={TNUM}>
+                <span className={`rounded px-1.5 py-0.5 text-body font-semibold ${bgChg(g.changePct)}`} style={TNUM}>
                   {fmtPct(g.changePct)}
                 </span>
               )}
             </div>
             {/* 涨跌说明 */}
-            {g.intradayNote && <div className="mt-0.5 text-[9px] text-slate-600">{g.intradayNote}</div>}
+            {g.intradayNote && <div className="mt-0.5 text-caption text-db-faint">{g.intradayNote}</div>}
 
             {/* CNY 换算(双价) */}
             <div className="mt-2 grid grid-cols-2 gap-2">
-              <div className="rounded border border-slate-700/30 bg-slate-800/20 px-2 py-1.5">
-                <div className="text-[10px] text-slate-500">CNY/g（克价）</div>
-                <div className="text-[18px] font-semibold" style={{ ...TNUM, color: g.cnyPerG != null ? "#fde68a" : "#64748b" }}>
+              <div className="rounded border border-db-border/30 bg-db-subtle/20 px-2 py-1.5">
+                <div className="text-meta text-db-muted">CNY/g（克价）</div>
+                <div className="text-metric-lg font-semibold" style={{ ...TNUM, color: g.cnyPerG != null ? "#fde68a" : "#64748b" }}>
                   {g.cnyPerG != null ? `¥${g.cnyPerG.toFixed(2)}` : "——"}
                 </div>
               </div>
-              <div className="rounded border border-slate-700/30 bg-slate-800/20 px-2 py-1.5">
-                <div className="text-[10px] text-slate-500">CNY/oz</div>
-                <div className="text-[18px] font-semibold" style={{ ...TNUM, color: g.cny != null ? "#fde68a" : "#64748b" }}>
+              <div className="rounded border border-db-border/30 bg-db-subtle/20 px-2 py-1.5">
+                <div className="text-meta text-db-muted">CNY/oz</div>
+                <div className="text-metric-lg font-semibold" style={{ ...TNUM, color: g.cny != null ? "#fde68a" : "#64748b" }}>
                   {g.cny != null ? `¥${g.cny.toLocaleString("zh-CN", { maximumFractionDigits: 0 })}` : "——"}
                 </div>
               </div>
             </div>
-            {g.note && <div className="mt-1 text-[9px] text-amber-600/90">{g.note}</div>}
+            {g.note && <div className="mt-1 text-caption text-amber-600/90">{g.note}</div>}
           </>
         )}
       </div>
@@ -140,13 +168,14 @@ function GoldTrendPanel({ className = "", ...zoomProps }: { className?: string }
     <Panel className={className} {...zoomProps} title="金价走势" icon={<TrendingUp size={14} />} accent={GOLD}
       right={
         <div className="flex items-center gap-0.5">
+          {data?.stale && <span className="mr-1 text-caption text-amber-500/80">缓存快照</span>}
           {TREND_TABS.map((t) => (
             <button
               key={t.days}
               type="button"
               onClick={() => setDays(t.days)}
-              className={`rounded px-1.5 py-0.5 text-[10px] transition-colors ${
-                days === t.days ? "bg-[#f5c542]/15 font-semibold text-[#fde68a]" : "text-slate-500 hover:text-slate-300"
+              className={`rounded px-1.5 py-0.5 text-meta transition-colors ${
+                days === t.days ? "bg-gold/15 font-semibold text-gold-soft" : "text-db-muted hover:text-db-secondary"
               }`}
             >
               {t.label}
@@ -156,7 +185,7 @@ function GoldTrendPanel({ className = "", ...zoomProps }: { className?: string }
       }>
       <div className="flex h-full flex-col p-2.5">
         {!chart ? (
-          <GoldEmpty what={error ? "金价走势" : "金价走势"} />
+          <GoldEmpty reason={data?.reason} error={error} what={error ? "金价走势" : "金价走势"} />
         ) : (
           <>
             <div ref={boxRef} className="min-h-0 flex-1">
@@ -217,9 +246,12 @@ function GoldTrendPanel({ className = "", ...zoomProps }: { className?: string }
                 )}
               </svg>
             </div>
-            {/* 时间范围说明 */}
-            <div className="mt-1 shrink-0 text-[9px] text-slate-600">
-              {days === 1 ? "近 24 小时 · 60min 采样" : days === 7 ? "近 7 天 · 60min 采样" : "近 30 天 · 降采样"} · 共 {data?.count ?? chart?.pts.length} 点
+            {/* 时间范围与真实采样口径 */}
+            <div className="mt-1 shrink-0 text-caption text-db-faint">
+              {data?.source === "xaus"
+                ? days === 1 ? "近 24 小时 · 5min 采样" : days === 7 ? "近 7 天 · 日线 + 5min 日内" : "近 30 天 · 日线 + 日内"
+                : days === 1 ? "近 24 小时 · 本地采样" : days === 7 ? "近 7 天 · 本地采样" : "近 30 天 · 本地降采样"}
+              {" "}· 共 {data?.count ?? chart?.pts.length} 点 · {data?.provider || "gold-monitor"}
             </div>
           </>
         )}
@@ -234,7 +266,7 @@ function GoldTrendPanel({ className = "", ...zoomProps }: { className?: string }
 const TENOR_ORDER = ["1M", "3M", "6M", "1Y", "2Y", "3Y", "5Y", "7Y", "10Y", "20Y", "30Y"];
 
 function GoldYieldCurvePanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
-  const { data, error } = usePolling(() => api.gold(), POLL.MINUTE);
+  const { data, error } = useGoldSummary();
   const y = data?.treasury?.yields ?? null;
   const nominal = data?.real_curve?.nominal_rates ?? null; // 月度历史名义(期限键 1/2/5/10/20/30)
   const { ref: boxRef, size } = useElementSize();
@@ -279,16 +311,16 @@ function GoldYieldCurvePanel({ className = "", ...zoomProps }: { className?: str
     <Panel className={className} {...zoomProps} title="美债收益率曲线" icon={<Activity size={14} />} accent={GOLD}
       right={
         spread10y2y != null ? (
-          <span className={`text-[10px] font-semibold ${clsChg(spread10y2y)}`} style={TNUM}>
+          <span className={`text-meta font-semibold ${clsChg(spread10y2y)}`} style={TNUM}>
             10Y−2Y {spread10y2y > 0 ? "+" : ""}{spread10y2y.toFixed(0)}bp
           </span>
         ) : (
-          <GoldStamp text={data?.treasury?.date || null} />
+          <GoldStamp stale={data?.sources.monitor.status === "stale"} source={data?.providers.treasury || "gold-monitor"} text={data?.treasury?.date || null} />
         )
       }>
       <div className="flex h-full flex-col p-2.5">
         {!chart ? (
-          <GoldEmpty what={error ? "美债收益率" : "美债收益率"} />
+          <GoldEmpty reason={data?.reason} error={error} what={error ? "美债收益率" : "美债收益率"} />
         ) : (
           <>
             <div ref={boxRef} className="min-h-0 flex-1">
@@ -327,16 +359,16 @@ function GoldYieldCurvePanel({ className = "", ...zoomProps }: { className?: str
                 })}
               </svg>
             </div>
-            <div className="mt-1 flex shrink-0 flex-wrap items-center gap-x-3 gap-y-0.5 text-[9px] text-slate-500">
+            <div className="mt-1 flex shrink-0 flex-wrap items-center gap-x-3 gap-y-0.5 text-caption text-db-muted">
               <span className="flex items-center gap-1">
-                <i className="inline-block h-[2px] w-3 rounded" style={{ background: GOLD }} /> 实时(FRED)
+                <i className="inline-block h-[2px] w-3 rounded" style={{ background: GOLD }} /> 最新曲线（{data?.providers.treasury || "gold-monitor"}）
               </span>
               {chart.nomPts.length >= 2 && (
                 <span className="flex items-center gap-1">
-                  <i className="inline-block h-0 w-3 border-t border-dashed border-slate-500" /> 上月名义曲线
+                  <i className="inline-block h-0 w-3 border-t border-dashed border-slate-500" /> 名义曲线（对比）
                 </span>
               )}
-              <span className="ml-auto text-slate-600">{data?.treasury?.date || ""}</span>
+              <span className="ml-auto text-db-faint">{data?.treasury?.date || ""}</span>
             </div>
           </>
         )}
@@ -348,7 +380,7 @@ function GoldYieldCurvePanel({ className = "", ...zoomProps }: { className?: str
 /* ================= 面板 4: 实际利率(手写 SVG, 已过滤脏值) ================= */
 
 function GoldRealRatePanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
-  const { data, error } = usePolling(() => api.gold(), POLL.MINUTE);
+  const { data, error } = useGoldSummary();
   const real = data?.real_curve?.real_rates ?? null;
   const be = data?.real_curve?.breakeven_rates ?? null;
   const { ref: boxRef, size } = useElementSize();
@@ -356,8 +388,8 @@ function GoldRealRatePanel({ className = "", ...zoomProps }: { className?: strin
 
   const chart = useMemo(() => {
     if (!real) return null;
-    // 合并期限键(实际利率 1/2/3/5/10/30, 盈亏平衡 5/10/30)
-    const keys = [...new Set([...Object.keys(real), ...(be ? Object.keys(be) : [])])].sort();
+    // 数值排序，避免字典序把 10/20/30 排到 5/7 前面。
+    const keys = [...new Set([...Object.keys(real), ...(be ? Object.keys(be) : [])])].sort((a, b) => Number(a) - Number(b));
     if (keys.length < 2) return null;
     const { w: W, h: H } = size;
     const PL = 40, PR = 14, PT = 10, PB = 20;
@@ -378,10 +410,10 @@ function GoldRealRatePanel({ className = "", ...zoomProps }: { className?: strin
 
   return (
     <Panel className={className} {...zoomProps} title="实际利率与盈亏平衡" icon={<Percent size={14} />} accent={GOLD}
-      right={<GoldStamp text={data?.real_curve?.date ? `曲线日期 ${data.real_curve.date}` : null} />}>
+      right={<GoldStamp stale={data?.sources.monitor.status === "stale"} source={data?.providers.treasury || "gold-monitor"} text={data?.real_curve?.date ? `曲线日期 ${data.real_curve.date}` : null} />}>
       <div className="flex h-full flex-col p-2.5">
         {!chart ? (
-          <GoldEmpty what={error ? "实际利率" : "实际利率"} />
+          <GoldEmpty reason={data?.reason} error={error} what={error ? "实际利率" : "实际利率"} />
         ) : (
           <>
             <div ref={boxRef} className="min-h-0 flex-1">
@@ -425,7 +457,7 @@ function GoldRealRatePanel({ className = "", ...zoomProps }: { className?: strin
                 )}
               </svg>
             </div>
-            <div className="mt-1 flex shrink-0 flex-wrap items-center gap-x-3 gap-y-0.5 text-[9px] text-slate-500">
+            <div className="mt-1 flex shrink-0 flex-wrap items-center gap-x-3 gap-y-0.5 text-caption text-db-muted">
               <span className="flex items-center gap-1">
                 <i className="inline-block h-[2px] w-3 rounded" style={{ background: GOLD }} /> 实际利率
               </span>
@@ -434,7 +466,7 @@ function GoldRealRatePanel({ className = "", ...zoomProps }: { className?: strin
                   <i className="inline-block h-0 w-3 border-t border-dashed border-blue-400" /> 盈亏平衡通胀
                 </span>
               )}
-              <span className="ml-auto text-slate-600">脏值已过滤(|x|&lt;50)</span>
+              <span className="ml-auto text-db-faint">脏值已过滤(|x|&lt;50)</span>
             </div>
           </>
         )}
@@ -446,7 +478,7 @@ function GoldRealRatePanel({ className = "", ...zoomProps }: { className?: strin
 /* ================= 面板 5: 央行购金动态 ================= */
 
 function GoldCbTxPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
-  const { data, error } = usePolling(() => api.gold(), POLL.MINUTE);
+  const { data, error } = useGoldSummary();
 
   const bars = useMemo(() => {
     const txs = data?.central_bank?.transactions ?? [];
@@ -461,11 +493,11 @@ function GoldCbTxPanel({ className = "", ...zoomProps }: { className?: string } 
   }, [data]);
 
   return (
-    <Panel className={className} {...zoomProps} title="央行购金动态" icon={<Landmark size={14} />} accent={GOLD}
-      right={<span className="text-[9px] text-slate-600">近 3 月 · WGC 月度统计</span>}>
+    <Panel className={className} {...zoomProps} title="央行储备变动" icon={<Landmark size={14} />} accent={GOLD}
+      right={<span className={`text-caption ${data?.sources.centralBank.status === "stale" ? "text-amber-500/80" : "text-db-faint"}`}>{data?.sources.centralBank.status === "stale" ? "延迟/缓存 · " : ""}{data?.providers.centralBank?.includes("XAUS") ? "近期 · 较上期储备变化" : "近 3 月 · WGC 月度统计"}</span>}>
       <div className="flex h-full flex-col p-2.5">
         {!bars.length ? (
-          <GoldEmpty what={error ? "央行购金" : "央行购金"} />
+          <GoldEmpty reason={data?.sources.centralBank.reason ?? data?.reason} error={error} what={error ? "央行购金" : "央行购金"} />
         ) : (
           <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto pr-1">
             {bars.map((t) => {
@@ -473,8 +505,8 @@ function GoldCbTxPanel({ className = "", ...zoomProps }: { className?: string } 
               return (
                 <div key={`${t.ym}|${t.country}`} className="flex items-center gap-2">
                   <div className="w-[72px] shrink-0 leading-tight">
-                    <div className="truncate text-[11px] text-slate-200">{t.country}</div>
-                    <div className="text-[9px] text-slate-600" style={TNUM}>{t.ym}</div>
+                    <div className="truncate text-body text-db-primary">{t.country}</div>
+                    <div className="text-caption text-db-faint" style={TNUM}>{t.ym}</div>
                   </div>
                   {/* bar 占剩余空间(min-w-0 可压缩), 数字列 shrink-0 恒可见 —— 任何宽度不溢出 */}
                   <div className="flex min-w-0 flex-1 items-center">
@@ -489,7 +521,7 @@ function GoldCbTxPanel({ className = "", ...zoomProps }: { className?: string } 
                         }}
                       />
                     </div>
-                    <span className={`ml-1.5 shrink-0 text-[11px] font-semibold ${pos ? "text-rose-300" : "text-emerald-300"}`} style={TNUM}>
+                    <span className={`ml-1.5 shrink-0 text-body font-semibold ${pos ? "text-rose-300" : "text-emerald-300"}`} style={TNUM}>
                       {pos ? "+" : ""}{t.tonnes.toFixed(1)}t
                     </span>
                   </div>
@@ -506,7 +538,7 @@ function GoldCbTxPanel({ className = "", ...zoomProps }: { className?: string } 
 /* ================= 面板 6: 央行储备 TOP10(水平条形, CSS flex) ================= */
 
 function GoldCbTopPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
-  const { data, error } = usePolling(() => api.gold(), POLL.MINUTE);
+  const { data, error } = useGoldSummary();
 
   const rows = useMemo(() => {
     const top = data?.central_bank?.top10 ?? [];
@@ -517,20 +549,20 @@ function GoldCbTopPanel({ className = "", ...zoomProps }: { className?: string }
 
   return (
     <Panel className={className} {...zoomProps} title="央行黄金储备 TOP10" icon={<Wallet size={14} />} accent={GOLD}
-      right={<span className="text-[9px] text-slate-600">吨 · 最新快照</span>}>
+      right={<span className={`text-caption ${data?.sources.centralBank.status === "stale" ? "text-amber-500/80" : "text-db-faint"}`}>{data?.sources.centralBank.status === "stale" ? "延迟/缓存 · " : ""}吨 · {data?.providers.centralBank || "最新快照"}</span>}>
       <div className="flex h-full flex-col p-2.5">
         {!rows.length ? (
-          <GoldEmpty what={error ? "央行储备" : "央行储备"} />
+          <GoldEmpty reason={data?.sources.centralBank.reason ?? data?.reason} error={error} what={error ? "央行储备" : "央行储备"} />
         ) : (
           <div className="flex min-h-0 flex-1 flex-col justify-center gap-1.5 overflow-y-auto pr-1">
             {rows.map((r) => (
               <div key={r.country} className="flex items-center gap-2">
-                <div className="w-[68px] shrink-0 truncate text-[11px] text-slate-200">{r.country}</div>
-                <div className="h-[12px] flex-1 overflow-hidden rounded-sm bg-slate-800/60">
+                <div className="w-[68px] shrink-0 truncate text-body text-db-primary">{r.country}</div>
+                <div className="h-[12px] flex-1 overflow-hidden rounded-sm bg-db-subtle/60">
                   {/* 水平条形(CSS flex, 参考 gold-monitor 柱图) */}
                   <div className="h-full rounded-sm" style={{ width: `${Math.max(r.pct, 1)}%`, background: `linear-gradient(90deg, ${GOLD_DIM}, ${GOLD})` }} />
                 </div>
-                <div className="w-[64px] shrink-0 text-right text-[11px] font-semibold text-slate-300" style={TNUM}>
+                <div className="w-[64px] shrink-0 text-right text-body font-semibold text-db-secondary" style={TNUM}>
                   {r.tonnes.toLocaleString("zh-CN", { maximumFractionDigits: 0 })}
                 </div>
               </div>
@@ -545,7 +577,7 @@ function GoldCbTopPanel({ className = "", ...zoomProps }: { className?: string }
 /* ================= 面板 7: 通胀与 Fed(指标卡网格) ================= */
 
 function GoldInflationPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
-  const { data, error } = usePolling(() => api.gold(), POLL.MINUTE);
+  const { data, error } = useGoldSummary();
   const heads = data?.inflation?.headlines ?? null;
   const be = data?.inflation?.breakeven_inflation ?? null;
   const fed = data?.fed ?? null;
@@ -562,17 +594,17 @@ function GoldInflationPanel({ className = "", ...zoomProps }: { className?: stri
 
   return (
     <Panel className={className} {...zoomProps} title="通胀与 Fed" icon={<Gem size={14} />} accent={GOLD}
-      right={<GoldStamp text={fed?.fetchedAt ? `Fed ${fed.fetchedAt.slice(0, 16).replace("T", " ")}` : null} />}>
+      right={<GoldStamp stale={data?.sources.monitor.status === "stale"} source={data?.providers.macro || "gold-monitor"} text={fed?.fetchedAt ? `Fed ${fed.fetchedAt.slice(0, 16).replace("T", " ")}` : null} />}>
       <div className="flex h-full flex-col p-2.5">
         {!cards.length ? (
-          <GoldEmpty what={error ? "通胀与 Fed" : "通胀与 Fed"} />
+          <GoldEmpty reason={data?.reason} error={error} what={error ? "通胀与 Fed" : "通胀与 Fed"} />
         ) : (
           <div className="grid flex-1 grid-cols-2 gap-2">
             {cards.map((c) => (
-              <div key={c.label} className="flex flex-col justify-center rounded border border-slate-700/30 bg-slate-800/20 px-2.5 py-2">
-                <div className="text-[10px] text-slate-500">{c.label}</div>
-                <div className={`text-[20px] font-bold leading-tight ${c.cls}`} style={TNUM}>{c.value}</div>
-                <div className="text-[9px] text-slate-600">{c.sub}</div>
+              <div key={c.label} className="flex flex-col justify-center rounded border border-db-border/30 bg-db-subtle/20 px-2.5 py-2">
+                <div className="text-meta text-db-muted">{c.label}</div>
+                <div className={`text-display-sm font-bold leading-tight ${c.cls}`} style={TNUM}>{c.value}</div>
+                <div className="text-caption text-db-faint">{c.sub}</div>
               </div>
             ))}
           </div>
@@ -585,15 +617,15 @@ function GoldInflationPanel({ className = "", ...zoomProps }: { className?: stri
 /* ================= 面板 8: 黄金新闻 ================= */
 
 function GoldNewsPanel({ className = "", ...zoomProps }: { className?: string } & PanelZoomProps) {
-  const { data, error } = usePolling(() => api.gold(), POLL.MINUTE);
+  const { data, error } = useGoldSummary();
   const news = data?.news ?? [];
 
   return (
     <Panel className={className} {...zoomProps} title="黄金相关新闻" icon={<Newspaper size={14} />} accent={GOLD}
-      right={<span className="text-[9px] text-slate-600">最多 8 条 · RSS</span>}>
+      right={<span className={`text-caption ${data?.sources.monitor.status === "stale" ? "text-amber-500/80" : "text-db-faint"}`}>{data?.sources.monitor.status === "stale" ? "非实时快照 · " : ""}最多 8 条 · {data?.providers.news || "RSS"}</span>}>
       <div className="flex h-full flex-col p-2.5">
         {!news.length ? (
-          <GoldEmpty what={error ? "黄金新闻" : "黄金新闻"} />
+          <GoldEmpty reason={data?.reason} error={error} what={error ? "黄金新闻" : "黄金新闻"} />
         ) : (
           <div className="flex min-h-0 flex-1 flex-col justify-center gap-1 overflow-y-auto pr-1">
             {news.map((n, i) => (
@@ -602,13 +634,13 @@ function GoldNewsPanel({ className = "", ...zoomProps }: { className?: string } 
                 href={n.url || "#"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-start gap-2 rounded px-1.5 py-1 transition-colors hover:bg-slate-800/40"
+                className="group flex items-start gap-2 rounded px-1.5 py-1 transition-colors hover:bg-db-subtle/40"
               >
                 <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: GOLD }} />
                 <span className="min-w-0 flex-1">
                   {/* 长标题不 truncate(用户要求 flex-wrap 换行) */}
-                  <span className="block text-[11px] leading-snug text-slate-300 group-hover:text-[#fde68a]">{n.title}</span>
-                  {n.source && <span className="mt-0.5 block text-[9px] text-slate-600">{n.source}</span>}
+                  <span className="block text-body leading-snug text-db-secondary group-hover:text-gold-soft">{n.title}</span>
+                  {(n.source || n.publishedAt) && <span className="mt-0.5 block text-caption text-db-faint">{n.source}{n.publishedAt ? ` · ${new Date(n.publishedAt).toLocaleDateString("zh-CN", { month: "2-digit", day: "2-digit" })}` : ""}</span>}
                 </span>
               </a>
             ))}
@@ -653,9 +685,11 @@ const PANEL_ROWS: PanelRowDef[] = [
 
 export default function GoldDashboard() {
   const { isFullscreen, toggle } = useFullscreen();
+  const { data, error } = usePolling(() => api.gold(), POLL.MINUTE);
+  const summary = useMemo(() => ({ data, error }), [data, error]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#070b12] text-slate-200 lg:h-screen lg:overflow-hidden">
+    <div className="flex min-h-screen flex-col bg-db-canvas text-db-primary lg:h-screen lg:overflow-hidden">
       <DashboardHeader
         title="黄金观察"
         subtitle="GOLD WATCH"
@@ -673,7 +707,9 @@ export default function GoldDashboard() {
         isFullscreen={isFullscreen}
         onToggleFullscreen={toggle}
       />
-      <DashboardLayout rows={PANEL_ROWS} pageKey="gold" />
+      <GoldSummaryCtx.Provider value={summary}>
+        <DashboardLayout rows={PANEL_ROWS} pageKey="gold" />
+      </GoldSummaryCtx.Provider>
     </div>
   );
 }
