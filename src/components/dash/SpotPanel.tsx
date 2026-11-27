@@ -32,9 +32,9 @@ export function SpotPanel({ className = "", ...zoomProps }: { className?: string
       title="现货价格"
       icon={<Diamond size={14} />}
       accent="#f5c542"
-      right={<span className="text-[10px] text-slate-500">生意社{data?.date ? ` · ${data.date}` : ""}</span>}
+      right={<span className="text-meta text-db-muted">生意社{data?.date ? ` · ${data.date}` : ""}</span>}
     >
-      <div className="flex h-full min-h-0 flex-col divide-y divide-slate-800/60 overflow-y-auto p-1">
+      <div className="flex h-full min-h-0 flex-col divide-y divide-db-subtle/60 overflow-y-auto p-1">
         {CHEM_SPOTS.map((def) => {
           const c = chems?.find((x) => x.id === def.id);
           if (!c) return null;
@@ -45,7 +45,7 @@ export function SpotPanel({ className = "", ...zoomProps }: { className?: string
           const hist = (data.history[r.name] || []).map((h) => ({ t: h.t, c: h.p }));
           return <QuoteRow key={r.name} code="" name={r.name} unit={EXCH_SHORT[r.exchange] || r.exchange} price={r.spot} pct={dailyPct(hist)} spark sparkData={hist.length > 1 ? { points: hist.map((h) => ({ t: h.t, p: h.c })), prec: hist[0].c, session: "daily" } : undefined} />;
         })}
-        {!data && !chems && <div className="p-4 text-center text-[10px] text-slate-600">现货数据加载中…</div>}
+        {!data && !chems && <div className="p-4 text-center text-meta text-db-faint">现货数据加载中…</div>}
       </div>
     </Panel>
   );

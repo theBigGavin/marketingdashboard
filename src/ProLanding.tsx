@@ -6,12 +6,12 @@ function useTheme() {
     try {
       const saved = localStorage.getItem("mrd-theme-v1");
       if (saved) return saved === "dark";
-    } catch {}
+    } catch { /* localStorage 不可用时使用默认主题 */ }
     return true;
   });
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
-    try { localStorage.setItem("mrd-theme-v1", dark ? "dark" : "light"); } catch {}
+    try { localStorage.setItem("mrd-theme-v1", dark ? "dark" : "light"); } catch { /* localStorage 不可用时使用默认主题 */ }
   }, [dark]);
   return { dark, toggle: () => setDark((d) => !d) };
 }

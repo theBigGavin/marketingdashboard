@@ -78,11 +78,11 @@ type PlainGridRowProps = RowSharedProps & {
 /** 四变体行组件 props 联合 */
 export type RowVariantProps = CompactRowProps | IndexRowProps | FinanceRowProps | PlainGridRowProps;
 
-function Stat({ label, value, valueCls = "text-slate-300" }: { label?: string; value: ReactNode; valueCls?: string }) {
+function Stat({ label, value, valueCls = "text-db-secondary" }: { label?: string; value: ReactNode; valueCls?: string }) {
   return (
     <span className="flex min-w-0 items-center justify-end gap-1 leading-none">
-      {label && <span className="shrink-0 text-[9px] text-slate-600">{label}</span>}
-      <span className={`truncate text-[11px] ${valueCls}`} style={TNUM}>
+      {label && <span className="shrink-0 text-caption text-db-faint">{label}</span>}
+      <span className={`truncate text-body ${valueCls}`} style={TNUM}>
         {value}
       </span>
     </span>
@@ -96,11 +96,11 @@ function CompactRow({ basis, Tag, rootRef, onClick, className, active, accent, b
       <Tag
         ref={(el: HTMLElement | null) => { rootRef.current = el; }}
         onClick={onClick}
-        className={`group grid w-full grid-cols-[72px_minmax(0,1fr)_110px_110px] grid-rows-[20px_16px] items-center gap-x-1 rounded px-2 py-[4px] text-left transition-colors hover:bg-slate-800/40 hover:shadow-[inset_0_0_0_1px_rgba(34,211,238,0.22)] ${active ? "bg-cyan-500/10 ring-1 ring-cyan-500/40" : ""} ${className || ""}`}
+        className={`group grid w-full grid-cols-[72px_minmax(0,1fr)_110px_110px] grid-rows-[20px_16px] items-center gap-x-1 rounded px-2 py-[4px] text-left transition-colors hover:bg-db-subtle/40 hover:shadow-[inset_0_0_0_1px_rgba(34,211,238,0.22)] ${active ? "bg-cyan-500/10 ring-1 ring-cyan-500/40" : ""} ${className || ""}`}
       >
         <div className="row-span-2 flex min-w-0 flex-col justify-center gap-1 leading-none">
-          <span className="truncate text-[11px] text-slate-200">{name}</span>
-          <span className="truncate text-[10px] text-slate-500">{subtitle}</span>
+          <span className="truncate text-body text-db-primary">{name}</span>
+          <span className="truncate text-meta text-db-muted">{subtitle}</span>
         </div>
         <div className="row-span-2 flex h-full min-w-0 items-center">
           {sp && sp.points.length > 1 && (
@@ -108,20 +108,20 @@ function CompactRow({ basis, Tag, rootRef, onClick, className, active, accent, b
           )}
         </div>
         <span className="col-start-3 row-start-1 flex min-w-0 items-center gap-1 leading-none">
-          <span className="shrink-0 text-[9px] text-slate-600">现货</span>
-          <span className="truncate text-[11px] font-semibold text-slate-200" style={TNUM}>{fmtPrice(basis.spot)}</span>
+          <span className="shrink-0 text-caption text-db-faint">现货</span>
+          <span className="truncate text-body font-semibold text-db-primary" style={TNUM}>{fmtPrice(basis.spot)}</span>
         </span>
         <span className="col-start-3 row-start-2 flex min-w-0 items-center gap-1 leading-none">
-          <span className="shrink-0 text-[9px] text-slate-600">期货</span>
-          <span className="truncate text-[11px] text-slate-400" style={TNUM}>{fmtPrice(basis.futures)}</span>
+          <span className="shrink-0 text-caption text-db-faint">期货</span>
+          <span className="truncate text-body text-db-tertiary" style={TNUM}>{fmtPrice(basis.futures)}</span>
         </span>
         <span className="col-start-4 row-start-1 flex min-w-0 items-center gap-1 leading-none">
-          <span className="shrink-0 text-[9px] text-slate-600">基差</span>
-          <span className={`truncate text-[11px] font-semibold ${clsChg(basis.basis)}`} style={TNUM}>{basis.basis > 0 ? "+" : ""}{fmtPrice(basis.basis)}</span>
+          <span className="shrink-0 text-caption text-db-faint">基差</span>
+          <span className={`truncate text-body font-semibold ${clsChg(basis.basis)}`} style={TNUM}>{basis.basis > 0 ? "+" : ""}{fmtPrice(basis.basis)}</span>
         </span>
         <span className="col-start-4 row-start-2 flex min-w-0 items-center gap-1 leading-none">
-          <span className="shrink-0 text-[9px] text-slate-600">基差率</span>
-          <span className={`rounded px-0.5 text-[11px] font-semibold ${bgChg(basis.basisPct)}`} style={TNUM}>{fmtPct(basis.basisPct)}</span>
+          <span className="shrink-0 text-caption text-db-faint">基差率</span>
+          <span className={`rounded px-0.5 text-body font-semibold ${bgChg(basis.basisPct)}`} style={TNUM}>{fmtPct(basis.basisPct)}</span>
         </span>
       </Tag>
     );
@@ -130,7 +130,7 @@ function CompactRow({ basis, Tag, rootRef, onClick, className, active, accent, b
     <Tag
       ref={(el: HTMLElement | null) => { rootRef.current = el; }}
       onClick={onClick}
-      className={`group flex items-center gap-1.5 w-full rounded px-1 py-[3px] text-left transition-colors hover:bg-slate-800/40 hover:shadow-[inset_0_0_0_1px_rgba(34,211,238,0.22)] ${accent ? "relative" : ""} ${
+      className={`group flex items-center gap-1.5 w-full rounded px-1 py-[3px] text-left transition-colors hover:bg-db-subtle/40 hover:shadow-[inset_0_0_0_1px_rgba(34,211,238,0.22)] ${accent ? "relative" : ""} ${
         active ? "bg-cyan-500/10 ring-1 ring-cyan-500/40" : ""
       } ${className || ""}`}
     >
@@ -138,23 +138,23 @@ function CompactRow({ basis, Tag, rootRef, onClick, className, active, accent, b
         <span aria-hidden className="absolute left-0 top-0 h-full w-[3px] rounded-l" style={{ background: accent, opacity: 0.55 }} />
       )}
       {badge && (
-        <span className="w-6 shrink-0 rounded-sm bg-slate-700/50 text-center text-[8px] leading-3 text-slate-400">{badge}</span>
+        <span className="w-6 shrink-0 rounded-sm bg-db-border/50 text-center text-micro leading-3 text-db-tertiary">{badge}</span>
       )}
       <div className="w-[72px] shrink-0 leading-none">
-        <div className="truncate text-[11px] text-slate-300">{name}</div>
-        {subtitle && <div className="mt-0.5 truncate text-[8px] text-slate-600">{subtitle}</div>}
+        <div className="truncate text-body text-db-secondary">{name}</div>
+        {subtitle && <div className="mt-0.5 truncate text-micro text-db-faint">{subtitle}</div>}
       </div>
-      <span className={`w-[72px] shrink-0 text-right text-[11px] font-semibold ${pct != null ? clsChg(pct) : "text-slate-400"}`} style={TNUM}>
+      <span className={`w-[72px] shrink-0 text-right text-body font-semibold ${pct != null ? clsChg(pct) : "text-db-tertiary"}`} style={TNUM}>
         {p != null ? fmtPrice(p) : "—"}
       </span>
-      <span className={`w-[52px] shrink-0 rounded px-0.5 text-right text-[10px] font-semibold ${pct != null ? bgChg(pct) : ""}`} style={TNUM}>
+      <span className={`w-[52px] shrink-0 rounded px-0.5 text-right text-meta font-semibold ${pct != null ? bgChg(pct) : ""}`} style={TNUM}>
         {pct != null ? fmtPct(pct) : ""}
       </span>
       <span className="min-w-0 flex-1">
         {sp && sp.points.length > 1 ? (
           <Spark points={sp.points} prec={sp.prec} width={120} height={20} fluid emptyLabel="—" session={sparkData?.session || "ashare"} />
         ) : (
-          <span className="text-[10px] text-slate-600">——</span>
+          <span className="text-meta text-db-faint">——</span>
         )}
       </span>
     </Tag>
@@ -167,7 +167,7 @@ function IndexRow({ Tag, rootRef, onClick, className, active, badge, name, subti
     <Tag
       ref={(el: HTMLElement | null) => { rootRef.current = el; }}
       onClick={onClick}
-      className={`group block w-full rounded px-1.5 py-[2px] text-left transition-colors hover:bg-slate-800/40 hover:shadow-[inset_0_0_0_1px_rgba(34,211,238,0.22)] ${
+      className={`group block w-full rounded px-1.5 py-[2px] text-left transition-colors hover:bg-db-subtle/40 hover:shadow-[inset_0_0_0_1px_rgba(34,211,238,0.22)] ${
         active ? "bg-cyan-500/10 ring-1 ring-cyan-500/40" : ""
       } ${className || ""}`}
     >
@@ -180,29 +180,29 @@ function IndexRow({ Tag, rootRef, onClick, className, active, badge, name, subti
       >
         {badge && (
           <div className="row-span-2 self-center">
-            <span className="w-6 shrink-0 rounded-sm bg-slate-700/50 text-center text-[8px] leading-3 text-slate-400">{badge}</span>
+            <span className="w-6 shrink-0 rounded-sm bg-db-border/50 text-center text-micro leading-3 text-db-tertiary">{badge}</span>
           </div>
         )}
         <div className="row-span-2 flex min-w-0 flex-col justify-center gap-1 leading-none">
-          <span className="truncate text-[11px] text-slate-200">{name}</span>
-          <span className="truncate text-[9px] text-slate-500">{subtitle}</span>
+          <span className="truncate text-body text-db-primary">{name}</span>
+          <span className="truncate text-caption text-db-muted">{subtitle}</span>
         </div>
         <div className="flex h-[16px] min-w-0 items-center self-center">
           {sp && sp.points.length > 1 ? (
             <Spark points={sp.points} prec={sp.prec} width={120} height={16} fluid emptyLabel="—" session={sparkData?.session || "ashare"} />
           ) : sparkNote ? (
-            <span className="truncate text-[10px] text-amber-400/80" title={sparkNote}>{sparkNote}</span>
+            <span className="truncate text-meta text-amber-400/80" title={sparkNote}>{sparkNote}</span>
           ) : (
-            <span className="text-[10px] text-slate-600">——</span>
+            <span className="text-meta text-db-faint">——</span>
           )}
         </div>
-        <span className={`self-center text-right text-[12px] font-bold leading-none ${p != null ? clsChg(p) : "text-slate-600"}`} style={TNUM}>
+        <span className={`self-center text-right text-panel-title font-bold leading-none ${p != null ? clsChg(p) : "text-db-faint"}`} style={TNUM}>
           {p != null ? fmtPrice(p) : "—"}
         </span>
-        <span className="self-center truncate text-right text-[9px] leading-none text-slate-500" style={TNUM}>
+        <span className="self-center truncate text-right text-caption leading-none text-db-muted" style={TNUM}>
           {amount || "—"}
         </span>
-        <span className={`self-center justify-self-end rounded px-0.5 text-[10px] font-semibold leading-none ${pc != null ? bgChg(pc) : ""}`} style={TNUM}>
+        <span className={`self-center justify-self-end rounded px-0.5 text-meta font-semibold leading-none ${pc != null ? bgChg(pc) : ""}`} style={TNUM}>
           {pc != null ? fmtPct(pc) : ""}
         </span>
       </div>
@@ -219,20 +219,20 @@ function FinanceRow({ Tag, rootRef, onClick, className, active, accent, rank, ba
     <Tag
       ref={(el: HTMLElement | null) => { rootRef.current = el; }}
       onClick={onClick}
-      className={`group block w-full rounded px-2 py-[4px] text-left transition-colors hover:bg-slate-800/40 hover:shadow-[inset_0_0_0_1px_rgba(34,211,238,0.22)] ${active ? "bg-cyan-500/10 ring-1 ring-cyan-500/40" : ""} ${className || ""}`}
+      className={`group block w-full rounded px-2 py-[4px] text-left transition-colors hover:bg-db-subtle/40 hover:shadow-[inset_0_0_0_1px_rgba(34,211,238,0.22)] ${active ? "bg-cyan-500/10 ring-1 ring-cyan-500/40" : ""} ${className || ""}`}
     >
       {accent && (
         <span aria-hidden className="absolute left-0 top-0 h-full w-[3px] rounded-l" style={{ background: accent, opacity: 0.55 }} />
       )}
       <div className="grid items-center gap-x-1" style={{ gridTemplateColumns: cols, gridTemplateRows: "20px 16px" }}>
         {rank != null && (
-          <div className="row-span-2 self-center text-[11px] font-bold leading-none" style={{ color: rank <= 3 ? [RANK_GOLD, RANK_SILVER, RANK_BRONZE][rank - 1] : CROSSHAIR, ...TNUM }}>
+          <div className="row-span-2 self-center text-body font-bold leading-none" style={{ color: rank <= 3 ? [RANK_GOLD, RANK_SILVER, RANK_BRONZE][rank - 1] : CROSSHAIR, ...TNUM }}>
             {rank}
           </div>
         )}
         {badge && (
           <div className="row-span-2 self-center">
-            <span className="w-6 shrink-0 rounded-sm bg-slate-700/50 text-center text-[8px] leading-3 text-slate-400">{badge}</span>
+            <span className="w-6 shrink-0 rounded-sm bg-db-border/50 text-center text-micro leading-3 text-db-tertiary">{badge}</span>
           </div>
         )}
         {leadingCols?.map((c, i) => (
@@ -241,17 +241,17 @@ function FinanceRow({ Tag, rootRef, onClick, className, active, accent, rank, ba
           </div>
         ))}
         <div className="row-span-2 flex min-w-0 flex-col justify-center gap-1 leading-none">
-          <span className="truncate text-[11px] text-slate-200">{name}</span>
-          <span className="text-[10px] text-slate-500">{subtitle}</span>
+          <span className="truncate text-body text-db-primary">{name}</span>
+          <span className="text-meta text-db-muted">{subtitle}</span>
         </div>
         <div className="flex h-[20px] min-w-0 items-center self-center">
           {sp && sp.points.length > 1 ? (
             <Spark points={sp.points} prec={sp.prec} width={160} height={20} fluid emptyLabel="—" session={sparkData?.session || "ashare"} />
           ) : (
-            <span className="text-[10px] text-slate-600">——</span>
+            <span className="text-meta text-db-faint">——</span>
           )}
         </div>
-        <Stat label="价" value={p != null ? fmtPrice(p) : "—"} valueCls={`font-semibold ${p != null ? clsChg(p) : "text-slate-600"}`} />
+        <Stat label="价" value={p != null ? fmtPrice(p) : "—"} valueCls={`font-semibold ${p != null ? clsChg(p) : "text-db-faint"}`} />
         {extraCols?.map((c, i) => (
           <div key={i} className="flex min-w-0 items-center justify-end gap-1 overflow-hidden whitespace-nowrap leading-none">
             {c.top ?? <span />}
@@ -263,7 +263,7 @@ function FinanceRow({ Tag, rootRef, onClick, className, active, accent, rank, ba
           </div>
         ))}
         <div className="flex h-[16px] min-w-0 items-center justify-between gap-1.5 self-center">{sparkExtra}</div>
-        <Stat label="幅" value={pc != null ? fmtPct(pc, 2) : ""} valueCls={`font-semibold ${pc != null ? clsChg(pc) : "text-slate-600"}`} />
+        <Stat label="幅" value={pc != null ? fmtPct(pc, 2) : ""} valueCls={`font-semibold ${pc != null ? clsChg(pc) : "text-db-faint"}`} />
         {extraCols?.map((c, i) => (
           <div key={i} className="flex min-w-0 items-center justify-end gap-1 overflow-hidden whitespace-nowrap leading-none">
             {c.bottom ?? <span />}
@@ -271,7 +271,7 @@ function FinanceRow({ Tag, rootRef, onClick, className, active, accent, rank, ba
         ))}
         {onRemove && (
           <div className="row-span-2 self-center">
-            <button onClick={(e) => { e.stopPropagation(); onRemove(); }} className="text-[10px] leading-none text-slate-600 opacity-0 transition-opacity hover:text-rose-400 group-hover:opacity-100" title="移除">×</button>
+            <button onClick={(e) => { e.stopPropagation(); onRemove(); }} className="text-meta leading-none text-db-faint opacity-0 transition-opacity hover:text-rose-400 group-hover:opacity-100" title="移除">×</button>
           </div>
         )}
       </div>
@@ -287,8 +287,8 @@ function PlainGridRow({ variant, Tag, rootRef, onClick, active, accent, rank, ba
   const nameW = variant === "card" ? "56px" : "72px";
   const skin =
     variant === "card"
-      ? "border border-slate-700/25 bg-slate-800/15 hover:border-cyan-500/40 hover:bg-slate-800/30"
-      : "hover:bg-slate-800/40 hover:shadow-[inset_0_0_0_1px_rgba(34,211,238,0.22)]";
+      ? "border border-db-border/25 bg-db-subtle/15 hover:border-cyan-500/40 hover:bg-db-subtle/30"
+      : "hover:bg-db-subtle/40 hover:shadow-[inset_0_0_0_1px_rgba(34,211,238,0.22)]";
 
   let gridCols: string;
   let sparkColSpan: number;
@@ -325,24 +325,24 @@ function PlainGridRow({ variant, Tag, rootRef, onClick, active, accent, rank, ba
         }}
       >
         {rank != null && (
-          <div className={`row-span-2 self-center text-[11px] font-bold leading-none ${rank <= 3 ? "text-amber-400" : "text-slate-600"}`} style={TNUM}>
+          <div className={`row-span-2 self-center text-body font-bold leading-none ${rank <= 3 ? "text-amber-400" : "text-db-faint"}`} style={TNUM}>
             {rank}
           </div>
         )}
         {badge && (
           <div className="row-span-2 self-center">
-            <span className="w-6 shrink-0 rounded-sm bg-slate-700/50 text-center text-[8px] leading-3 text-slate-400">{badge}</span>
+            <span className="w-6 shrink-0 rounded-sm bg-db-border/50 text-center text-micro leading-3 text-db-tertiary">{badge}</span>
           </div>
         )}
         <div className="row-span-2 flex min-w-0 flex-col justify-center gap-1 leading-none">
-          <span className="truncate text-[11px] text-slate-200">{name}</span>
-          <span className="text-[10px] text-slate-500">{subtitle}</span>
+          <span className="truncate text-body text-db-primary">{name}</span>
+          <span className="text-meta text-db-muted">{subtitle}</span>
         </div>
         <div className={`flex h-[20px] min-w-0 items-center self-center`} style={{ gridColumn: `span ${sparkColSpan}` }}>
           {sp && sp.points.length > 1 ? (
             <Spark points={sp.points} prec={sp.prec} width={160} height={20} fluid emptyLabel="—" session={sparkData?.session || "ashare"} />
           ) : (
-            <span className="text-[10px] text-slate-600">——</span>
+            <span className="text-meta text-db-faint">——</span>
           )}
         </div>
         {hasFlow || hasAmount ? (
@@ -355,7 +355,7 @@ function PlainGridRow({ variant, Tag, rootRef, onClick, active, accent, rank, ba
           <div className="row-span-2 self-center">
             <button
               onClick={(e) => { e.stopPropagation(); onRemove(); }}
-              className="text-[10px] leading-none text-slate-600 opacity-0 transition-opacity hover:text-rose-400 group-hover:opacity-100"
+              className="text-meta leading-none text-db-faint opacity-0 transition-opacity hover:text-rose-400 group-hover:opacity-100"
               title="移除"
             >
               ×
@@ -364,41 +364,41 @@ function PlainGridRow({ variant, Tag, rootRef, onClick, active, accent, rank, ba
         )}
         {hasFlow ? (
           <>
-            <Stat label={compact ? "净" : "主力净额"} value={fl ? fmtYuan(fl.netIn) : "—"} valueCls={`font-semibold ${fl ? clsChg(fl.netIn) : "text-slate-600"}`} />
+            <Stat label={compact ? "净" : "主力净额"} value={fl ? fmtYuan(fl.netIn) : "—"} valueCls={`font-semibold ${fl ? clsChg(fl.netIn) : "text-db-faint"}`} />
             <div className="flex min-w-0 items-center gap-1 overflow-hidden whitespace-nowrap leading-none">
-              <span className="shrink-0 text-[9px] text-slate-600">{compact ? "占" : "净占比"}</span>
-              <span className="h-1 min-w-0 flex-1 self-center rounded-full bg-slate-800">
+              <span className="shrink-0 text-caption text-db-faint">{compact ? "占" : "净占比"}</span>
+              <span className="h-1 min-w-0 flex-1 self-center rounded-full bg-db-subtle">
                 <span className={`block h-1 rounded-full ${fl && fl.netRatio < 0 ? "bg-emerald-400/80" : "bg-rose-400/80"}`} style={{ width: `${ratioBar}%` }} />
               </span>
-              <span className={`truncate text-[11px] ${fl ? clsChg(fl.netRatio) : "text-slate-600"}`} style={TNUM}>{fl ? `${fl.netRatio.toFixed(1)}%` : "—"}</span>
+              <span className={`truncate text-body ${fl ? clsChg(fl.netRatio) : "text-db-faint"}`} style={TNUM}>{fl ? `${fl.netRatio.toFixed(1)}%` : "—"}</span>
             </div>
             {hasTurnover ? <Stat label="换" value={turnover} /> : <div />}
-            <Stat label="幅" value={pc != null ? fmtPct(pc, variant === "card" ? 1 : 2) : ""} valueCls={`font-semibold ${pc != null ? clsChg(pc) : "text-slate-600"}`} />
+            <Stat label="幅" value={pc != null ? fmtPct(pc, variant === "card" ? 1 : 2) : ""} valueCls={`font-semibold ${pc != null ? clsChg(pc) : "text-db-faint"}`} />
           </>
         ) : hasAmount || hasTurnover ? (
           <>
             <div />
             {hasTurnover ? <Stat label="换" value={turnover} /> : <div />}
-            <Stat label="幅" value={pc != null ? fmtPct(pc, variant === "card" ? 1 : 2) : ""} valueCls={`font-semibold ${pc != null ? clsChg(pc) : "text-slate-600"}`} />
+            <Stat label="幅" value={pc != null ? fmtPct(pc, variant === "card" ? 1 : 2) : ""} valueCls={`font-semibold ${pc != null ? clsChg(pc) : "text-db-faint"}`} />
           </>
         ) : (
           <>
             <div />
             <Stat label="价" value={p != null ? fmtPrice(p) : "—"} />
-            <Stat label="幅" value={pc != null ? fmtPct(pc, 1) : ""} valueCls={`font-semibold ${pc != null ? clsChg(pc) : "text-slate-600"}`} />
+            <Stat label="幅" value={pc != null ? fmtPct(pc, 1) : ""} valueCls={`font-semibold ${pc != null ? clsChg(pc) : "text-db-faint"}`} />
           </>
         )}
       </div>
       {(tag || boards) && (
-        <div className="mt-0.5 flex h-[13px] min-w-0 items-center gap-1.5 text-[9px] leading-none">
+        <div className="mt-0.5 flex h-[13px] min-w-0 items-center gap-1.5 text-caption leading-none">
           {tag && (
-            <span className="shrink-0 rounded-sm bg-slate-700/40 px-1 py-px text-[8px] text-slate-400">{tag}</span>
+            <span className="shrink-0 rounded-sm bg-db-border/40 px-1 py-px text-micro text-db-tertiary">{tag}</span>
           )}
           {boards && bd && (bd.industry || (bd.concepts?.length ?? 0) > 0) && (
             <span className="truncate">
               {bd.industry && <span className="text-cyan-500/80">{bd.industry}</span>}
               {(bd.concepts?.length ?? 0) > 0 && (
-                <span className="text-slate-600">
+                <span className="text-db-faint">
                   {bd.industry ? " · " : ""}
                   {(bd.concepts ?? []).join("/")}
                 </span>
@@ -431,22 +431,21 @@ export const QuoteRow = memo(function QuoteRow({
   const compact = rowWidth > 0 && rowWidth < COMPACT_WIDTH;
 
   const needsVisible = (spark && !sparkData) || boards || flow;
-  const [visible, setVisible] = useState(isTv || !needsVisible);
+  const [observedVisible, setObservedVisible] = useState(false);
   useEffect(() => {
     // 懒加载依赖就绪(sparkData/boards/flow 到达)后强制可见 — 否则 IO 未触发过的行(面板底部)
     // 会永远 visible=false, 报价订阅禁用 → 价格空态"—"(0820-25 实锤: BTC 行)
-    if (isTv || !needsVisible) {
-      setVisible(true);
-      return;
-    }
+    if (isTv || !needsVisible) return;
     const el = rootRef.current;
     if (!el) return;
     const io = new IntersectionObserver((entries) => {
-      setVisible(entries.some((e) => e.isIntersecting));
+      setObservedVisible(entries.some((e) => e.isIntersecting));
     });
     io.observe(el);
     return () => io.disconnect();
   }, [needsVisible]);
+  // TV 与无需懒加载的行直接派生为可见，避免在 effect 中同步 setState。
+  const visible = isTv || !needsVisible || observedVisible;
 
   const hub = useQuote(code, visible);
   const p = hub?.price ?? price;

@@ -73,14 +73,14 @@ export const InfraRoiPanel = memo(function InfraRoiPanel({ className, panelId, i
 
   if (loading) return (
     <Panel title="AI 基础设施资本出清与复合 ROI" icon={<Activity size={14} />} accent="#fbbf24" className={className} panelId={panelId} isZoomed={isZoomed} onToggleZoom={onToggleZoom}>
-      <div className="flex h-full items-center justify-center text-[11px] text-slate-600">加载中…</div>
+      <div className="flex h-full items-center justify-center text-body text-db-faint">加载中…</div>
     </Panel>
   );
   if (error) return (
     <Panel title="AI 基础设施资本出清与复合 ROI" icon={<Activity size={14} />} accent="#fbbf24" className={className} panelId={panelId} isZoomed={isZoomed} onToggleZoom={onToggleZoom}>
-      <div className="flex h-full flex-col items-center justify-center gap-2 text-[11px] text-red-400">
+      <div className="flex h-full flex-col items-center justify-center gap-2 text-body text-red-400">
         <span>数据异常: {error}</span>
-        <button onClick={retry} className="rounded border border-slate-600 px-2 py-0.5 text-slate-300 hover:bg-slate-700/50">重试</button>
+        <button onClick={retry} className="rounded border border-slate-600 px-2 py-0.5 text-db-secondary hover:bg-db-border/50">重试</button>
       </div>
     </Panel>
   );
@@ -99,13 +99,13 @@ export const InfraRoiPanel = memo(function InfraRoiPanel({ className, panelId, i
     >
       <div className="flex h-full flex-col p-2 pt-1">
         {/* 图例 + 剪刀差状态 */}
-        <div className="flex shrink-0 flex-wrap items-center gap-x-2.5 gap-y-0.5 pb-1 text-[9px]">
-          <span className="flex items-center gap-1"><span className="inline-block h-[3px] w-3.5 rounded bg-[#38bdf8]" />售价 <span className="text-slate-600">($/M)</span></span>
-          <span className="flex items-center gap-1"><span className="inline-block h-[3px] w-3.5 rounded bg-[#fb7185]" />生产成本 <span className="text-slate-600">($/M)</span></span>
-          <span className="flex items-center gap-1"><span className="inline-block h-[3px] w-3.5 rounded bg-[#a78bfa]" />AI专项ROI <span className="text-slate-600">(右轴%)</span></span>
-          <span className="flex items-center gap-1"><span className="inline-block h-[3px] w-3.5 rounded bg-[#fbbf24]" />CapEx <span className="text-slate-600">($B, 归一)</span></span>
-          <span className="flex items-center gap-1"><span className="inline-block h-[3px] w-3.5 rounded bg-[#34d399]" />电网 <span className="text-slate-600">(指数, 归一)</span></span>
-          <span className="ml-auto text-slate-600">历史 2022-2026 · 预测 2027-2035</span>
+        <div className="flex shrink-0 flex-wrap items-center gap-x-2.5 gap-y-0.5 pb-1 text-caption">
+          <span className="flex items-center gap-1"><span className="inline-block h-[3px] w-3.5 rounded bg-infra-price" />售价 <span className="text-db-faint">($/M)</span></span>
+          <span className="flex items-center gap-1"><span className="inline-block h-[3px] w-3.5 rounded bg-infra-cost" />生产成本 <span className="text-db-faint">($/M)</span></span>
+          <span className="flex items-center gap-1"><span className="inline-block h-[3px] w-3.5 rounded bg-infra-roi" />AI专项ROI <span className="text-db-faint">(右轴%)</span></span>
+          <span className="flex items-center gap-1"><span className="inline-block h-[3px] w-3.5 rounded bg-infra-capex" />CapEx <span className="text-db-faint">($B, 归一)</span></span>
+          <span className="flex items-center gap-1"><span className="inline-block h-[3px] w-3.5 rounded bg-infra-grid" />电网 <span className="text-db-faint">(指数, 归一)</span></span>
+          <span className="ml-auto text-db-faint">历史 2022-2026 · 预测 2027-2035</span>
         </div>
         {/* 主图 */}
         <div ref={observe} className="relative min-h-0 flex-1">
@@ -163,24 +163,24 @@ export const InfraRoiPanel = memo(function InfraRoiPanel({ className, panelId, i
           {/* tooltip */}
           {hover != null && chart && (
             <div
-              className="pointer-events-none absolute z-10 min-w-[150px] rounded border border-slate-700/60 bg-[#0a1220]/95 p-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
+              className="pointer-events-none absolute z-10 min-w-[150px] rounded border border-db-border/60 bg-db-overlay/95 p-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
               style={{ left: Math.min(Math.max(chart.X(hover) - 75, 4), size.w - 165), top: 4 }}
             >
-              <div className="mb-1 flex items-baseline justify-between gap-3 text-[10px]">
-                <span className="font-semibold text-slate-200">{chart.pts[hover].year}{!chart.pts[hover].actual && <span className="ml-1 text-[8px] text-amber-400">预测</span>}</span>
+              <div className="mb-1 flex items-baseline justify-between gap-3 text-meta">
+                <span className="font-semibold text-db-primary">{chart.pts[hover].year}{!chart.pts[hover].actual && <span className="ml-1 text-micro text-amber-400">预测</span>}</span>
               </div>
-              <div className="space-y-px text-[9px] leading-3">
-                <div className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-[#38bdf8]" /><span className="w-14 text-slate-400">售价</span><span className="ml-auto font-mono text-slate-200">${chart.pts[hover].pricePerM}/M</span></div>
-                <div className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-[#fb7185]" /><span className="w-14 text-slate-400">成本</span><span className="ml-auto font-mono text-slate-200">${chart.pts[hover].costPerM}/M</span></div>
-                <div className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-[#a78bfa]" /><span className="w-14 text-slate-400">ROI</span><span className={`ml-auto font-mono ${chart.pts[hover].roiPct >= 0 ? "text-emerald-400" : "text-red-400"}`}>{chart.pts[hover].roiPct}%</span></div>
-                <div className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-[#fbbf24]" /><span className="w-14 text-slate-400">CapEx</span><span className="ml-auto font-mono text-slate-200">${chart.pts[hover].capexB}B</span></div>
-                <div className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-[#34d399]" /><span className="w-14 text-slate-400">电网</span><span className="ml-auto font-mono text-slate-200">{chart.pts[hover].grid}</span></div>
+              <div className="space-y-px text-caption leading-3">
+                <div className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-infra-price" /><span className="w-14 text-db-tertiary">售价</span><span className="ml-auto font-mono text-db-primary">${chart.pts[hover].pricePerM}/M</span></div>
+                <div className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-infra-cost" /><span className="w-14 text-db-tertiary">成本</span><span className="ml-auto font-mono text-db-primary">${chart.pts[hover].costPerM}/M</span></div>
+                <div className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-infra-roi" /><span className="w-14 text-db-tertiary">ROI</span><span className={`ml-auto font-mono ${chart.pts[hover].roiPct >= 0 ? "text-emerald-400" : "text-red-400"}`}>{chart.pts[hover].roiPct}%</span></div>
+                <div className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-infra-capex" /><span className="w-14 text-db-tertiary">CapEx</span><span className="ml-auto font-mono text-db-primary">${chart.pts[hover].capexB}B</span></div>
+                <div className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-infra-grid" /><span className="w-14 text-db-tertiary">电网</span><span className="ml-auto font-mono text-db-primary">{chart.pts[hover].grid}</span></div>
               </div>
             </div>
           )}
         </div>
         {/* 底部状态行 */}
-        <div className="flex items-center justify-between pt-1 text-[9px] text-slate-600">
+        <div className="flex items-center justify-between pt-1 text-caption text-db-faint">
           <span>{last ? `ROI ${last.roiPct}% · CapEx $${last.capexB}B · 售价/成本 ${last.pricePerM}/${last.costPerM}$/M` : "—"}</span>
           <span>数据: SEC/OpenRouter/FRED · 预测=模型假设</span>
         </div>

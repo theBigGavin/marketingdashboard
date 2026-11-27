@@ -57,11 +57,11 @@ function Chart({ allDays, days, mode, agg }: { allDays: OrUsageDay[]; days: OrUs
 
   const chart = useMemo(() => computeOrChart(allDays, days, mode, size), [allDays, days, mode, size]);
 
-  if (!chart) return <div className="flex h-full items-center justify-center text-[11px] text-slate-600">暂无数据</div>;
+  if (!chart) return <div className="flex h-full items-center justify-center text-body text-db-faint">暂无数据</div>;
 
   return (
     <div ref={boxRef} className="relative flex h-full min-h-0 w-full flex-col">
-      <div className="flex shrink-0 flex-wrap gap-x-3 gap-y-0.5 pb-1 text-[9px]">
+      <div className="flex shrink-0 flex-wrap gap-x-3 gap-y-0.5 pb-1 text-caption">
         {chart.areas.map((a) => (
           <span key={a.name} className="flex items-center gap-1">
             <span className="inline-block h-2 w-2 rounded-full" style={{ background: vendorColor(a.name) }} />
@@ -69,14 +69,14 @@ function Chart({ allDays, days, mode, agg }: { allDays: OrUsageDay[]; days: OrUs
           </span>
         ))}
       </div>
-      <div className="flex shrink-0 items-baseline gap-3 pb-1 text-[10px]">
-        <span className="font-semibold text-slate-200">{fmtT(chart.last)}</span>
+      <div className="flex shrink-0 items-baseline gap-3 pb-1 text-meta">
+        <span className="font-semibold text-db-primary">{fmtT(chart.last)}</span>
         <span className={chart.chg >= 0 ? "text-emerald-400" : "text-red-400"}>
           {chart.chg >= 0 ? "↑" : "↓"} {chart.chgPct > 0.01 || chart.chgPct < -0.01 ? `${chart.chgPct > 0 ? "+" : ""}${chart.chgPct.toFixed(1)}%` : "0%"}
         </span>
-        <span className="text-slate-500">{agg === "week" ? "周均" : "日均"} {fmtT(Math.round(chart.avg))}</span>
-        <span className="text-slate-500">{agg === "week" ? "周增速" : "日增速"} {chart.dailyRate > 0.001 ? `+${chart.dailyRate.toFixed(2)}%` : `${chart.dailyRate.toFixed(2)}%`}</span>
-        <span className="text-slate-500">近{agg === "week" ? "4周" : "7日"} {fmtT(Math.round(chart.avg7))}/{agg === "week" ? "周" : "日"}</span>
+        <span className="text-db-muted">{agg === "week" ? "周均" : "日均"} {fmtT(Math.round(chart.avg))}</span>
+        <span className="text-db-muted">{agg === "week" ? "周增速" : "日增速"} {chart.dailyRate > 0.001 ? `+${chart.dailyRate.toFixed(2)}%` : `${chart.dailyRate.toFixed(2)}%`}</span>
+        <span className="text-db-muted">近{agg === "week" ? "4周" : "7日"} {fmtT(Math.round(chart.avg7))}/{agg === "week" ? "周" : "日"}</span>
       </div>
       <svg
         ref={svgRef}
@@ -132,15 +132,15 @@ function Chart({ allDays, days, mode, agg }: { allDays: OrUsageDay[]; days: OrUs
       {/* tooltip: 十字准线对应的当日明细 */}
       {hover != null && chart.stacked[hover] && (
         <div
-          className="pointer-events-none absolute z-10 min-w-[150px] rounded border border-slate-700/60 bg-[#0a1220]/95 p-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
+          className="pointer-events-none absolute z-10 min-w-[150px] rounded border border-db-border/60 bg-db-overlay/95 p-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
           style={{
             left: Math.min(Math.max(chart.X(hover) - 75, 4), chart.W - 160),
             top: 4,
           }}
         >
-          <div className="mb-1 flex items-baseline justify-between gap-3 text-[10px]">
-            <span className="font-semibold text-slate-200">{chart.stacked[hover].date}</span>
-            <span className="font-mono text-slate-400">{fmtT(chart.stacked[hover].total)}</span>
+          <div className="mb-1 flex items-baseline justify-between gap-3 text-meta">
+            <span className="font-semibold text-db-primary">{chart.stacked[hover].date}</span>
+            <span className="font-mono text-db-tertiary">{fmtT(chart.stacked[hover].total)}</span>
           </div>
           <div className="max-h-[130px] space-y-px overflow-y-auto">
             {chart.ord.map((v) => {
@@ -149,11 +149,11 @@ function Chart({ allDays, days, mode, agg }: { allDays: OrUsageDay[]; days: OrUs
               if (val <= 0) return null;
               const pct = s.total > 0 ? (val / s.total) * 100 : 0;
               return (
-                <div key={v} className="flex items-center gap-1.5 text-[9px] leading-3">
+                <div key={v} className="flex items-center gap-1.5 text-caption leading-3">
                   <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: vendorColor(v) }} />
-                  <span className="w-14 shrink-0 truncate text-slate-400">{v}</span>
-                  <span className="ml-auto font-mono text-slate-200">{fmtT(val)}</span>
-                  <span className="w-9 text-right font-mono text-slate-500">{pct.toFixed(1)}%</span>
+                  <span className="w-14 shrink-0 truncate text-db-tertiary">{v}</span>
+                  <span className="ml-auto font-mono text-db-primary">{fmtT(val)}</span>
+                  <span className="w-9 text-right font-mono text-db-muted">{pct.toFixed(1)}%</span>
                 </div>
               );
             })}
@@ -215,18 +215,18 @@ export function OpenRouterPanel({ className, panelId, isZoomed, onToggleZoom }: 
       onToggleZoom={onToggleZoom}
       right={
         <div className="flex gap-1">
-          <div className="mr-1 flex gap-0.5 rounded border border-slate-700/60 p-0.5 text-[10px]">
-            <button onClick={() => setAgg("day")} className={`rounded px-1.5 py-0.5 transition-colors ${agg === "day" ? "bg-violet-500/20 text-violet-300" : "text-slate-500 hover:text-slate-300"}`}>日</button>
-            <button onClick={() => { setAgg("week"); if (range === "7d" || range === "14d") setRange("30d"); }} className={`rounded px-1.5 py-0.5 transition-colors ${agg === "week" ? "bg-violet-500/20 text-violet-300" : "text-slate-500 hover:text-slate-300"}`}>周</button>
+          <div className="mr-1 flex gap-0.5 rounded border border-db-border/60 p-0.5 text-meta">
+            <button onClick={() => setAgg("day")} className={`rounded px-1.5 py-0.5 transition-colors ${agg === "day" ? "bg-violet-500/20 text-violet-300" : "text-db-muted hover:text-db-secondary"}`}>日</button>
+            <button onClick={() => { setAgg("week"); if (range === "7d" || range === "14d") setRange("30d"); }} className={`rounded px-1.5 py-0.5 transition-colors ${agg === "week" ? "bg-violet-500/20 text-violet-300" : "text-db-muted hover:text-db-secondary"}`}>周</button>
           </div>
-          <div className="mr-1 flex gap-0.5 rounded border border-slate-700/60 p-0.5 text-[10px]">
-            <button onClick={() => setMode("vendor")} className={`rounded px-1.5 py-0.5 transition-colors ${mode === "vendor" ? "bg-violet-500/20 text-violet-300" : "text-slate-500 hover:text-slate-300"}`}>厂商</button>
-            <button onClick={() => setMode("country")} className={`rounded px-1.5 py-0.5 transition-colors ${mode === "country" ? "bg-violet-500/20 text-violet-300" : "text-slate-500 hover:text-slate-300"}`}>中美</button>
+          <div className="mr-1 flex gap-0.5 rounded border border-db-border/60 p-0.5 text-meta">
+            <button onClick={() => setMode("vendor")} className={`rounded px-1.5 py-0.5 transition-colors ${mode === "vendor" ? "bg-violet-500/20 text-violet-300" : "text-db-muted hover:text-db-secondary"}`}>厂商</button>
+            <button onClick={() => setMode("country")} className={`rounded px-1.5 py-0.5 transition-colors ${mode === "country" ? "bg-violet-500/20 text-violet-300" : "text-db-muted hover:text-db-secondary"}`}>中美</button>
           </div>
           {(["7d", "14d", "30d", "60d", "180d", "1y"] as const).map((r) => {
             const off = agg === "week" && (r === "7d" || r === "14d");
             return (
-              <button key={r} disabled={off} onClick={() => setRange(r)} className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors ${range === r ? "bg-violet-500/20 text-violet-300" : off ? "cursor-not-allowed text-slate-700" : "text-slate-500 hover:text-slate-300"}`}>{r}</button>
+              <button key={r} disabled={off} onClick={() => setRange(r)} className={`rounded px-1.5 py-0.5 text-meta font-medium transition-colors ${range === r ? "bg-violet-500/20 text-violet-300" : off ? "cursor-not-allowed text-db-border" : "text-db-muted hover:text-db-secondary"}`}>{r}</button>
             );
           })}
         </div>
@@ -234,15 +234,15 @@ export function OpenRouterPanel({ className, panelId, isZoomed, onToggleZoom }: 
     >
       <div className="flex h-full flex-col p-2 pt-1">
         {loading ? (
-          <div className="flex h-full items-center justify-center text-[11px] text-slate-600">加载中…</div>
+          <div className="flex h-full items-center justify-center text-body text-db-faint">加载中…</div>
         ) : error ? (
-          <div className="flex h-full items-center justify-center text-[11px] text-red-400">数据异常: {error}</div>
+          <div className="flex h-full items-center justify-center text-body text-red-400">数据异常: {error}</div>
         ) : (
           <div className="min-h-0 flex-1">
             <Chart allDays={data || []} days={sliced} mode={mode} agg={agg} />
           </div>
         )}
-        <div className="flex items-center justify-between pt-1 text-[9px] text-slate-600">
+        <div className="flex items-center justify-between pt-1 text-caption text-db-faint">
           <span>数据: OpenRouter Rankings API</span>
           <span>日更新</span>
         </div>

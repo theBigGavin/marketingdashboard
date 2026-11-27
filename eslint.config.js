@@ -20,4 +20,11 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // Scripting App 入口必须导出 run()，并非 Vite React Fast Refresh 模块。
+    files: ['scriptable/**/*.tsx'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ])

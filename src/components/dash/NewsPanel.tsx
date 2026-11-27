@@ -23,18 +23,18 @@ function tagOf(item: NewsItem): { label: string; color: string } | null {
 function NewsRow({ item, isNew }: { item: NewsItem; isNew: boolean }) {
   const tag = tagOf(item);
   return (
-    <article className={`rounded border-l-2 px-2.5 py-2 transition-colors ${isNew ? "border-cyan-400 bg-cyan-500/5" : "border-slate-700/50 hover:bg-slate-800/30"}`}>
+    <article className={`rounded border-l-2 px-2.5 py-2 transition-colors ${isNew ? "border-cyan-400 bg-cyan-500/5" : "border-db-border/50 hover:bg-db-subtle/30"}`}>
       <div className="flex items-center gap-2">
-        <span className="text-[10px] text-slate-500" style={{ fontVariantNumeric: "tabular-nums" }}>{fmtTime(item.time)}</span>
+        <span className="text-meta text-db-muted" style={{ fontVariantNumeric: "tabular-nums" }}>{fmtTime(item.time)}</span>
         {tag && (
-          <span className="rounded-sm px-1 py-px text-[9px]" style={{ background: `${tag.color}22`, color: tag.color }}>
+          <span className="rounded-sm px-1 py-px text-caption" style={{ background: `${tag.color}22`, color: tag.color }}>
             {tag.label}
           </span>
         )}
-        {isNew && <span className="rounded-sm bg-cyan-500/20 px-1 py-px text-[9px] text-cyan-300">NEW</span>}
+        {isNew && <span className="rounded-sm bg-cyan-500/20 px-1 py-px text-caption text-cyan-300">NEW</span>}
       </div>
-      {item.title && <h3 className="mt-1 text-[12px] font-semibold leading-5 text-slate-200">{item.title}</h3>}
-      <p className={`mt-0.5 text-[11px] leading-[1.55] text-slate-400 ${item.title ? "line-clamp-2" : ""}`}>{item.content}</p>
+      {item.title && <h3 className="mt-1 text-panel-title font-semibold leading-5 text-db-primary">{item.title}</h3>}
+      <p className={`mt-0.5 text-body leading-[1.55] text-db-tertiary ${item.title ? "line-clamp-2" : ""}`}>{item.content}</p>
     </article>
   );
 }
@@ -67,7 +67,7 @@ export function NewsPanel({ className = "", ...zoomProps }: { className?: string
       icon={<Rss size={14} />}
       accent="#f472b6"
       right={
-        <label className="flex cursor-pointer items-center gap-1.5 text-[10px] text-slate-400">
+        <label className="flex cursor-pointer items-center gap-1.5 text-meta text-db-tertiary">
           <input type="checkbox" checked={autoScroll} onChange={(e) => setAutoScroll(e.target.checked)} className="accent-cyan-400" />
           自动滚动 · {todayCount}条
         </label>

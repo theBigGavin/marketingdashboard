@@ -1,5 +1,7 @@
 /** 格式化与涨跌配色(中国市场: 涨红 / 跌绿) */
 
+import { UP, DOWN, FLAT } from "./colors";
+
 /** 等宽数字样式片段, 各面板统一使用 */
 export const TNUM = { fontVariantNumeric: "tabular-nums" } as const;
 
@@ -15,12 +17,17 @@ export const fmtPct = (v: number, digits = 2) => `${v > 0 ? "+" : ""}${v.toFixed
 export const fmtTurnover = (t?: number): string | undefined => (t != null && t > 0 ? `${t.toFixed(1)}%` : undefined);
 
 export const clsChg = (v: number) =>
-  v > 0 ? "text-rose-400" : v < 0 ? "text-emerald-400" : "text-slate-400";
+  v > 0 ? "text-change-up" : v < 0 ? "text-change-down" : "text-change-flat";
 
 export const bgChg = (v: number) =>
-  v > 0 ? "bg-rose-500/15 text-rose-300" : v < 0 ? "bg-emerald-500/15 text-emerald-300" : "bg-slate-500/15 text-slate-300";
+  v > 0
+    ? "bg-change-up-bg/15 text-change-up-soft"
+    : v < 0
+      ? "bg-change-down-bg/15 text-change-down-soft"
+      : "bg-change-flat-bg/15 text-change-flat-soft";
 
-export const hexChg = (v: number) => (v > 0 ? "#fb7185" : v < 0 ? "#34d399" : "#94a3b8");
+/** 兼容旧命名的 SVG/CSS 颜色入口；实际颜色由语义 token 提供。 */
+export const hexChg = (v: number) => (v > 0 ? UP : v < 0 ? DOWN : FLAT);
 
 /** 万元 -> 亿/万 */
 export const fmtWan = (wan: number) => {

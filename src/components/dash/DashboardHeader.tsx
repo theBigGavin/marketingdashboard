@@ -10,14 +10,14 @@ type Accent = "cyan" | "violet" | "gold";
 const SUBTITLE_CLASS: Record<Accent, string> = {
   cyan: "text-cyan-500/80",
   violet: "text-violet-500/80",
-  gold: "text-[#f5c542]/80",
+  gold: "text-gold/80",
 };
 
 /** 导航链接的 hover 色取与副标题相反的强调色 */
 const LINK_HOVER_CLASS: Record<Accent, string> = {
   cyan: "hover:border-violet-500/60 hover:text-violet-300",
   violet: "hover:border-cyan-500/60 hover:text-cyan-300",
-  gold: "hover:border-[#f5c542]/60 hover:text-[#fde68a]",
+  gold: "hover:border-gold/60 hover:text-gold-soft",
 };
 
 export function DashboardHeader({
@@ -72,16 +72,16 @@ export function DashboardHeader({
   const week = ["日", "一", "二", "三", "四", "五", "六"][now.getDay()];
 
   return (
-    <header className="titlebar flex h-9 shrink-0 items-center gap-3 border-b border-slate-700/50 bg-gradient-to-r from-[#0a1424] via-[#0c1320] to-[#0a1424]">
+    <header className="titlebar flex h-9 shrink-0 items-center gap-3 border-b border-db-border/50 bg-gradient-to-r from-db-header via-db-panel to-db-header">
       <div className="flex items-center gap-2.5">
         <Logo size={22} className="rounded-[6px] shadow-[0_0_12px_rgba(34,211,238,0.45)]" />
-        <h1 className="text-[13px] font-bold tracking-wider text-slate-100">
+        <h1 className="text-subtitle font-bold tracking-wider text-db-strong">
           {title}
-          <span className={`ml-2 text-[8px] font-medium tracking-[0.2em] ${SUBTITLE_CLASS[accent]}`}>{subtitle}</span>
+          <span className={`ml-2 text-micro font-medium tracking-[0.2em] ${SUBTITLE_CLASS[accent]}`}>{subtitle}</span>
         </h1>
       </div>
-      <div className="mx-1 h-4 w-px bg-slate-700" />
-      <div className="hidden items-center gap-3 text-[10px] text-slate-500 lg:flex">
+      <div className="mx-1 h-4 w-px bg-db-border" />
+      <div className="hidden items-center gap-3 text-meta text-db-muted lg:flex">
         <span>{tagline}</span>
       </div>
       <div className="ml-auto flex items-center gap-3">
@@ -90,14 +90,14 @@ export function DashboardHeader({
             key={l.to}
             to={l.to}
             {...(isTv ? { "data-tv-focusable": true, tabIndex: -1 } : {})}
-            className={`flex items-center gap-1 rounded border border-slate-700/60 bg-slate-800/40 px-2 py-1 text-[10px] text-slate-400 transition-colors ${LINK_HOVER_CLASS[accent]}`}
+            className={`flex items-center gap-1 rounded border border-db-border/60 bg-db-subtle/40 px-2 py-1 text-meta text-db-tertiary transition-colors ${LINK_HOVER_CLASS[accent]}`}
           >
             {linkBack && i === 0 && <ArrowLeft size={10} />}
             {l.label}
           </Link>
         ))}
         {live && (
-          <span className="flex items-center gap-1.5 text-[10px] text-emerald-400">
+          <span className="flex items-center gap-1.5 text-meta text-emerald-400">
             <span className="relative flex h-1.5 w-1.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
@@ -105,10 +105,10 @@ export function DashboardHeader({
             实时行情
           </span>
         )}
-        <span className="hidden text-[10px] text-slate-400 md:inline" style={{ fontVariantNumeric: "tabular-nums" }}>
+        <span className="hidden text-meta text-db-tertiary md:inline" style={{ fontVariantNumeric: "tabular-nums" }}>
           {dateStr} 星期{week}
         </span>
-        <span className="rounded border border-slate-700/60 bg-slate-800/40 px-2 py-px font-mono text-[12px] font-bold text-cyan-300">
+        <span className="rounded border border-db-border/60 bg-db-subtle/40 px-2 py-px font-mono text-panel-title font-bold text-cyan-300">
           {hh}:{mm}{isTv ? "" : <span className="text-cyan-600">:{ss}</span>}
         </span>
         {githubUrl && (
@@ -117,11 +117,11 @@ export function DashboardHeader({
             target="_blank"
             rel="noopener noreferrer"
             title={`GitHub 仓库${stars ? ` · ${stars} stars` : ""}`}
-            className="flex h-[22px] items-center gap-1 rounded border border-slate-700/60 bg-slate-800/40 px-1.5 text-slate-400 transition-colors hover:border-cyan-500/60 hover:text-cyan-300"
+            className="flex h-[22px] items-center gap-1 rounded border border-db-border/60 bg-db-subtle/40 px-1.5 text-db-tertiary transition-colors hover:border-cyan-500/60 hover:text-cyan-300"
           >
             <Github size={12} />
             {stars !== null && (
-              <span className="font-mono text-[10px] font-bold tabular-nums text-slate-300">
+              <span className="font-mono text-meta font-bold tabular-nums text-db-secondary">
                 {stars}
               </span>
             )}
@@ -130,7 +130,7 @@ export function DashboardHeader({
         <button
           onClick={onToggleFullscreen}
           title={isFullscreen ? "退出全屏" : "全屏显示"}
-          className="flex h-[22px] w-[22px] items-center justify-center rounded border border-slate-700/60 bg-slate-800/40 text-slate-400 transition-colors hover:border-cyan-500/60 hover:text-cyan-300"
+          className="flex h-[22px] w-[22px] items-center justify-center rounded border border-db-border/60 bg-db-subtle/40 text-db-tertiary transition-colors hover:border-cyan-500/60 hover:text-cyan-300"
         >
           {isFullscreen ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
         </button>

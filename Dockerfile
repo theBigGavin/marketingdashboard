@@ -1,12 +1,12 @@
 # 市场研究驾驶舱 — 全栈一体化镜像
-FROM node:20-alpine AS build
+FROM node:22-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
 RUN npm run build && npm prune --omit=dev
 
-FROM node:20-alpine
+FROM node:22-alpine
 RUN apk add --no-cache curl
 WORKDIR /app
 ENV NODE_ENV=production

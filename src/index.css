@@ -4,6 +4,41 @@
 
 @layer base {
   :root {
+    /* 驾驶舱语义色：值保持与现有界面一致，组件只消费语义，不再散落色值。 */
+    --db-canvas: 7 11 18;
+    --db-panel: 12 19 32;
+    --db-header: 10 20 36;
+    --db-ticker: 10 16 28;
+    --db-chart: 11 17 32;
+    --db-elevated: 15 23 42;
+    --db-subtle: 30 41 59;
+    --db-border: 51 65 85;
+    --db-strong: 241 245 249;
+    --db-primary: 226 232 240;
+    --db-secondary: 203 213 225;
+    --db-tertiary: 148 163 184;
+    --db-muted: 100 116 139;
+    --db-faint: 71 85 105;
+    --db-overlay: 10 18 32;
+    --gold: 245 197 66;
+    --gold-soft: 253 230 138;
+    --model-closed: 217 89 38;
+    --model-open: 25 158 112;
+    --infra-price: 56 189 248;
+    --infra-cost: 251 113 133;
+    --infra-roi: 167 139 250;
+    --infra-capex: 251 191 36;
+    --infra-grid: 52 211 153;
+    --change-up: 251 113 133;
+    --change-down: 52 211 153;
+    --change-flat: 148 163 184;
+    --change-up-soft: 253 164 175;
+    --change-down-soft: 110 231 183;
+    --change-flat-soft: 203 213 225;
+    --change-up-bg: 244 63 94;
+    --change-down-bg: 16 185 129;
+    --change-flat-bg: 100 116 139;
+
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -77,8 +112,8 @@
 /* ===== 驾驶舱全局样式 ===== */
 html,
 body {
-  background: #070b12;
-  font-family: -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: rgb(var(--db-canvas));
+  @apply font-sans;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }

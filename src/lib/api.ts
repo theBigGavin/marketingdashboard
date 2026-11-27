@@ -327,12 +327,28 @@ function timeoutSignal(ms: number): AbortSignal {
 /** 本地桌面壳注入的 API 前缀(通过 ?apiBase= 传入), 默认空 = 同源 */
 const API_BASE = new URLSearchParams(window.location.search).get("apiBase") ?? "";
 
+// 仅复用同地址的在途 GET：React StrictMode 重挂载或多个面板同时请求时不重复打接口；
+// 完成后立即移除，不缓存结果，后续轮询始终获取新数据。
+const inflightGets = new Map<string, Promise<unknown>>();
+
 async function get<T>(path: string): Promise<T> {
-  const r = await fetch(`${API_BASE}${path}`, { signal: timeoutSignal(10000) });
-  const j = await r.json().catch(() => null);
-  if (!r.ok) throw new Error(j?.error || `HTTP ${r.status}`);
-  if (!j?.ok) throw new Error(j?.error || "api error");
-  return j.data as T;
+  const url = `${API_BASE}${path}`;
+  const pending = inflightGets.get(url);
+  if (pending) return pending as Promise<T>;
+
+  const request = (async () => {
+    const r = await fetch(url, { signal: timeoutSignal(10000) });
+    const j = await r.json().catch(() => null);
+    if (!r.ok) throw new Error(j?.error || `HTTP ${r.status}`);
+    if (!j?.ok) throw new Error(j?.error || "api error");
+    return j.data as T;
+  })();
+  inflightGets.set(url, request);
+  try {
+    return await request;
+  } finally {
+    if (inflightGets.get(url) === request) inflightGets.delete(url);
+  }
 }
 
 /** 响应信封: 服务端在上游全挂时会降级返回上次成功数据并置 stale=true(带 asof 时间戳),
@@ -561,9 +577,9 @@ export const api = {
   spendIndex: () => get<SpendIndexResp>(`/api/spend-index`),
   /** AI 基础设施资本出清与复合 ROI(2022-2035 历史+预测) */
   aiInfra: () => get<AiInfraResp>(`/api/ai-infra`),
-  /** 黄金观察(25): 聚合(8 面板字段), 数据来自 gold-monitor 管道(60min 级) */
+  /** 黄金观察: 聚合 8 面板字段，本地资产优先，缺失时真实在线源回退。 */
   gold: () => get<GoldResp>(`/api/gold`),
-  /** 黄金历史序列: days=1|7|30(同机扫描 gold_data_*.json 降采样) */
+  /** 黄金历史序列: days=1|7|30(本地文件或 XAUS 在线序列降采样) */
   goldHistory: (days: 1 | 7 | 30) => get<GoldHistoryResp>(`/api/gold/history?days=${days}`),
 };
 
@@ -600,7 +616,7 @@ export interface GoldRealCurve {
 }
 
 export interface GoldInflation {
-  headlines: { CPI: { value: number; date: string; yoy_pct: number }; [k: string]: { value: number; date: string; yoy_pct: number } } | null;
+  headlines: { CPI: { value?: number; date: string; yoy_pct: number }; [k: string]: { value?: number; date: string; yoy_pct: number } } | null;
   breakeven_inflation: Record<string, number> | null;
 }
 
@@ -614,6 +630,7 @@ export interface GoldNews {
   title: string;
   url: string;
   source: string;
+  publishedAt?: string | null;
 }
 
 export interface GoldCbTx {
@@ -630,7 +647,19 @@ export interface GoldCbTop {
   tonnes: number;
 }
 
+export interface GoldSourceState {
+  status: "ok" | "partial" | "unavailable" | "stale";
+  /** 稳定机器原因码；前端映射为中文，不直接展示内部路径。 */
+  reason: string | null;
+  asof: number | null;
+}
+
 export interface GoldResp {
+  status: "ok" | "partial" | "unavailable";
+  reason: string | null;
+  stale: boolean;
+  asof: number | null;
+  sources: { monitor: GoldSourceState; centralBank: GoldSourceState };
   fetched_at: string | null;
   gold: GoldPrice | null;
   treasury: GoldTreasury | null;
@@ -639,14 +668,22 @@ export interface GoldResp {
   fed: GoldFed | null;
   news: GoldNews[];
   central_bank: { transactions: GoldCbTx[]; top10: GoldCbTop[] };
-  source: string;
+  source: "gold-monitor" | "online" | "hybrid";
+  /** 可读来源列表；各面板另用 providers 标注自己的真实来源。 */
+  provider: string;
+  providers: { gold?: string | null; treasury?: string | null; macro?: string | null; news?: string | null; centralBank?: string | null };
 }
 
 export interface GoldHistoryResp {
+  status: "ok" | "empty" | "unavailable";
+  reason: string | null;
+  stale: boolean;
+  asof: number | null;
   days: number;
   points: { t: string; p: number }[];
   count: number;
   source: string;
+  provider?: string;
 }
 
 /** OpenRouter 用量轮询(1 小时) */

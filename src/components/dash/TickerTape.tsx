@@ -13,8 +13,8 @@ export interface TapeItem {
 function TapeItemView({ it }: { it: TapeItem }) {
   return (
     <>
-      <span className="text-slate-400">{it.label}</span>
-      <span className="font-semibold text-slate-100" style={{ fontVariantNumeric: "tabular-nums" }}>
+      <span className="text-db-tertiary">{it.label}</span>
+      <span className="font-semibold text-db-strong" style={{ fontVariantNumeric: "tabular-nums" }}>
         {it.digits === 3 ? it.price.toFixed(3) : fmtPrice(it.price)}
       </span>
       <span className={`${clsChg(it.pct)} font-medium`} style={{ fontVariantNumeric: "tabular-nums" }}>
@@ -48,12 +48,12 @@ function FlapTape({ items }: { items: TapeItem[] }) {
   const slots = slotIdx.slice(0, n).map((idx, pos) => ({ pos, it: items[idx % items.length] }));
 
   return (
-    <div className="flex h-8 items-center justify-between gap-3 border-b border-slate-700/40 bg-[#0a101c] px-4 text-[11px]">
+    <div className="flex h-8 items-center justify-between gap-3 border-b border-db-border/40 bg-db-ticker px-4 text-body">
       {slots.map(({ pos, it }) => (
         // key = 槽位序号 + item.key: 槽位换内容时重挂载, 触发 flap-in 翻牌动画
         <span
           key={`${pos}-${it.key}`}
-          className="flap-item inline-flex h-6 min-w-0 flex-1 items-center justify-center gap-4 overflow-hidden whitespace-nowrap rounded border border-slate-700/60 bg-[#0c1320] px-2.5 leading-6 shadow-[0_1px_0_rgba(0,0,0,0.4)]"
+          className="flap-item inline-flex h-6 min-w-0 flex-1 items-center justify-center gap-4 overflow-hidden whitespace-nowrap rounded border border-db-border/60 bg-db-panel px-2.5 leading-6 shadow-[0_1px_0_rgba(0,0,0,0.4)]"
         >
           <TapeItemView it={it} />
         </span>
@@ -77,13 +77,13 @@ export function TickerTape({ items }: { items: TapeItem[] }) {
   if (isTv) return <FlapTape items={items} />;
 
   return (
-    <div className="ticker-wrap relative h-7 overflow-hidden border-b border-slate-700/40 bg-[#0a101c] text-[11px] leading-7">
+    <div className="ticker-wrap relative h-7 overflow-hidden border-b border-db-border/40 bg-db-ticker text-body leading-7">
       <div className="ticker-track inline-flex items-center will-change-transform">
         <div className="inline-flex">{content}</div>
         <div className="inline-flex" aria-hidden>{content}</div>
       </div>
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#070b12] to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#070b12] to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-db-canvas to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-db-canvas to-transparent" />
     </div>
   );
 }

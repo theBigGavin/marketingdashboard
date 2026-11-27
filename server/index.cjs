@@ -93,8 +93,9 @@ const { handleFinanceMain, handleFinanceBoard, handleFinanceForecast, validPerio
 const srcTreasuries = require("./sources/treasuries.cjs")({ fetchTextAny, num, fs, path });
 const { handleTreasuries, handleTreasuryHistory } = srcTreasuries;
 
-// 黄金观察（25, 0820 Gavin 指令）: 读 gold-monitor 产物文件(零网络依赖) + central-bank-gold SQLite(只读)
-const srcGold = require("./sources/gold.cjs")({ fs, path });
+// 黄金观察: 本地 gold-monitor/SQLite 优先；缺数时走真实在线源，最后使用独立 last-good 快照。
+const srcGoldOnline = require("./sources/gold-online.cjs")({ fetchTextAny });
+const srcGold = require("./sources/gold.cjs")({ fs, path, lastGood, online: srcGoldOnline, env: process.env });
 const { handleGold, handleGoldHistory } = srcGold;
 
 const srcOpenRouter = require("./sources/openrouter.cjs")({ safeRecord, fs, path });

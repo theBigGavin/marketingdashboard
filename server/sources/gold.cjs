@@ -1,117 +1,125 @@
-// mrd 黄金观察 /gold · 数据源 = 读 gold-monitor 产物文件（零网络依赖）
-// 数据资产盘点（庄子已定，勿改）：
-//   - 实时价/宏观: /home/gavin/hermes_space/gold-monitor/data/gold_data_*.json（60min cron 落盘, 按 mtime 取最新）
-//   - 历史序列:   同目录全部 gold_data_*.json（1200+ 份, 24h=24 点 / 7d=168 点 / 30d 降采样）
-//   - 央行购金:   /home/gavin/hermes_space/central-bank-gold/db/gold_reserves.db（SQLite, cb_transactions / gold_reserves）
-// 铁律: 不改 gold-monitor 任何文件; JSON 缺失/解析失败 → 空态 + __ttl: 60s 短缓存(恢复即重试);
-//       SQLite 读不到 → 央行面板空态提示, 绝不硬编码死值。
+// mrd 黄金观察 /gold · 数据源 = 读 gold-monitor 产物文件 + central-bank-gold SQLite(只读)
+// 配置: GOLD_DATA_DIR / GOLD_CB_DB_PATH；缺省值兼容原 Linux 部署。
+// 原则: 不修改数据资产；缺失/损坏必须返回明确原因，绝不用空数组冒充正常空数据。
 "use strict";
 
 const { DatabaseSync } = require("node:sqlite");
 
-const GOLD_DATA_DIR = "/home/gavin/hermes_space/gold-monitor/data";
-const CB_DB_PATH = "/home/gavin/hermes_space/central-bank-gold/db/gold_reserves.db";
+const DEFAULT_GOLD_DATA_DIR = "/home/gavin/hermes_space/gold-monitor/data";
+const DEFAULT_CB_DB_PATH = "/home/gavin/hermes_space/central-bank-gold/db/gold_reserves.db";
 // 盎司 → 克: 1 金衡盎司 = 31.1034768 克
 const OZ_TO_G = 31.1034768;
+const EMPTY_CB = { transactions: [], top10: [] };
+const sourceState = (status, reason = null, asof = null) => ({ status, reason, asof });
 
 module.exports = (ctx) => {
-  const { fs, path } = ctx;
+  const { fs, path, lastGood = null, online = null, env = process.env, logger = console } = ctx;
+  const GOLD_DATA_DIR = env.GOLD_DATA_DIR || DEFAULT_GOLD_DATA_DIR;
+  const CB_DB_PATH = env.GOLD_CB_DB_PATH || DEFAULT_CB_DB_PATH;
+  const loadSnapshot = (key) => lastGood ? lastGood.read(key) : null;
+  const saveSnapshot = (key, data) => { if (lastGood) lastGood.write(key, data); };
+
+  // 启动即报告依赖缺失；黄金是可选页面，不阻断其他驾驶舱接口。
+  if (!fs.existsSync(GOLD_DATA_DIR)) logger.warn(`[gold] GOLD_DATA_DIR 不存在: ${GOLD_DATA_DIR}`);
+  if (!fs.existsSync(CB_DB_PATH)) logger.warn(`[gold] GOLD_CB_DB_PATH 不存在: ${CB_DB_PATH}`);
 
   /* ---------------- 文件层 ---------------- */
 
-  /** 最新一份 gold_data_*.json 的绝对路径（按 mtime, 目录缺失/空返回 null） */
+  /** 最新一份 gold_data_*.json；所有失败都带稳定原因码，不把异常吞成 null。 */
   function latestGoldFile() {
+    if (!fs.existsSync(GOLD_DATA_DIR)) return { file: null, reason: "DATA_DIR_NOT_FOUND" };
     let names;
-    try { names = fs.readdirSync(GOLD_DATA_DIR); } catch { return null; }
+    try { names = fs.readdirSync(GOLD_DATA_DIR); } catch { return { file: null, reason: "DATA_DIR_UNREADABLE" }; }
     const golds = names
       .filter((n) => /^gold_data_\d{8}_\d{6}\.json$/.test(n))
       .map((n) => ({ n, p: path.join(GOLD_DATA_DIR, n) }))
       .sort((a, b) => {
         try { return fs.statSync(b.p).mtimeMs - fs.statSync(a.p).mtimeMs; } catch { return 0; }
       });
-    return golds.length ? golds[0].p : null;
+    return golds.length
+      ? { file: golds[0].p, reason: null }
+      : { file: null, reason: "DATA_FILE_NOT_FOUND" };
   }
 
-  /** 读 JSON, 解析失败返回 null（三层 fallback 第一层: 空态 + 短缓存） */
   function readGoldJson(file) {
-    if (!file) return null;
-    try { return JSON.parse(fs.readFileSync(file, "utf8")); } catch { return null; }
+    try { return { data: JSON.parse(fs.readFileSync(file, "utf8")), reason: null }; }
+    catch { return { data: null, reason: "DATA_FILE_INVALID" }; }
   }
 
-  /** 文件名 gold_data_20260820_174713.json → Date（本地时区, 与 mrd 服务器同区; 失败回退 mtime） */
-  function fileTime(file) {
+  /** 文件名 gold_data_20260820_174713.json → Date（本地时区；失败回退 mtime） */
+  function fileTimeFromName(file) {
     const m = path.basename(file).match(/^gold_data_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\.json$/);
-    if (m) {
-      const d = new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]);
-      if (!Number.isNaN(d.getTime())) return d;
-    }
+    if (!m) return null;
+    const d = new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+
+  function fileTime(file) {
+    const parsed = fileTimeFromName(file);
+    if (parsed) return parsed;
     try { return new Date(fs.statSync(file).mtimeMs); } catch { return new Date(0); }
   }
 
   /* ---------------- SQLite 层（node:sqlite 内置, 只读） ---------------- */
 
-  /** 打开央行库（只读; 缺失/损坏返回 null, 绝不抛给路由层） */
-  function openCbDb() {
-    try {
-      if (!fs.existsSync(CB_DB_PATH)) return null;
-      return new DatabaseSync(CB_DB_PATH, { readOnly: true });
-    } catch { return null; }
+  /** 央行购金动态: 同月同国去重，排除全球汇总及绝对值 >=20 吨的脏数据。 */
+  function cbTransactions(db) {
+    const rows = db.prepare(`
+      SELECT country, transaction_date AS ym, change_tonnes AS tonnes, notes
+      FROM cb_transactions
+      WHERE ABS(change_tonnes) < 20
+        AND country NOT LIKE '%全球%'
+      ORDER BY transaction_date DESC, change_tonnes DESC
+    `).all();
+    const seen = new Set();
+    const out = [];
+    for (const r of rows) {
+      if (!r.ym) continue;
+      const key = `${r.ym.slice(0, 7)}|${r.country}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push({ country: r.country, ym: r.ym.slice(0, 7), tonnes: r.tonnes, notes: r.notes || "" });
+      if (out.length >= 15) break;
+    }
+    return out;
   }
 
-  /** 央行购金动态: 近 3 个月, ABS(change_tonnes)<20 过滤脏数据(进口/汇总), 去重同月同国, 排除"全球"汇总行 */
-  function cbTransactions() {
-    const db = openCbDb();
-    if (!db) return { transactions: [] };
-    try {
-      const rows = db.prepare(`
-        SELECT country, transaction_date AS ym, change_tonnes AS tonnes, notes
-        FROM cb_transactions
-        WHERE ABS(change_tonnes) < 20
-          AND country NOT LIKE '%全球%'
-        ORDER BY transaction_date DESC, change_tonnes DESC
-      `).all();
-      // 去重: 同月同国只保留一条（优先保留最先出现的, ORDER BY 已让大额在前）
-      const seen = new Set();
-      const out = [];
-      for (const r of rows) {
-        if (!r.ym) continue;
-        const key = `${r.ym.slice(0, 7)}|${r.country}`;
-        if (seen.has(key)) continue;
-        seen.add(key);
-        out.push({ country: r.country, ym: r.ym.slice(0, 7), tonnes: r.tonnes, notes: r.notes || "" });
-        if (out.length >= 15) break;
+  /** 央行储备 TOP10: 每个国家取最新日期快照。 */
+  function cbReservesTop(db) {
+    const rows = db.prepare(`
+      SELECT r.country, r.date, r.reserves_tonnes AS tonnes
+      FROM gold_reserves r
+      JOIN (SELECT country, MAX(date) AS md FROM gold_reserves GROUP BY country) t
+        ON r.country = t.country AND r.date = t.md
+      ORDER BY r.reserves_tonnes DESC
+      LIMIT 10
+    `).all();
+    return rows.map((r) => ({ country: r.country, date: r.date, tonnes: r.tonnes }));
+  }
+
+  function readCentralBank() {
+    let reason = null;
+    if (!fs.existsSync(CB_DB_PATH)) reason = "DB_NOT_FOUND";
+    let db = null;
+    if (!reason) {
+      try {
+        db = new DatabaseSync(CB_DB_PATH, { readOnly: true });
+        const data = { transactions: cbTransactions(db), top10: cbReservesTop(db) };
+        saveSnapshot("gold:central-bank", data);
+        return { data, state: sourceState("ok", null, Date.now()) };
+      } catch {
+        reason = "DB_UNAVAILABLE";
+      } finally {
+        if (db) { try { db.close(); } catch {} }
       }
-      return { transactions: out };
-    } catch { return { transactions: [] }; }
-    finally { try { db.close(); } catch {} }
+    }
+    const snapshot = loadSnapshot("gold:central-bank");
+    if (snapshot) return { data: snapshot.data, state: sourceState("stale", reason, snapshot.at) };
+    return { data: { ...EMPTY_CB }, state: sourceState("unavailable", reason) };
   }
 
-  /** 央行储备 TOP10: 每个国家取最新日期快照, 按 reserves_tonnes 降序 */
-  function cbReservesTop() {
-    const db = openCbDb();
-    if (!db) return { top10: [] };
-    try {
-      // 子查询: 每国家最新 date（快照表一个国家多期, 取最新一期）
-      const rows = db.prepare(`
-        SELECT r.country, r.date, r.reserves_tonnes AS tonnes
-        FROM gold_reserves r
-        JOIN (SELECT country, MAX(date) AS md FROM gold_reserves GROUP BY country) t
-          ON r.country = t.country AND r.date = t.md
-        ORDER BY r.reserves_tonnes DESC
-        LIMIT 10
-      `).all();
-      return { top10: rows.map((r) => ({ country: r.country, date: r.date, tonnes: r.tonnes })) };
-    } catch { return { top10: [] }; }
-    finally { try { db.close(); } catch {} }
-  }
+  /* ---------------- 换算与清洗 ---------------- */
 
-  /* ---------------- 换算 ---------------- */
-
-  /**
-   * 金价换算: USD/oz 与 CNY/oz 双价（gold-api 已直接给 CNY/oz, 无需汇率反推）。
-   * 返回 { usd, cny, cnyPerG, note } — cnyPerG = CNY/oz ÷ 31.1035（克价）;
-   * CNY 缺失时用 USD × 汇率(无汇率则标注不可换算)兜底, 不伪造。
-   */
   function convertPrices(prices) {
     const usdEntry = prices && prices.USD && typeof prices.USD.price === "number" ? prices.USD : null;
     const cnyEntry = prices && prices.CNY && typeof prices.CNY.price === "number" ? prices.CNY : null;
@@ -134,7 +142,6 @@ module.exports = (ctx) => {
     };
   }
 
-  /** 收益率字典 → 数值对象（live_treasury_yields.yields 值是字符串, 转 number; 非法丢弃） */
   function yieldsToNum(yields) {
     const out = {};
     for (const [k, v] of Object.entries(yields || {})) {
@@ -144,7 +151,6 @@ module.exports = (ctx) => {
     return out;
   }
 
-  /** real_rates 脏值过滤: |x|<50 才有效（坑#15: real_rates["3"] 曾 -126 荒谬值, PCE 指数泄漏） */
   function cleanRealRates(rates) {
     const out = {};
     for (const [k, v] of Object.entries(rates || {})) {
@@ -155,28 +161,19 @@ module.exports = (ctx) => {
     return out;
   }
 
-  /* ---------------- 聚合 /api/gold ---------------- */
+  function emptyMonitor() {
+    return {
+      fetched_at: null,
+      gold: null,
+      treasury: null,
+      real_curve: null,
+      inflation: null,
+      fed: null,
+      news: [],
+    };
+  }
 
-  // 注意: cached() 内部执行 fn().then(...), handler 必须是 async(同步 fn 会抛 fn(...).then is not a function)
-  async function handleGold() {
-    const file = latestGoldFile();
-    const d = readGoldJson(file);
-    // 三层 fallback 第一层: 文件缺失/坏 → 空态 + 短缓存(60s, 恢复即重试)
-    if (!d) {
-      return {
-        __ttl: 60 * 1000,
-        fetched_at: null,
-        gold: null,
-        treasury: null,
-        real_curve: null,
-        inflation: null,
-        fed: null,
-        news: [],
-        central_bank: { transactions: [], top10: [] },
-        source: "gold-monitor",
-      };
-    }
-
+  function monitorPayload(d) {
     const price = convertPrices(d.gold_price && d.gold_price.prices);
     const intraday = (d.gold_price && d.gold_price.intraday) || {};
     const yields = yieldsToNum(d.live_treasury_yields && d.live_treasury_yields.yields);
@@ -184,7 +181,6 @@ module.exports = (ctx) => {
     const cpi = d.cpi_inflation || {};
     const fed = d.live_fed_rate || {};
     const newsRaw = (d.recent_news && d.recent_news.news) || [];
-
     return {
       fetched_at: d.fetched_at || null,
       gold: {
@@ -205,7 +201,6 @@ module.exports = (ctx) => {
         date: ryc.date || null,
         nominal_rates: ryc.nominal_rates || null,
         breakeven_rates: ryc.breakeven_rates || null,
-        // 脏值过滤后再给前端（坑#15: real_rates["3"] -126.64 曾毒化报告）
         real_rates: cleanRealRates(ryc.real_rates),
       },
       inflation: {
@@ -221,41 +216,214 @@ module.exports = (ctx) => {
         title: String(n.title || ""),
         url: String(n.url || ""),
         source: String(n.source || ""),
+        publishedAt: n.publishedAt || n.pubDate || null,
       })),
-      central_bank: { ...cbTransactions(), ...cbReservesTop() },
-      source: "gold-monitor",
+    };
+  }
+
+  function readMonitor() {
+    const latest = latestGoldFile();
+    let reason = latest.reason;
+    if (latest.file) {
+      const parsed = readGoldJson(latest.file);
+      reason = parsed.reason;
+      if (parsed.data) {
+        const data = monitorPayload(parsed.data);
+        saveSnapshot("gold:monitor", data);
+        return { data, state: sourceState("ok", null, Date.now()) };
+      }
+    }
+    const snapshot = loadSnapshot("gold:monitor");
+    if (snapshot) return { data: snapshot.data, state: sourceState("stale", reason, snapshot.at) };
+    return { data: emptyMonitor(), state: sourceState("unavailable", reason) };
+  }
+
+  /* ---------------- 在线回退（仅在对应本地来源非 ok 时启用） ---------------- */
+
+  function monitorValue(data, key) {
+    if (!data) return false;
+    if (key === "gold") return data.gold != null && (data.gold.usd != null || data.gold.cny != null);
+    if (key === "treasury") return Object.keys(data.treasury?.yields || {}).length > 0;
+    if (key === "real_curve") return Object.keys(data.real_curve?.real_rates || {}).length > 0 || Object.keys(data.real_curve?.breakeven_rates || {}).length > 0;
+    if (key === "inflation") return data.inflation?.headlines != null || data.inflation?.breakeven_inflation != null;
+    if (key === "fed") return data.fed?.effectiveRate != null;
+    if (key === "news") return Array.isArray(data.news) && data.news.length > 0;
+    return false;
+  }
+
+  function mergeMonitor(primary, fallback) {
+    const data = { ...primary, fetched_at: primary.fetched_at || fallback?.fetched_at || null };
+    let usedFallback = false;
+    for (const key of ["gold", "treasury", "real_curve", "inflation", "fed", "news"]) {
+      if (!monitorValue(primary, key) && monitorValue(fallback, key)) {
+        data[key] = fallback[key];
+        usedFallback = true;
+      }
+    }
+    return { data, usedFallback };
+  }
+
+  async function resolveMonitor(local) {
+    if (!online || local.state.status === "ok") return { ...local, provider: "gold-monitor", providers: {}, origin: "local" };
+    const previous = loadSnapshot("gold:online-monitor");
+    try {
+      const result = await online.fetchMonitor();
+      const merged = mergeMonitor(result.data, previous?.data?.data || local.data);
+      const payload = { data: merged.data, providers: result.providers || {} };
+      saveSnapshot("gold:online-monitor", payload);
+      const stale = result.stale === true || merged.usedFallback;
+      return {
+        data: merged.data,
+        state: sourceState(stale ? "stale" : result.errors?.length ? "partial" : "ok",
+          result.stale ? "UPSTREAM_STALE" : merged.usedFallback ? "ONLINE_SNAPSHOT_PARTIAL" : result.errors?.[0] || null,
+          Date.now()),
+        provider: "在线数据源", providers: result.providers || {}, origin: "online",
+      };
+    } catch (e) {
+      logger.warn("[gold] 在线聚合回退失败:", e?.message || e);
+      if (previous) return {
+        data: previous.data.data,
+        state: sourceState("stale", "ONLINE_UNAVAILABLE", previous.at),
+        provider: "在线缓存快照", providers: previous.data.providers || {}, origin: "online-snapshot",
+      };
+      return { ...local, provider: "gold-monitor", providers: {}, origin: "local" };
+    }
+  }
+
+  async function resolveCentralBank(local) {
+    if (!online || local.state.status === "ok") return { ...local, provider: "central-bank-gold", origin: "local" };
+    const key = "gold:online-central-bank";
+    try {
+      const result = await online.fetchCentralBank();
+      saveSnapshot(key, result);
+      return {
+        data: result.data,
+        state: sourceState(result.stale ? "stale" : "ok", result.stale ? "UPSTREAM_STALE" : null,
+          Date.parse(result.updated || "") || Date.now()),
+        provider: result.provider || "XAUS", origin: "online",
+      };
+    } catch (e) {
+      logger.warn("[gold] 在线央行储备回退失败:", e?.message || e);
+      const snapshot = loadSnapshot(key);
+      if (snapshot) return {
+        data: snapshot.data.data,
+        state: sourceState("stale", "ONLINE_UNAVAILABLE", snapshot.at),
+        provider: snapshot.data.provider || "XAUS 缓存快照", origin: "online-snapshot",
+      };
+      return { ...local, provider: "central-bank-gold", origin: "local" };
+    }
+  }
+
+  /* ---------------- 聚合 /api/gold ---------------- */
+
+  async function handleGold() {
+    // 两路独立回退，并允许彼此并行；单路故障不会拖垮另一面板组。
+    const [monitor, centralBank] = await Promise.all([
+      resolveMonitor(readMonitor()), resolveCentralBank(readCentralBank()),
+    ]);
+    const states = [monitor.state, centralBank.state];
+    const unavailable = states.every((s) => s.status === "unavailable");
+    const allFresh = states.every((s) => s.status === "ok");
+    const stale = states.some((s) => s.status === "stale");
+    const localOnly = monitor.origin === "local" && centralBank.origin === "local";
+    return {
+      __ttl: stale ? 15000 : 60000,
+      ...monitor.data,
+      central_bank: centralBank.data,
+      source: localOnly ? "gold-monitor" : monitor.origin === "online" && centralBank.origin === "online" ? "online" : "hybrid",
+      provider: [...new Set([...Object.values(monitor.providers || {}), centralBank.provider].filter(Boolean))].join(" · "),
+      providers: { ...(monitor.providers || {}), centralBank: centralBank.provider },
+      status: unavailable ? "unavailable" : allFresh ? "ok" : "partial",
+      reason: monitor.state.reason || centralBank.state.reason,
+      stale,
+      asof: monitor.state.asof ?? centralBank.state.asof,
+      sources: { monitor: monitor.state, centralBank: centralBank.state },
     };
   }
 
   /* ---------------- 历史序列 /api/gold/history?days=1|7|30 ---------------- */
 
+  async function withOnlineHistory(days, localResult) {
+    if (!online || localResult.status === "ok") return localResult;
+    const onlineKey = `gold:online-history:${days}`;
+    try {
+      const result = await online.fetchHistory(days);
+      saveSnapshot(onlineKey, result);
+      return { ...result, __ttl: result.stale ? 15000 : 60000 };
+    } catch (e) {
+      logger.warn("[gold] 在线历史回退失败:", e?.message || e);
+      const snapshot = loadSnapshot(onlineKey);
+      if (snapshot) return {
+        ...snapshot.data, __ttl: 15000, reason: "ONLINE_HISTORY_UNAVAILABLE", stale: true, asof: snapshot.at,
+      };
+      // 在线源也失败时保留原有本地快照/明确空态，不用假曲线填坑。
+      return localResult;
+    }
+  }
+
   async function handleGoldHistory(daysRaw) {
     const days = daysRaw === "7" ? 7 : daysRaw === "30" ? 30 : 1;
+    const snapshotKey = `gold:history:${days}`;
+    let names = null;
+    let reason = null;
+    if (!fs.existsSync(GOLD_DATA_DIR)) reason = "DATA_DIR_NOT_FOUND";
+    else {
+      try { names = await fs.promises.readdir(GOLD_DATA_DIR); }
+      catch { reason = "DATA_DIR_UNREADABLE"; }
+    }
+    if (names && !names.some((n) => /^gold_data_\d{8}_\d{6}\.json$/.test(n))) reason = "DATA_FILE_NOT_FOUND";
+    if (reason) {
+      const snapshot = loadSnapshot(snapshotKey);
+      const localResult = snapshot ? {
+        ...snapshot.data,
+        __ttl: 15000,
+        reason,
+        stale: true,
+        asof: snapshot.at,
+      } : {
+        __ttl: 60000,
+        days,
+        points: [],
+        count: 0,
+        source: "gold-monitor",
+        status: "unavailable",
+        reason,
+        stale: false,
+        asof: null,
+      };
+      return withOnlineHistory(days, localResult);
+    }
+
     const windowMs = days * 24 * 3600 * 1000;
     const now = Date.now();
-
-    let names;
-    try { names = fs.readdirSync(GOLD_DATA_DIR); } catch { names = []; }
-    const files = names
+    // 先按文件名日期排除窗口外文件，避免每次刷新都解析全部历史快照。
+    const candidates = names
       .filter((n) => /^gold_data_\d{8}_\d{6}\.json$/.test(n))
-      .map((n) => path.join(GOLD_DATA_DIR, n));
-
+      .map((n) => {
+        const file = path.join(GOLD_DATA_DIR, n);
+        const parsed = fileTimeFromName(file);
+        return { file, t: parsed ? parsed.getTime() : null };
+      })
+      .filter(({ t }) => t == null || (t >= now - windowMs && t <= now + 5 * 60 * 1000));
     const points = [];
-    for (const f of files) {
-      let p = null;
-      try {
-        const d = JSON.parse(fs.readFileSync(f, "utf8"));
-        p = d && d.gold_price && d.gold_price.prices && d.gold_price.prices.USD &&
-          typeof d.gold_price.prices.USD.price === "number" ? d.gold_price.prices.USD.price : null;
-      } catch { p = null; }
-      if (p == null) continue;
-      const t = fileTime(f).getTime();
-      if (t < now - windowMs || t > now + 5 * 60 * 1000) continue; // 只留窗口内, 容忍时钟偏移
-      points.push({ t: new Date(t).toISOString(), p });
+    // 分批异步读取，既不阻塞事件循环，也避免数百文件同时打开。
+    const READ_BATCH = 16;
+    for (let i = 0; i < candidates.length; i += READ_BATCH) {
+      const batch = await Promise.all(candidates.slice(i, i + READ_BATCH).map(async ({ file, t }) => {
+        try {
+          const d = JSON.parse(await fs.promises.readFile(file, "utf8"));
+          const p = d && d.gold_price && d.gold_price.prices && d.gold_price.prices.USD &&
+            typeof d.gold_price.prices.USD.price === "number" ? d.gold_price.prices.USD.price : null;
+          if (p == null) return null;
+          const ts = t ?? fileTime(file).getTime();
+          if (ts < now - windowMs || ts > now + 5 * 60 * 1000) return null;
+          return { t: new Date(ts).toISOString(), p };
+        } catch { return null; }
+      }));
+      for (const point of batch) if (point) points.push(point);
     }
     points.sort((a, b) => a.t.localeCompare(b.t));
 
-    // 降采样: 30d ≈720 点, 曲线渲染上限 ~200 点(保持形状, 前端 polyline 不糊)
     const MAX_POINTS = 200;
     let series = points;
     if (points.length > MAX_POINTS) {
@@ -264,17 +432,21 @@ module.exports = (ctx) => {
       for (let i = 0; i < MAX_POINTS; i++) {
         series.push(points[Math.min(points.length - 1, Math.floor(i * step))]);
       }
-      // 尾点必须是最新价(索引取整可能落到倒数第二点, 曲线结尾会"提前截止")
       series[series.length - 1] = points[points.length - 1];
     }
 
-    return {
-      __ttl: 60 * 1000,
+    const data = {
       days,
       points: series.map(({ t, p }) => ({ t, p: Math.round(p * 100) / 100 })),
       count: points.length,
       source: "gold-monitor",
+      status: points.length >= 2 ? "ok" : "empty",
+      reason: points.length >= 2 ? null : points.length === 0 ? "HISTORY_WINDOW_EMPTY" : "HISTORY_INSUFFICIENT_POINTS",
+      stale: false,
+      asof: Date.now(),
     };
+    if (points.length >= 2) saveSnapshot(snapshotKey, data);
+    return withOnlineHistory(days, { __ttl: 60000, ...data });
   }
 
   return { handleGold, handleGoldHistory };

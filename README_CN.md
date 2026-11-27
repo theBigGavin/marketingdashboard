@@ -14,7 +14,7 @@
 [![Vite](https://img.shields.io/badge/Vite-7-646cff?logo=vite&logoColor=white)](https://vite.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38bdf8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white)](https://nodejs.org)
+[![Node.js](https://img.shields.io/badge/Node.js-22.13+-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![GitHub Stars](https://img.shields.io/github/stars/theBigGavin/marketingdashboard?style=social&label=Stars)](https://github.com/theBigGavin/marketingdashboard)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -38,6 +38,9 @@
 - **💹 大模型价格竞争观察** — 2×3 网格四个面板：TTSI 支出指数趋势（全市场加权 / 闭源前沿 / 开源权重三线，纵轴从 0 起，本地 `ttsi.csv`（CC BY 4.0）全量历史与 RSS 日更尾部合并）、大模型价格表（约 400 个模型，智能/输入/输出/任务成本可排序）、性价比散点（智能指数 × 任务成本对数轴，厂商配色）、降价/份额变动事件流（TrakToken 每日标注）
 - **🪟 财报窗口（/fin）** — 财报季宏观视角：财报披露日历（14 天柱状节奏 + 今日清单）、业绩预告（预喜/预悲统计条 + 净利区间明细）、行业盈利榜（规模 × 景气度双编码）、个股盈利榜（净利额/增速切换），以及单公司近 12 期财报趋势（营收净利柱线 + ROE/毛利率/净利率）
 - **🏷️ 商品价格页（/goods）** — 贵金属 / 基本金属 / 黑色 / 能化 / 农产品 / 国际能源 6 大分组期货主力日线趋势（新浪全历史 K 线，30d~365d 区间切换），生意社现货日度报价（历史逐日积累）与现期基差对照表
+- **🪙 黄金观察（/gold）** — 实时金价与美元/人民币双价、24H/7D/30D 走势、美债收益率曲线、实际利率、央行购金与储备 TOP10、通胀与 Fed 指标、黄金新闻共 8 个面板；读取 gold-monitor 数据产物，缺失时显示诚实空态
+- **🚀 Pro 托管版（/pro）** — 托管版介绍与预注册落地页；`HOSTING=1` 部署时启用登录墙、租户隔离的自选股与面板布局云同步、AI 租户额度，托管账号后端由私有仓库 `mrd-pro` 注入
+- **🤖 MCP 数据服务** — 同一 Node.js 进程提供 `/mcp` 与 `/mcp/stream`，AI Agent 可直接调用行情、板块、期货、资金流和快讯工具，无需额外 API Key
 - **📰 7×24 快讯聚合** — 全球财经快讯滚动播报，宏观关键词与产业链关联新闻自动高亮
 - **🖥️ 可安装为桌面应用** — 内置 PWA 支持（Web Manifest + Service Worker），浏览器地址栏一键安装，独立窗口运行
 - **📺 Android TV 客户端** — 原生 WebView 壳（`android-tv/`），遥控器空间导航、面板全屏放大（比例缩放+幻灯片切换）、翻牌跑马灯，适配老内核与弱 GPU
@@ -81,16 +84,16 @@ flowchart LR
 
 - 前端优先请求本站 Node 代理；代理不可用时，部分接口（腾讯系 / 见闻）自动降级为浏览器直连
 - **前端统一报价中心**：所有面板的价格 / 涨跌幅由单一客户端报价中心（`src/lib/market.ts`）按 5s 批量拉取并分发同一快照，同一只股票全站同帧；服务端报价按代码独立缓存（5s，与客户端轮询周期对齐），集合变化只补新码
-- 服务端按接口粒度设置缓存 TTL（行情 5s ~ 板块归属 24h），缓存容量有界（LRU + 定时清扫），无数据库、无外部存储
+- 服务端按接口粒度设置缓存 TTL（行情 5s ~ 板块归属 24h），缓存容量有界（LRU + 定时清扫）；核心行情无业务数据库，历史数据写本地文件，黄金页额外只读外部 SQLite
 - **多用户并发友好**：按代码 TTL 缓存 + inflight 去重（并发缓存失效共享同一次上游拉取）、上游失败退避（5s→2min 负缓存，宕机时不再被反复锤打）、浏览器直连兜底按 code 节流、`/api/stats` 暴露请求数/上游调用数/429 计数
 - 现货价格由服务端每 4 小时定时采集并写入本地历史文件，无需前端在线，历史随天数自然生长
-- 生产环境单进程运行：同一端口同时提供 API 与前端静态文件
+- 生产环境单进程运行：同一端口同时提供 API、MCP 与前端静态文件；托管账号层仅 `HOSTING=1` 时加载
 
 ## 🚀 快速开始
 
 ### 先决条件
 
-- Node.js 18+
+- Node.js 22.13+
 - 系统可用 `curl`（部分代理接口使用）
 
 ### 本地开发
@@ -200,6 +203,8 @@ https://scripting.fun/import_scripts?urls=%5B%22https%3A%5C%2F%5C%2Fgithub.com%5
 | `/api/news?page=...&size=...` | 7×24 财经快讯 |
 | `/api/treasuries` | 美债收益率实时值 |
 | `/api/treasury-history` | 美债收益率历史月末曲线（2001 年至今，代码库本地存档 `server/treasury-rates/` + 当年在线补充） |
+| `/api/gold` | 黄金观察聚合数据（金价、宏观指标、央行购金与新闻） |
+| `/api/gold/history?days=1\|7\|30` | 黄金历史走势，支持 24 小时、7 天和 30 天窗口 |
 | `/api/mystery-select?query=...&limit=...` | 问财股票筛选（按概念/行业查询） |
 | `/api/finance-main?code=...` | 单公司近 12 期财报主指标（东财 F10，营收/净利/ROE/毛利率等） |
 | `/api/finance-board?period=...` | 财报宏观数据包（个股盈利榜 TOP50 + 行业聚合 TOP15 + 近期披露日历） |
@@ -208,33 +213,57 @@ https://scripting.fun/import_scripts?urls=%5B%22https%3A%5C%2F%5C%2Fgithub.com%5
 | `/api/openrouter-usage` | OpenRouter 日度榜单（厂商 Token 消耗量，本地缓存持久化积累） |
 | `/api/aa-models` | Artificial Analysis 全模型定价（约 600 个模型：智能指数/每百万输入输出价/任务成本；24h 缓存 + 每日快照积累到 `server/data/model-prices.json`） |
 | `/api/spend-index` | TrakToken TTSI 支出指数（本地 `ttsi.csv` 全量历史 + RSS 日更尾部合并，含降价/份额变动事件） |
+| `POST /api/leads` | Pro 落地页预注册留资，写入 `server/data/leads.json` |
+| `/api/hosting/*` | 托管模式账号、租户自选股、布局与 AI 额度接口，仅 `HOSTING=1` 时由私有托管层注入 |
 | `/api/stats` | 运行观测：请求数 / 上游调用数 / 429 计数、运行时长 |
 | `/api/stock-search?q=...` | 股票搜索（名称/拼音首字母→代码，新浪建议代理） |
 | `/api/health` | 健康检查 |
 
-> 注：`/api/mystery-select` 与 `/api/openrouter-usage` 消耗服务端私有 API Key，仅接受同源页面请求（跨源 403）；`/api/aa-models` 需要 `server/.env` 配置 `ARTIFICIAL_ANALYSIS_API_KEY`，端点本身保持公开（24h 缓存）。全站 API 仅向同源页面反射 CORS Origin（跨源浏览器读取不授权），并按客户端 IP 限流（公开端点 2400 次/分、私有端点 30 次/分，超限 429；经 Cloudflare Tunnel 部署时真实 IP 取 `CF-Connecting-IP`）；POST 请求体上限 256KB；`/api/` 未命中路由返回 404 JSON。
+> 注：`/api/mystery-select` 与 `/api/openrouter-usage` 消耗服务端私有 API Key，仅接受同源页面请求（跨源 403）；`/api/aa-models` 需要 `server/.env` 配置 `ARTIFICIAL_ANALYSIS_API_KEY`，端点本身保持公开（24h 缓存）。全站 API 仅向同源页面反射 CORS Origin（跨源浏览器读取不授权），并按客户端 IP 限流（公开端点 2400 次/分、私有端点 30 次/分，超限 429；经 Cloudflare Tunnel 部署时真实 IP 取 `CF-Connecting-IP`）；POST 请求体上限 256KB；`/api/` 未命中路由返回 404 JSON。黄金接口还依赖部署机上的 gold-monitor 数据目录与央行黄金 SQLite 数据库，缺失时返回空态而不是模拟数据。
+
+## 🤖 MCP Server（Phase 1.5）
+
+MCP 服务嵌入同一个 Node.js 进程，复用行情缓存，协议为 JSON-RPC 2.0 over Streamable HTTP：
+
+| 方法 | 路径 | 说明 |
+| --- | --- | --- |
+| `GET` | `/mcp` | 服务元数据、版本、工具与资源清单 |
+| `POST` | `/mcp` | `initialize`、`tools/list`、`tools/call`、`ping` 等 JSON-RPC 请求 |
+| `GET` | `/mcp/stream` | 服务端通知的 SSE 流 |
+
+公开工具包括 `get_quotes`、`get_boards`、`get_futures`、`get_money_flow`、`get_news`，资源包括 `mrd://health` 与 `mrd://stats`。公开工具无需 API Key，私有行情与 AI 接口不会经 MCP 暴露。
+
+也可通过 DSH 直接接入远程服务：
+
+```bash
+dsh plugin --profile web add github:theBigGavin/marketingdashboard
+```
+
+`cordis.patch.yml` 会将 `https://mrd.hermes.cc.cd/mcp` 桥接为 `mcp__mrd__*` 工具。
 
 ## 🗂️ 项目结构
 
 ```
 ├── server/
-│   ├── dev.cjs        # 开发入口：同时启动 Vite 与数据代理
-│   ├── index.cjs      # 数据代理 + 生产静态文件服务
-│   └── data/          # 运行时积累数据（gitignore）：spot-history.json、
-│                      #   model-prices.json、ttsi.csv（可选 TTSI 全量历史）
+│   ├── dev.cjs             # 开发入口：同时启动 Vite 与数据代理
+│   ├── index.cjs           # API、MCP 与生产静态文件服务
+│   ├── mcp-server.cjs      # MCP JSON-RPC / Streamable HTTP 服务
+│   ├── sources/gold.cjs    # 黄金观察数据聚合（文件 + 只读 SQLite）
+│   └── data/               # 运行时积累数据（gitignore）
 ├── src/
-│   ├── App.tsx        # 大屏布局与路由（/ 市场驾驶舱、/ai AI观察、/goods 商品价格、/fin 财报窗口）
-│   ├── AiDashboard.tsx    # AI 观察页（2×3 网格：Token 消耗跨两行一列 + 4 个大模型价格面板）
-│   ├── FinDashboard.tsx   # 财报窗口页（面板见 components/dash/fin/）
-│   ├── GoodsDashboard.tsx # 商品价格页（6 分组趋势面板 + 现货/基差面板）
-│   ├── components/
-│   │   └── dash/      # 驾驶舱各面板（指数/板块/资金流/快讯/产业链/AI观察/自选股/商品趋势…）
-│   │       ├── Spark.tsx       # 迷你走势图（A股按交易时段 / 24h 连续时间轴 / 日线按点均分）
-│   │       └── WatchlistPanel.tsx  # 自选股面板（支持名称/拼音搜索，localStorage 持久化）
-│   ├── config/        # 指数、商品、产业链等静态配置
-│   ├── hooks/         # usePolling / useSharedPolling / useClock 等通用钩子
-│   └── lib/           # API 客户端、统一报价中心(market.ts)与工具函数
-└── docs/              # 截图等文档资源
+│   ├── App.tsx             # 首页布局、托管登录墙与 6 个页面路由
+│   ├── AiDashboard.tsx     # AI 观察页
+│   ├── FinDashboard.tsx    # 财报窗口页
+│   ├── GoodsDashboard.tsx  # 商品价格页
+│   ├── GoldDashboard.tsx   # 黄金观察页（8 面板）
+│   ├── ProLanding.tsx      # Pro 托管版介绍与预注册页
+│   ├── pages/LoginPage.tsx # 托管模式登录与注册页
+│   ├── components/dash/    # 驾驶舱各业务面板
+│   ├── config/             # 指数、商品、产业链等静态配置
+│   ├── hooks/              # 轮询、时钟、面板缩放等通用钩子
+│   └── lib/                # API、统一报价中心、托管模式与工具函数
+├── cordis.patch.yml        # DSH 远程 MCP 接入配置
+└── docs/                   # 截图与设计文档
 ```
 
 ## 🛠️ 技术栈

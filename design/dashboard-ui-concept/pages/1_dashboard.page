@@ -1,0 +1,7561 @@
+{
+  "pageType": "content",
+  "background": {
+    "type": "solid",
+    "color": "$bg"
+  },
+  "elements": [
+    {
+      "elementId": "shape_001",
+      "elementType": "shape",
+      "bounds": [
+        0,
+        0,
+        216,
+        828
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$rail"
+      }
+    },
+    {
+      "elementId": "shape_002",
+      "elementType": "shape",
+      "bounds": [
+        215,
+        0,
+        1,
+        828
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "shape_003",
+      "elementType": "shape",
+      "bounds": [
+        16,
+        13,
+        24,
+        24
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$blueSoft"
+      },
+      "adjustments": [
+        3000
+      ],
+      "border": {
+        "style": "solid",
+        "width": 1,
+        "color": "$blueBorder"
+      }
+    },
+    {
+      "elementId": "icon_004",
+      "elementType": "icon",
+      "bounds": [
+        21,
+        18,
+        14,
+        14
+      ],
+      "iconName": "fas:chart-line",
+      "fill": {
+        "type": "solid",
+        "color": "$blue"
+      }
+    },
+    {
+      "elementId": "text_005",
+      "elementType": "text",
+      "bounds": [
+        50,
+        10,
+        150,
+        30
+      ],
+      "content": {
+        "text": "市场研究驾驶舱",
+        "fontSize": 15,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "icon_006",
+      "elementType": "icon",
+      "bounds": [
+        22,
+        72,
+        13,
+        13
+      ],
+      "iconName": "fas:house",
+      "fill": {
+        "type": "solid",
+        "color": "$muted"
+      }
+    },
+    {
+      "elementId": "text_007",
+      "elementType": "text",
+      "bounds": [
+        48,
+        62,
+        140,
+        34
+      ],
+      "content": {
+        "text": "市场总览",
+        "fontSize": 11,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_008",
+      "elementType": "shape",
+      "bounds": [
+        8,
+        102,
+        200,
+        34
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$blueSoft"
+      },
+      "adjustments": [
+        3000
+      ]
+    },
+    {
+      "elementId": "shape_009",
+      "elementType": "shape",
+      "bounds": [
+        8,
+        109,
+        2,
+        20
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$blue"
+      }
+    },
+    {
+      "elementId": "icon_010",
+      "elementType": "icon",
+      "bounds": [
+        22,
+        112,
+        13,
+        13
+      ],
+      "iconName": "fas:layer-group",
+      "fill": {
+        "type": "solid",
+        "color": "$blue"
+      }
+    },
+    {
+      "elementId": "text_011",
+      "elementType": "text",
+      "bounds": [
+        48,
+        102,
+        140,
+        34
+      ],
+      "content": {
+        "text": "板块研究",
+        "fontSize": 11,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "icon_012",
+      "elementType": "icon",
+      "bounds": [
+        22,
+        152,
+        13,
+        13
+      ],
+      "iconName": "fas:magnifying-glass-chart",
+      "fill": {
+        "type": "solid",
+        "color": "$muted"
+      }
+    },
+    {
+      "elementId": "text_013",
+      "elementType": "text",
+      "bounds": [
+        48,
+        142,
+        140,
+        34
+      ],
+      "content": {
+        "text": "个股追踪",
+        "fontSize": 11,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "icon_014",
+      "elementType": "icon",
+      "bounds": [
+        22,
+        192,
+        13,
+        13
+      ],
+      "iconName": "fas:newspaper",
+      "fill": {
+        "type": "solid",
+        "color": "$muted"
+      }
+    },
+    {
+      "elementId": "text_015",
+      "elementType": "text",
+      "bounds": [
+        48,
+        182,
+        140,
+        34
+      ],
+      "content": {
+        "text": "新闻中心",
+        "fontSize": 11,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_016",
+      "elementType": "shape",
+      "bounds": [
+        16,
+        226,
+        184,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "text_017",
+      "elementType": "text",
+      "bounds": [
+        16,
+        240,
+        94,
+        20
+      ],
+      "content": {
+        "text": "板块监控",
+        "fontSize": 12,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_018",
+      "elementType": "text",
+      "bounds": [
+        110,
+        240,
+        90,
+        20
+      ],
+      "content": {
+        "text": "按涨跌",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_019",
+      "elementType": "shape",
+      "bounds": [
+        8,
+        268,
+        200,
+        31
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$blueSoft"
+      },
+      "adjustments": [
+        3000
+      ]
+    },
+    {
+      "elementId": "text_020",
+      "elementType": "text",
+      "bounds": [
+        18,
+        270,
+        92,
+        27
+      ],
+      "content": {
+        "text": "电网设备",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_021",
+      "elementType": "text",
+      "bounds": [
+        112,
+        270,
+        76,
+        27
+      ],
+      "content": {
+        "text": "+6.20%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_022",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        294,
+        170,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$track"
+      }
+    },
+    {
+      "elementId": "shape_023",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        294,
+        170,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "text_024",
+      "elementType": "text",
+      "bounds": [
+        18,
+        304,
+        92,
+        27
+      ],
+      "content": {
+        "text": "通信设备",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_025",
+      "elementType": "text",
+      "bounds": [
+        112,
+        304,
+        76,
+        27
+      ],
+      "content": {
+        "text": "+6.04%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_026",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        328,
+        170,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$track"
+      }
+    },
+    {
+      "elementId": "shape_027",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        328,
+        166,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "text_028",
+      "elementType": "text",
+      "bounds": [
+        18,
+        338,
+        92,
+        27
+      ],
+      "content": {
+        "text": "能源金属",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_029",
+      "elementType": "text",
+      "bounds": [
+        112,
+        338,
+        76,
+        27
+      ],
+      "content": {
+        "text": "+5.65%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_030",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        362,
+        170,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$track"
+      }
+    },
+    {
+      "elementId": "shape_031",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        362,
+        155,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "text_032",
+      "elementType": "text",
+      "bounds": [
+        18,
+        372,
+        92,
+        27
+      ],
+      "content": {
+        "text": "汽车整车",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_033",
+      "elementType": "text",
+      "bounds": [
+        112,
+        372,
+        76,
+        27
+      ],
+      "content": {
+        "text": "+4.46%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_034",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        396,
+        170,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$track"
+      }
+    },
+    {
+      "elementId": "shape_035",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        396,
+        122,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "text_036",
+      "elementType": "text",
+      "bounds": [
+        18,
+        406,
+        92,
+        27
+      ],
+      "content": {
+        "text": "白酒",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_037",
+      "elementType": "text",
+      "bounds": [
+        112,
+        406,
+        76,
+        27
+      ],
+      "content": {
+        "text": "+4.25%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_038",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        430,
+        170,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$track"
+      }
+    },
+    {
+      "elementId": "shape_039",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        430,
+        117,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "text_040",
+      "elementType": "text",
+      "bounds": [
+        18,
+        440,
+        92,
+        27
+      ],
+      "content": {
+        "text": "半导体",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_041",
+      "elementType": "text",
+      "bounds": [
+        112,
+        440,
+        76,
+        27
+      ],
+      "content": {
+        "text": "+2.18%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_042",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        464,
+        170,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$track"
+      }
+    },
+    {
+      "elementId": "shape_043",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        464,
+        60,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "text_044",
+      "elementType": "text",
+      "bounds": [
+        18,
+        474,
+        92,
+        27
+      ],
+      "content": {
+        "text": "软件开发",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_045",
+      "elementType": "text",
+      "bounds": [
+        112,
+        474,
+        76,
+        27
+      ],
+      "content": {
+        "text": "-1.82%",
+        "fontSize": 10,
+        "color": "$green",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_046",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        498,
+        170,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$track"
+      }
+    },
+    {
+      "elementId": "shape_047",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        498,
+        50,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$green"
+      }
+    },
+    {
+      "elementId": "text_048",
+      "elementType": "text",
+      "bounds": [
+        18,
+        508,
+        92,
+        27
+      ],
+      "content": {
+        "text": "银行",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_049",
+      "elementType": "text",
+      "bounds": [
+        112,
+        508,
+        76,
+        27
+      ],
+      "content": {
+        "text": "-2.16%",
+        "fontSize": 10,
+        "color": "$green",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_050",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        532,
+        170,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$track"
+      }
+    },
+    {
+      "elementId": "shape_051",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        532,
+        59,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$green"
+      }
+    },
+    {
+      "elementId": "shape_052",
+      "elementType": "shape",
+      "bounds": [
+        16,
+        548,
+        184,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "text_053",
+      "elementType": "text",
+      "bounds": [
+        16,
+        560,
+        94,
+        20
+      ],
+      "content": {
+        "text": "自选监控",
+        "fontSize": 12,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_054",
+      "elementType": "text",
+      "bounds": [
+        110,
+        560,
+        90,
+        20
+      ],
+      "content": {
+        "text": "5",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_055",
+      "elementType": "text",
+      "bounds": [
+        18,
+        590,
+        82,
+        24
+      ],
+      "content": {
+        "text": "中国西电",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_056",
+      "elementType": "text",
+      "bounds": [
+        100,
+        590,
+        48,
+        24
+      ],
+      "content": {
+        "text": "12.42",
+        "fontSize": 9,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_057",
+      "elementType": "text",
+      "bounds": [
+        150,
+        590,
+        48,
+        24
+      ],
+      "content": {
+        "text": "+20.04%",
+        "fontSize": 8,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_058",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        617,
+        180,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_059",
+      "elementType": "text",
+      "bounds": [
+        18,
+        624,
+        82,
+        24
+      ],
+      "content": {
+        "text": "中际旭创",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_060",
+      "elementType": "text",
+      "bounds": [
+        100,
+        624,
+        48,
+        24
+      ],
+      "content": {
+        "text": "285.50",
+        "fontSize": 9,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_061",
+      "elementType": "text",
+      "bounds": [
+        150,
+        624,
+        48,
+        24
+      ],
+      "content": {
+        "text": "+5.90%",
+        "fontSize": 8,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_062",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        651,
+        180,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_063",
+      "elementType": "text",
+      "bounds": [
+        18,
+        658,
+        82,
+        24
+      ],
+      "content": {
+        "text": "沪电股份",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_064",
+      "elementType": "text",
+      "bounds": [
+        100,
+        658,
+        48,
+        24
+      ],
+      "content": {
+        "text": "61.09",
+        "fontSize": 9,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_065",
+      "elementType": "text",
+      "bounds": [
+        150,
+        658,
+        48,
+        24
+      ],
+      "content": {
+        "text": "+3.43%",
+        "fontSize": 8,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_066",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        685,
+        180,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_067",
+      "elementType": "text",
+      "bounds": [
+        18,
+        692,
+        82,
+        24
+      ],
+      "content": {
+        "text": "宁德时代",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_068",
+      "elementType": "text",
+      "bounds": [
+        100,
+        692,
+        48,
+        24
+      ],
+      "content": {
+        "text": "372.18",
+        "fontSize": 9,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_069",
+      "elementType": "text",
+      "bounds": [
+        150,
+        692,
+        48,
+        24
+      ],
+      "content": {
+        "text": "-0.36%",
+        "fontSize": 8,
+        "color": "$green",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_070",
+      "elementType": "shape",
+      "bounds": [
+        18,
+        719,
+        180,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_071",
+      "elementType": "text",
+      "bounds": [
+        18,
+        726,
+        82,
+        24
+      ],
+      "content": {
+        "text": "云天化",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_072",
+      "elementType": "text",
+      "bounds": [
+        100,
+        726,
+        48,
+        24
+      ],
+      "content": {
+        "text": "30.26",
+        "fontSize": 9,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_073",
+      "elementType": "text",
+      "bounds": [
+        150,
+        726,
+        48,
+        24
+      ],
+      "content": {
+        "text": "-0.92%",
+        "fontSize": 8,
+        "color": "$green",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_074",
+      "elementType": "shape",
+      "bounds": [
+        16,
+        770,
+        184,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "icon_075",
+      "elementType": "icon",
+      "bounds": [
+        20,
+        786,
+        13,
+        13
+      ],
+      "iconName": "fas:gear",
+      "fill": {
+        "type": "solid",
+        "color": "$muted"
+      }
+    },
+    {
+      "elementId": "text_076",
+      "elementType": "text",
+      "bounds": [
+        44,
+        778,
+        110,
+        28
+      ],
+      "content": {
+        "text": "监控设置",
+        "fontSize": 10,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_077",
+      "elementType": "text",
+      "bounds": [
+        154,
+        778,
+        44,
+        28
+      ],
+      "content": {
+        "text": "⌘ K",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_078",
+      "elementType": "shape",
+      "bounds": [
+        216,
+        0,
+        1464,
+        48
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$header"
+      }
+    },
+    {
+      "elementId": "shape_079",
+      "elementType": "shape",
+      "bounds": [
+        216,
+        47,
+        1464,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "text_080",
+      "elementType": "text",
+      "bounds": [
+        232,
+        10,
+        64,
+        28
+      ],
+      "content": {
+        "text": "市场总览",
+        "fontSize": 10,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_081",
+      "elementType": "text",
+      "bounds": [
+        296,
+        10,
+        20,
+        28
+      ],
+      "content": {
+        "text": "/",
+        "fontSize": 10,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_082",
+      "elementType": "text",
+      "bounds": [
+        316,
+        10,
+        64,
+        28
+      ],
+      "content": {
+        "text": "板块研究",
+        "fontSize": 10,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_083",
+      "elementType": "text",
+      "bounds": [
+        380,
+        10,
+        20,
+        28
+      ],
+      "content": {
+        "text": "/",
+        "fontSize": 10,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_084",
+      "elementType": "text",
+      "bounds": [
+        400,
+        10,
+        110,
+        28
+      ],
+      "content": {
+        "text": "电网设备",
+        "fontSize": 11,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_085",
+      "elementType": "shape",
+      "bounds": [
+        714,
+        10,
+        250,
+        28
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$surface"
+      },
+      "adjustments": [
+        3000
+      ],
+      "border": {
+        "style": "solid",
+        "width": 1,
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "icon_086",
+      "elementType": "icon",
+      "bounds": [
+        728,
+        18,
+        12,
+        12
+      ],
+      "iconName": "fas:magnifying-glass",
+      "fill": {
+        "type": "solid",
+        "color": "$muted"
+      }
+    },
+    {
+      "elementId": "text_087",
+      "elementType": "text",
+      "bounds": [
+        750,
+        10,
+        200,
+        28
+      ],
+      "content": {
+        "text": "搜索板块、股票或快讯",
+        "fontSize": 10,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_088",
+      "elementType": "shape",
+      "bounds": [
+        1298,
+        20,
+        6,
+        6
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$green"
+      },
+      "adjustments": [
+        3000
+      ]
+    },
+    {
+      "elementId": "text_089",
+      "elementType": "text",
+      "bounds": [
+        1310,
+        10,
+        64,
+        28
+      ],
+      "content": {
+        "text": "数据实时",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_090",
+      "elementType": "text",
+      "bounds": [
+        1410,
+        10,
+        170,
+        28
+      ],
+      "content": {
+        "text": "2026-11-25  09:55:32",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "icon_091",
+      "elementType": "icon",
+      "bounds": [
+        1600,
+        17,
+        14,
+        14
+      ],
+      "iconName": "fas:expand",
+      "fill": {
+        "type": "solid",
+        "color": "$sub"
+      }
+    },
+    {
+      "elementId": "shape_092",
+      "elementType": "shape",
+      "bounds": [
+        216,
+        48,
+        1072,
+        70
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$surface"
+      }
+    },
+    {
+      "elementId": "shape_093",
+      "elementType": "shape",
+      "bounds": [
+        216,
+        117,
+        1072,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "text_094",
+      "elementType": "text",
+      "bounds": [
+        232,
+        56,
+        160,
+        14
+      ],
+      "content": {
+        "text": "上证指数",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_095",
+      "elementType": "text",
+      "bounds": [
+        232,
+        72,
+        118,
+        26
+      ],
+      "content": {
+        "text": "3,876.78",
+        "fontSize": 17,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_096",
+      "elementType": "text",
+      "bounds": [
+        350,
+        75,
+        54,
+        20
+      ],
+      "content": {
+        "text": "+0.25%",
+        "fontSize": 9,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_097",
+      "elementType": "text",
+      "bounds": [
+        416,
+        56,
+        160,
+        14
+      ],
+      "content": {
+        "text": "深证成指",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_098",
+      "elementType": "text",
+      "bounds": [
+        416,
+        72,
+        118,
+        26
+      ],
+      "content": {
+        "text": "14,123.30",
+        "fontSize": 17,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_099",
+      "elementType": "text",
+      "bounds": [
+        534,
+        75,
+        54,
+        20
+      ],
+      "content": {
+        "text": "+0.44%",
+        "fontSize": 9,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_100",
+      "elementType": "shape",
+      "bounds": [
+        404,
+        60,
+        1,
+        42
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_101",
+      "elementType": "text",
+      "bounds": [
+        600,
+        56,
+        160,
+        14
+      ],
+      "content": {
+        "text": "创业板指",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_102",
+      "elementType": "text",
+      "bounds": [
+        600,
+        72,
+        118,
+        26
+      ],
+      "content": {
+        "text": "3,675.52",
+        "fontSize": 17,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_103",
+      "elementType": "text",
+      "bounds": [
+        718,
+        75,
+        54,
+        20
+      ],
+      "content": {
+        "text": "+0.34%",
+        "fontSize": 9,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_104",
+      "elementType": "shape",
+      "bounds": [
+        588,
+        60,
+        1,
+        42
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_105",
+      "elementType": "text",
+      "bounds": [
+        784,
+        56,
+        160,
+        14
+      ],
+      "content": {
+        "text": "科创 50",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_106",
+      "elementType": "text",
+      "bounds": [
+        784,
+        72,
+        118,
+        26
+      ],
+      "content": {
+        "text": "1,769.60",
+        "fontSize": 17,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_107",
+      "elementType": "text",
+      "bounds": [
+        902,
+        75,
+        54,
+        20
+      ],
+      "content": {
+        "text": "-3.74%",
+        "fontSize": 9,
+        "color": "$green",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_108",
+      "elementType": "shape",
+      "bounds": [
+        772,
+        60,
+        1,
+        42
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_109",
+      "elementType": "text",
+      "bounds": [
+        984,
+        56,
+        128,
+        14
+      ],
+      "content": {
+        "text": "市场宽度",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_110",
+      "elementType": "text",
+      "bounds": [
+        984,
+        74,
+        52,
+        22
+      ],
+      "content": {
+        "text": "3,128",
+        "fontSize": 14,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_111",
+      "elementType": "text",
+      "bounds": [
+        1038,
+        74,
+        34,
+        22
+      ],
+      "content": {
+        "text": "涨",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_112",
+      "elementType": "text",
+      "bounds": [
+        1080,
+        74,
+        52,
+        22
+      ],
+      "content": {
+        "text": "1,964",
+        "fontSize": 14,
+        "color": "$green",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_113",
+      "elementType": "text",
+      "bounds": [
+        1134,
+        74,
+        34,
+        22
+      ],
+      "content": {
+        "text": "跌",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_114",
+      "elementType": "shape",
+      "bounds": [
+        984,
+        102,
+        282,
+        4
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$track"
+      },
+      "adjustments": [
+        3000
+      ]
+    },
+    {
+      "elementId": "shape_115",
+      "elementType": "shape",
+      "bounds": [
+        984,
+        102,
+        173,
+        4
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$red"
+      },
+      "adjustments": [
+        3000
+      ]
+    },
+    {
+      "elementId": "shape_116",
+      "elementType": "shape",
+      "bounds": [
+        1157,
+        102,
+        109,
+        4
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$green"
+      },
+      "adjustments": [
+        3000
+      ]
+    },
+    {
+      "elementId": "text_117",
+      "elementType": "text",
+      "bounds": [
+        232,
+        134,
+        140,
+        24
+      ],
+      "content": {
+        "text": "电网设备",
+        "fontSize": 18,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_118",
+      "elementType": "shape",
+      "bounds": [
+        378,
+        134,
+        68,
+        24
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$blueSoft"
+      },
+      "adjustments": [
+        3000
+      ],
+      "border": {
+        "style": "solid",
+        "width": 1,
+        "color": "$blueBorder"
+      }
+    },
+    {
+      "elementId": "text_119",
+      "elementType": "text",
+      "bounds": [
+        388,
+        134,
+        48,
+        24
+      ],
+      "content": {
+        "text": "已选中 ×",
+        "fontSize": 9,
+        "color": "$blue",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "center",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_120",
+      "elementType": "text",
+      "bounds": [
+        232,
+        160,
+        130,
+        16
+      ],
+      "content": {
+        "text": "881245 · 盘中",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_121",
+      "elementType": "text",
+      "bounds": [
+        364,
+        134,
+        130,
+        36
+      ],
+      "content": {
+        "text": "+6.20%",
+        "fontSize": 25,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_122",
+      "elementType": "text",
+      "bounds": [
+        364,
+        168,
+        130,
+        16
+      ],
+      "content": {
+        "text": "今日涨跌",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_123",
+      "elementType": "text",
+      "bounds": [
+        510,
+        136,
+        116,
+        16
+      ],
+      "content": {
+        "text": "主力净流入",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_124",
+      "elementType": "text",
+      "bounds": [
+        510,
+        154,
+        116,
+        24
+      ],
+      "content": {
+        "text": "+48.6 亿",
+        "fontSize": 15,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_125",
+      "elementType": "text",
+      "bounds": [
+        644,
+        136,
+        100,
+        16
+      ],
+      "content": {
+        "text": "20 日涨跌",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_126",
+      "elementType": "text",
+      "bounds": [
+        644,
+        154,
+        100,
+        24
+      ],
+      "content": {
+        "text": "+12.08%",
+        "fontSize": 15,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_127",
+      "elementType": "text",
+      "bounds": [
+        758,
+        136,
+        80,
+        16
+      ],
+      "content": {
+        "text": "换手率",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_128",
+      "elementType": "text",
+      "bounds": [
+        758,
+        154,
+        80,
+        24
+      ],
+      "content": {
+        "text": "6.35%",
+        "fontSize": 15,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_129",
+      "elementType": "text",
+      "bounds": [
+        852,
+        136,
+        80,
+        16
+      ],
+      "content": {
+        "text": "上涨 / 下跌",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_130",
+      "elementType": "text",
+      "bounds": [
+        852,
+        154,
+        80,
+        24
+      ],
+      "content": {
+        "text": "42 / 8",
+        "fontSize": 15,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_131",
+      "elementType": "text",
+      "bounds": [
+        232,
+        194,
+        60,
+        22
+      ],
+      "content": {
+        "text": "分时",
+        "fontSize": 10,
+        "color": "$blue",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_132",
+      "elementType": "text",
+      "bounds": [
+        280,
+        194,
+        60,
+        22
+      ],
+      "content": {
+        "text": "5 日",
+        "fontSize": 10,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_133",
+      "elementType": "text",
+      "bounds": [
+        336,
+        194,
+        60,
+        22
+      ],
+      "content": {
+        "text": "20 日",
+        "fontSize": 10,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_134",
+      "elementType": "text",
+      "bounds": [
+        400,
+        194,
+        60,
+        22
+      ],
+      "content": {
+        "text": "资金流向",
+        "fontSize": 10,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_135",
+      "elementType": "text",
+      "bounds": [
+        732,
+        194,
+        200,
+        22
+      ],
+      "content": {
+        "text": "更新于 09:55:28",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_136",
+      "elementType": "shape",
+      "bounds": [
+        270,
+        232,
+        646,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_137",
+      "elementType": "text",
+      "bounds": [
+        232,
+        224,
+        30,
+        16
+      ],
+      "content": {
+        "text": "6%",
+        "fontSize": 8,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_138",
+      "elementType": "shape",
+      "bounds": [
+        270,
+        270,
+        646,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_139",
+      "elementType": "text",
+      "bounds": [
+        232,
+        262,
+        30,
+        16
+      ],
+      "content": {
+        "text": "4%",
+        "fontSize": 8,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_140",
+      "elementType": "shape",
+      "bounds": [
+        270,
+        308,
+        646,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_141",
+      "elementType": "text",
+      "bounds": [
+        232,
+        300,
+        30,
+        16
+      ],
+      "content": {
+        "text": "2%",
+        "fontSize": 8,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_142",
+      "elementType": "shape",
+      "bounds": [
+        270,
+        346,
+        646,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_143",
+      "elementType": "text",
+      "bounds": [
+        232,
+        338,
+        30,
+        16
+      ],
+      "content": {
+        "text": "0%",
+        "fontSize": 8,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_144",
+      "elementType": "shape",
+      "bounds": [
+        270,
+        384,
+        646,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_145",
+      "elementType": "text",
+      "bounds": [
+        232,
+        376,
+        30,
+        16
+      ],
+      "content": {
+        "text": "-2%",
+        "fontSize": 8,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_146",
+      "elementType": "shape",
+      "bounds": [
+        270,
+        232,
+        646,
+        164
+      ],
+      "shapeName": "custom",
+      "viewBox": [
+        646,
+        164
+      ],
+      "path": "M0,146 L38,136 L76,141 L114,118 L152,124 L190,100 L228,110 L266,82 L304,90 L342,64 L380,73 L418,48 L456,58 L494,38 L532,44 L570,26 L608,34 L646,12 L646,164 L0,164 Z",
+      "fill": {
+        "type": "solid",
+        "color": "$redSoft"
+      }
+    },
+    {
+      "elementId": "line_147",
+      "elementType": "line",
+      "bounds": [
+        270,
+        232,
+        646,
+        164
+      ],
+      "viewBox": [
+        646,
+        164
+      ],
+      "points": "0,146 38,136 76,141 114,118 152,124 190,100 228,110 266,82 304,90 342,64 380,73 418,48 456,58 494,38 532,44 570,26 608,34 646,12",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 2,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "line_148",
+      "elementType": "line",
+      "bounds": [
+        270,
+        232,
+        646,
+        164
+      ],
+      "viewBox": [
+        646,
+        164
+      ],
+      "points": "0,132 38,128 76,130 114,118 152,122 190,114 228,116 266,108 304,110 342,100 380,104 418,92 456,96 494,84 532,88 570,78 608,82 646,72",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1,
+        "color": "#7D8B9B"
+      }
+    },
+    {
+      "elementId": "shape_149",
+      "elementType": "shape",
+      "bounds": [
+        272,
+        420,
+        18,
+        18
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$greenSoft"
+      }
+    },
+    {
+      "elementId": "shape_150",
+      "elementType": "shape",
+      "bounds": [
+        309,
+        412,
+        18,
+        26
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$redSoft"
+      }
+    },
+    {
+      "elementId": "shape_151",
+      "elementType": "shape",
+      "bounds": [
+        346,
+        422,
+        18,
+        16
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$redSoft"
+      }
+    },
+    {
+      "elementId": "shape_152",
+      "elementType": "shape",
+      "bounds": [
+        383,
+        406,
+        18,
+        32
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$greenSoft"
+      }
+    },
+    {
+      "elementId": "shape_153",
+      "elementType": "shape",
+      "bounds": [
+        420,
+        414,
+        18,
+        24
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$redSoft"
+      }
+    },
+    {
+      "elementId": "shape_154",
+      "elementType": "shape",
+      "bounds": [
+        457,
+        398,
+        18,
+        40
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$redSoft"
+      }
+    },
+    {
+      "elementId": "shape_155",
+      "elementType": "shape",
+      "bounds": [
+        494,
+        408,
+        18,
+        30
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$greenSoft"
+      }
+    },
+    {
+      "elementId": "shape_156",
+      "elementType": "shape",
+      "bounds": [
+        531,
+        392,
+        18,
+        46
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$redSoft"
+      }
+    },
+    {
+      "elementId": "shape_157",
+      "elementType": "shape",
+      "bounds": [
+        568,
+        404,
+        18,
+        34
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$redSoft"
+      }
+    },
+    {
+      "elementId": "shape_158",
+      "elementType": "shape",
+      "bounds": [
+        605,
+        386,
+        18,
+        52
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$greenSoft"
+      }
+    },
+    {
+      "elementId": "shape_159",
+      "elementType": "shape",
+      "bounds": [
+        642,
+        400,
+        18,
+        38
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$redSoft"
+      }
+    },
+    {
+      "elementId": "shape_160",
+      "elementType": "shape",
+      "bounds": [
+        679,
+        378,
+        18,
+        60
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$redSoft"
+      }
+    },
+    {
+      "elementId": "shape_161",
+      "elementType": "shape",
+      "bounds": [
+        716,
+        390,
+        18,
+        48
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$greenSoft"
+      }
+    },
+    {
+      "elementId": "shape_162",
+      "elementType": "shape",
+      "bounds": [
+        753,
+        380,
+        18,
+        58
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$redSoft"
+      }
+    },
+    {
+      "elementId": "shape_163",
+      "elementType": "shape",
+      "bounds": [
+        790,
+        372,
+        18,
+        66
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$redSoft"
+      }
+    },
+    {
+      "elementId": "shape_164",
+      "elementType": "shape",
+      "bounds": [
+        827,
+        384,
+        18,
+        54
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$greenSoft"
+      }
+    },
+    {
+      "elementId": "shape_165",
+      "elementType": "shape",
+      "bounds": [
+        864,
+        366,
+        18,
+        72
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$redSoft"
+      }
+    },
+    {
+      "elementId": "line_166",
+      "elementType": "line",
+      "bounds": [
+        270,
+        232,
+        646,
+        164
+      ],
+      "viewBox": [
+        646,
+        164
+      ],
+      "points": "520,0 520,164",
+      "curve": "sharp",
+      "border": {
+        "style": "dash",
+        "width": 1,
+        "color": "$blue"
+      }
+    },
+    {
+      "elementId": "shape_167",
+      "elementType": "shape",
+      "bounds": [
+        754,
+        244,
+        162,
+        52
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$surface2"
+      },
+      "adjustments": [
+        3000
+      ],
+      "border": {
+        "style": "solid",
+        "width": 1,
+        "color": "$blueBorder"
+      }
+    },
+    {
+      "elementId": "text_168",
+      "elementType": "text",
+      "bounds": [
+        766,
+        250,
+        138,
+        16
+      ],
+      "content": {
+        "text": "14:30  ·  电网设备",
+        "fontSize": 9,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_169",
+      "elementType": "text",
+      "bounds": [
+        766,
+        268,
+        138,
+        22
+      ],
+      "content": {
+        "text": "+6.20%   净流入 48.6 亿",
+        "fontSize": 11,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_170",
+      "elementType": "text",
+      "bounds": [
+        270,
+        446,
+        56,
+        14
+      ],
+      "content": {
+        "text": "09:30",
+        "fontSize": 8,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_171",
+      "elementType": "text",
+      "bounds": [
+        410,
+        446,
+        56,
+        14
+      ],
+      "content": {
+        "text": "10:30",
+        "fontSize": 8,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_172",
+      "elementType": "text",
+      "bounds": [
+        550,
+        446,
+        56,
+        14
+      ],
+      "content": {
+        "text": "11:30",
+        "fontSize": 8,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_173",
+      "elementType": "text",
+      "bounds": [
+        690,
+        446,
+        56,
+        14
+      ],
+      "content": {
+        "text": "13:30",
+        "fontSize": 8,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_174",
+      "elementType": "text",
+      "bounds": [
+        830,
+        446,
+        56,
+        14
+      ],
+      "content": {
+        "text": "14:30",
+        "fontSize": 8,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_175",
+      "elementType": "shape",
+      "bounds": [
+        936,
+        134,
+        1,
+        326
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "text_176",
+      "elementType": "text",
+      "bounds": [
+        960,
+        134,
+        222,
+        20
+      ],
+      "content": {
+        "text": "领涨与资金",
+        "fontSize": 12,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_177",
+      "elementType": "text",
+      "bounds": [
+        1182,
+        134,
+        90,
+        20
+      ],
+      "content": {
+        "text": "4 只",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_178",
+      "elementType": "shape",
+      "bounds": [
+        952,
+        165,
+        328,
+        46
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$blueSoft"
+      },
+      "adjustments": [
+        3000
+      ]
+    },
+    {
+      "elementId": "text_179",
+      "elementType": "text",
+      "bounds": [
+        960,
+        168,
+        100,
+        20
+      ],
+      "content": {
+        "text": "中国西电",
+        "fontSize": 11,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_180",
+      "elementType": "text",
+      "bounds": [
+        1064,
+        168,
+        64,
+        20
+      ],
+      "content": {
+        "text": "12.42",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_181",
+      "elementType": "text",
+      "bounds": [
+        1140,
+        168,
+        124,
+        20
+      ],
+      "content": {
+        "text": "+20.04%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_182",
+      "elementType": "text",
+      "bounds": [
+        960,
+        190,
+        130,
+        16
+      ],
+      "content": {
+        "text": "主力净流  8.2 亿",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_183",
+      "elementType": "line",
+      "bounds": [
+        1150,
+        192,
+        114,
+        14
+      ],
+      "viewBox": [
+        114,
+        14
+      ],
+      "points": "0.0,13.0 19.0,11.0 38.0,11.0 57.0,7.0 76.0,9.0 95.0,3.0 114.0,1.0",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "text_184",
+      "elementType": "text",
+      "bounds": [
+        960,
+        218,
+        100,
+        20
+      ],
+      "content": {
+        "text": "特变电工",
+        "fontSize": 11,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_185",
+      "elementType": "text",
+      "bounds": [
+        1064,
+        218,
+        64,
+        20
+      ],
+      "content": {
+        "text": "18.66",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_186",
+      "elementType": "text",
+      "bounds": [
+        1140,
+        218,
+        124,
+        20
+      ],
+      "content": {
+        "text": "+10.01%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_187",
+      "elementType": "text",
+      "bounds": [
+        960,
+        240,
+        130,
+        16
+      ],
+      "content": {
+        "text": "主力净流  6.7 亿",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_188",
+      "elementType": "line",
+      "bounds": [
+        1150,
+        242,
+        114,
+        14
+      ],
+      "viewBox": [
+        114,
+        14
+      ],
+      "points": "0.0,13.0 19.0,11.0 38.0,9.0 57.0,7.0 76.0,7.0 95.0,3.0 114.0,1.0",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "text_189",
+      "elementType": "text",
+      "bounds": [
+        960,
+        268,
+        100,
+        20
+      ],
+      "content": {
+        "text": "金盘科技",
+        "fontSize": 11,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_190",
+      "elementType": "text",
+      "bounds": [
+        1064,
+        268,
+        64,
+        20
+      ],
+      "content": {
+        "text": "68.20",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_191",
+      "elementType": "text",
+      "bounds": [
+        1140,
+        268,
+        124,
+        20
+      ],
+      "content": {
+        "text": "+11.37%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_192",
+      "elementType": "text",
+      "bounds": [
+        960,
+        290,
+        130,
+        16
+      ],
+      "content": {
+        "text": "主力净流  4.1 亿",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_193",
+      "elementType": "line",
+      "bounds": [
+        1150,
+        292,
+        114,
+        14
+      ],
+      "viewBox": [
+        114,
+        14
+      ],
+      "points": "0.0,13.0 19.0,11.0 38.0,7.0 57.0,7.0 76.0,5.0 95.0,3.0 114.0,1.0",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "text_194",
+      "elementType": "text",
+      "bounds": [
+        960,
+        318,
+        100,
+        20
+      ],
+      "content": {
+        "text": "四方股份",
+        "fontSize": 11,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_195",
+      "elementType": "text",
+      "bounds": [
+        1064,
+        318,
+        64,
+        20
+      ],
+      "content": {
+        "text": "21.38",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_196",
+      "elementType": "text",
+      "bounds": [
+        1140,
+        318,
+        124,
+        20
+      ],
+      "content": {
+        "text": "+9.98%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_197",
+      "elementType": "text",
+      "bounds": [
+        960,
+        340,
+        130,
+        16
+      ],
+      "content": {
+        "text": "主力净流  3.6 亿",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_198",
+      "elementType": "line",
+      "bounds": [
+        1150,
+        342,
+        114,
+        14
+      ],
+      "viewBox": [
+        114,
+        14
+      ],
+      "points": "0.0,13.0 19.0,11.0 38.0,5.0 57.0,7.0 76.0,3.0 95.0,3.0 114.0,1.0",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "text_199",
+      "elementType": "text",
+      "bounds": [
+        960,
+        376,
+        222,
+        20
+      ],
+      "content": {
+        "text": "资金结构",
+        "fontSize": 12,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_200",
+      "elementType": "text",
+      "bounds": [
+        1182,
+        376,
+        90,
+        20
+      ],
+      "content": {
+        "text": "亿元",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_201",
+      "elementType": "text",
+      "bounds": [
+        960,
+        404,
+        60,
+        18
+      ],
+      "content": {
+        "text": "超大单",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_202",
+      "elementType": "shape",
+      "bounds": [
+        1028,
+        410,
+        150,
+        5
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$track"
+      },
+      "adjustments": [
+        3000
+      ]
+    },
+    {
+      "elementId": "shape_203",
+      "elementType": "shape",
+      "bounds": [
+        1028,
+        410,
+        150,
+        5
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$red"
+      },
+      "adjustments": [
+        3000
+      ]
+    },
+    {
+      "elementId": "text_204",
+      "elementType": "text",
+      "bounds": [
+        1186,
+        404,
+        78,
+        18
+      ],
+      "content": {
+        "text": "+26.8",
+        "fontSize": 9,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_205",
+      "elementType": "text",
+      "bounds": [
+        960,
+        424,
+        60,
+        18
+      ],
+      "content": {
+        "text": "大单",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_206",
+      "elementType": "shape",
+      "bounds": [
+        1028,
+        430,
+        150,
+        5
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$track"
+      },
+      "adjustments": [
+        3000
+      ]
+    },
+    {
+      "elementId": "shape_207",
+      "elementType": "shape",
+      "bounds": [
+        1028,
+        430,
+        122,
+        5
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$red"
+      },
+      "adjustments": [
+        3000
+      ]
+    },
+    {
+      "elementId": "text_208",
+      "elementType": "text",
+      "bounds": [
+        1186,
+        424,
+        78,
+        18
+      ],
+      "content": {
+        "text": "+21.8",
+        "fontSize": 9,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_209",
+      "elementType": "text",
+      "bounds": [
+        960,
+        444,
+        60,
+        18
+      ],
+      "content": {
+        "text": "中小单",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_210",
+      "elementType": "shape",
+      "bounds": [
+        1028,
+        450,
+        150,
+        5
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$track"
+      },
+      "adjustments": [
+        3000
+      ]
+    },
+    {
+      "elementId": "shape_211",
+      "elementType": "shape",
+      "bounds": [
+        1028,
+        450,
+        103,
+        5
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$green"
+      },
+      "adjustments": [
+        3000
+      ]
+    },
+    {
+      "elementId": "text_212",
+      "elementType": "text",
+      "bounds": [
+        1186,
+        444,
+        78,
+        18
+      ],
+      "content": {
+        "text": "-18.4",
+        "fontSize": 9,
+        "color": "$green",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_213",
+      "elementType": "shape",
+      "bounds": [
+        216,
+        474,
+        1072,
+        338
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$surface"
+      }
+    },
+    {
+      "elementId": "shape_214",
+      "elementType": "shape",
+      "bounds": [
+        216,
+        473,
+        1072,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "text_215",
+      "elementType": "text",
+      "bounds": [
+        232,
+        486,
+        950,
+        20
+      ],
+      "content": {
+        "text": "核心标的",
+        "fontSize": 12,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_216",
+      "elementType": "text",
+      "bounds": [
+        1182,
+        486,
+        90,
+        20
+      ],
+      "content": {
+        "text": "7 / 42",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_217",
+      "elementType": "text",
+      "bounds": [
+        396,
+        486,
+        44,
+        20
+      ],
+      "content": {
+        "text": "全部",
+        "fontSize": 10,
+        "color": "$blue",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "center",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_218",
+      "elementType": "shape",
+      "bounds": [
+        404,
+        510,
+        28,
+        2
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$blue"
+      }
+    },
+    {
+      "elementId": "text_219",
+      "elementType": "text",
+      "bounds": [
+        444,
+        486,
+        44,
+        20
+      ],
+      "content": {
+        "text": "上游",
+        "fontSize": 10,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "center",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_220",
+      "elementType": "text",
+      "bounds": [
+        492,
+        486,
+        44,
+        20
+      ],
+      "content": {
+        "text": "中游",
+        "fontSize": 10,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "center",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_221",
+      "elementType": "text",
+      "bounds": [
+        540,
+        486,
+        44,
+        20
+      ],
+      "content": {
+        "text": "下游",
+        "fontSize": 10,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "center",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_222",
+      "elementType": "text",
+      "bounds": [
+        962,
+        486,
+        294,
+        20
+      ],
+      "content": {
+        "text": "电网设备  ·  按主力净流入排序  ·  实时",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_223",
+      "elementType": "text",
+      "bounds": [
+        248,
+        520,
+        220,
+        18
+      ],
+      "content": {
+        "text": "公司 / 产业环节",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_224",
+      "elementType": "text",
+      "bounds": [
+        486,
+        520,
+        100,
+        18
+      ],
+      "content": {
+        "text": "最新",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_225",
+      "elementType": "text",
+      "bounds": [
+        574,
+        520,
+        100,
+        18
+      ],
+      "content": {
+        "text": "涨跌幅",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_226",
+      "elementType": "text",
+      "bounds": [
+        674,
+        520,
+        100,
+        18
+      ],
+      "content": {
+        "text": "主力净流",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_227",
+      "elementType": "text",
+      "bounds": [
+        790,
+        520,
+        100,
+        18
+      ],
+      "content": {
+        "text": "换手",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_228",
+      "elementType": "text",
+      "bounds": [
+        876,
+        520,
+        100,
+        18
+      ],
+      "content": {
+        "text": "成交额",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_229",
+      "elementType": "text",
+      "bounds": [
+        994,
+        520,
+        100,
+        18
+      ],
+      "content": {
+        "text": "分时趋势",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "center",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_230",
+      "elementType": "text",
+      "bounds": [
+        1110,
+        520,
+        120,
+        18
+      ],
+      "content": {
+        "text": "5 日",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "center",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_231",
+      "elementType": "shape",
+      "bounds": [
+        232,
+        542,
+        1040,
+        33
+      ],
+      "shapeName": "roundRect",
+      "fill": {
+        "type": "solid",
+        "color": "$blueSoft"
+      },
+      "adjustments": [
+        3000
+      ]
+    },
+    {
+      "elementId": "text_232",
+      "elementType": "text",
+      "bounds": [
+        248,
+        544,
+        116,
+        30
+      ],
+      "content": {
+        "text": "中国西电",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_233",
+      "elementType": "text",
+      "bounds": [
+        366,
+        544,
+        112,
+        30
+      ],
+      "content": {
+        "text": "下游 · 电网设备",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_234",
+      "elementType": "text",
+      "bounds": [
+        462,
+        544,
+        72,
+        30
+      ],
+      "content": {
+        "text": "12.42",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_235",
+      "elementType": "text",
+      "bounds": [
+        550,
+        544,
+        84,
+        30
+      ],
+      "content": {
+        "text": "+20.04%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_236",
+      "elementType": "text",
+      "bounds": [
+        654,
+        544,
+        86,
+        30
+      ],
+      "content": {
+        "text": "8.2 亿",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_237",
+      "elementType": "text",
+      "bounds": [
+        768,
+        544,
+        66,
+        30
+      ],
+      "content": {
+        "text": "12.8%",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_238",
+      "elementType": "text",
+      "bounds": [
+        854,
+        544,
+        86,
+        30
+      ],
+      "content": {
+        "text": "68.4 亿",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_239",
+      "elementType": "line",
+      "bounds": [
+        1000,
+        551,
+        90,
+        16
+      ],
+      "viewBox": [
+        90,
+        16
+      ],
+      "points": "0.0,15.0 18.0,13.6 36.0,10.8 54.0,8.0 72.0,6.6 90.0,1.0",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "line_240",
+      "elementType": "line",
+      "bounds": [
+        1104,
+        551,
+        144,
+        16
+      ],
+      "viewBox": [
+        144,
+        16
+      ],
+      "points": "0.0,15.0 24.0,12.2 48.0,15.0 72.0,6.6 96.0,9.4 120.0,1.0 144.0,3.8",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "shape_241",
+      "elementType": "shape",
+      "bounds": [
+        248,
+        576,
+        1000,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_242",
+      "elementType": "text",
+      "bounds": [
+        248,
+        579,
+        116,
+        30
+      ],
+      "content": {
+        "text": "特变电工",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_243",
+      "elementType": "text",
+      "bounds": [
+        366,
+        579,
+        112,
+        30
+      ],
+      "content": {
+        "text": "中游 · 电力装备",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_244",
+      "elementType": "text",
+      "bounds": [
+        462,
+        579,
+        72,
+        30
+      ],
+      "content": {
+        "text": "18.66",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_245",
+      "elementType": "text",
+      "bounds": [
+        550,
+        579,
+        84,
+        30
+      ],
+      "content": {
+        "text": "+10.01%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_246",
+      "elementType": "text",
+      "bounds": [
+        654,
+        579,
+        86,
+        30
+      ],
+      "content": {
+        "text": "6.7 亿",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_247",
+      "elementType": "text",
+      "bounds": [
+        768,
+        579,
+        66,
+        30
+      ],
+      "content": {
+        "text": "6.2%",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_248",
+      "elementType": "text",
+      "bounds": [
+        854,
+        579,
+        86,
+        30
+      ],
+      "content": {
+        "text": "102.8 亿",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_249",
+      "elementType": "line",
+      "bounds": [
+        1000,
+        586,
+        90,
+        16
+      ],
+      "viewBox": [
+        90,
+        16
+      ],
+      "points": "0.0,15.0 18.0,12.7 36.0,10.3 54.0,12.7 72.0,5.7 90.0,1.0",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "line_250",
+      "elementType": "line",
+      "bounds": [
+        1104,
+        586,
+        144,
+        16
+      ],
+      "viewBox": [
+        144,
+        16
+      ],
+      "points": "0.0,15.0 24.0,12.2 48.0,15.0 72.0,6.6 96.0,6.6 120.0,1.0 144.0,1.0",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "shape_251",
+      "elementType": "shape",
+      "bounds": [
+        248,
+        611,
+        1000,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_252",
+      "elementType": "text",
+      "bounds": [
+        248,
+        614,
+        116,
+        30
+      ],
+      "content": {
+        "text": "金盘科技",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_253",
+      "elementType": "text",
+      "bounds": [
+        366,
+        614,
+        112,
+        30
+      ],
+      "content": {
+        "text": "中游 · 电力装备",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_254",
+      "elementType": "text",
+      "bounds": [
+        462,
+        614,
+        72,
+        30
+      ],
+      "content": {
+        "text": "68.20",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_255",
+      "elementType": "text",
+      "bounds": [
+        550,
+        614,
+        84,
+        30
+      ],
+      "content": {
+        "text": "+11.37%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_256",
+      "elementType": "text",
+      "bounds": [
+        654,
+        614,
+        86,
+        30
+      ],
+      "content": {
+        "text": "4.1 亿",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_257",
+      "elementType": "text",
+      "bounds": [
+        768,
+        614,
+        66,
+        30
+      ],
+      "content": {
+        "text": "8.1%",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_258",
+      "elementType": "text",
+      "bounds": [
+        854,
+        614,
+        86,
+        30
+      ],
+      "content": {
+        "text": "32.6 亿",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_259",
+      "elementType": "line",
+      "bounds": [
+        1000,
+        621,
+        90,
+        16
+      ],
+      "viewBox": [
+        90,
+        16
+      ],
+      "points": "0.0,13.0 18.0,15.0 36.0,11.0 54.0,7.0 72.0,9.0 90.0,1.0",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "line_260",
+      "elementType": "line",
+      "bounds": [
+        1104,
+        621,
+        144,
+        16
+      ],
+      "viewBox": [
+        144,
+        16
+      ],
+      "points": "0.0,15.0 24.0,12.7 48.0,15.0 72.0,8.0 96.0,10.3 120.0,3.3 144.0,1.0",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "shape_261",
+      "elementType": "shape",
+      "bounds": [
+        248,
+        646,
+        1000,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_262",
+      "elementType": "text",
+      "bounds": [
+        248,
+        649,
+        116,
+        30
+      ],
+      "content": {
+        "text": "四方股份",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_263",
+      "elementType": "text",
+      "bounds": [
+        366,
+        649,
+        112,
+        30
+      ],
+      "content": {
+        "text": "上游 · 控制系统",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_264",
+      "elementType": "text",
+      "bounds": [
+        462,
+        649,
+        72,
+        30
+      ],
+      "content": {
+        "text": "21.38",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_265",
+      "elementType": "text",
+      "bounds": [
+        550,
+        649,
+        84,
+        30
+      ],
+      "content": {
+        "text": "+9.98%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_266",
+      "elementType": "text",
+      "bounds": [
+        654,
+        649,
+        86,
+        30
+      ],
+      "content": {
+        "text": "3.6 亿",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_267",
+      "elementType": "text",
+      "bounds": [
+        768,
+        649,
+        66,
+        30
+      ],
+      "content": {
+        "text": "5.6%",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_268",
+      "elementType": "text",
+      "bounds": [
+        854,
+        649,
+        86,
+        30
+      ],
+      "content": {
+        "text": "18.2 亿",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_269",
+      "elementType": "line",
+      "bounds": [
+        1000,
+        656,
+        90,
+        16
+      ],
+      "viewBox": [
+        90,
+        16
+      ],
+      "points": "0.0,15.0 18.0,10.3 36.0,12.7 54.0,8.0 72.0,3.3 90.0,1.0",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "line_270",
+      "elementType": "line",
+      "bounds": [
+        1104,
+        656,
+        144,
+        16
+      ],
+      "viewBox": [
+        144,
+        16
+      ],
+      "points": "0.0,15.0 24.0,12.2 48.0,15.0 72.0,6.6 96.0,6.6 120.0,1.0 144.0,3.8",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "shape_271",
+      "elementType": "shape",
+      "bounds": [
+        248,
+        681,
+        1000,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_272",
+      "elementType": "text",
+      "bounds": [
+        248,
+        684,
+        116,
+        30
+      ],
+      "content": {
+        "text": "国电南瑞",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_273",
+      "elementType": "text",
+      "bounds": [
+        366,
+        684,
+        112,
+        30
+      ],
+      "content": {
+        "text": "上游 · 控制系统",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_274",
+      "elementType": "text",
+      "bounds": [
+        462,
+        684,
+        72,
+        30
+      ],
+      "content": {
+        "text": "26.72",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_275",
+      "elementType": "text",
+      "bounds": [
+        550,
+        684,
+        84,
+        30
+      ],
+      "content": {
+        "text": "+4.18%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_276",
+      "elementType": "text",
+      "bounds": [
+        654,
+        684,
+        86,
+        30
+      ],
+      "content": {
+        "text": "2.8 亿",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_277",
+      "elementType": "text",
+      "bounds": [
+        768,
+        684,
+        66,
+        30
+      ],
+      "content": {
+        "text": "2.1%",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_278",
+      "elementType": "text",
+      "bounds": [
+        854,
+        684,
+        86,
+        30
+      ],
+      "content": {
+        "text": "28.4 亿",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_279",
+      "elementType": "line",
+      "bounds": [
+        1000,
+        691,
+        90,
+        16
+      ],
+      "viewBox": [
+        90,
+        16
+      ],
+      "points": "0.0,15.0 18.0,15.0 36.0,10.3 54.0,5.7 72.0,10.3 90.0,1.0",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "line_280",
+      "elementType": "line",
+      "bounds": [
+        1104,
+        691,
+        144,
+        16
+      ],
+      "viewBox": [
+        144,
+        16
+      ],
+      "points": "0.0,15.0 24.0,12.2 48.0,15.0 72.0,6.6 96.0,9.4 120.0,1.0 144.0,1.0",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "shape_281",
+      "elementType": "shape",
+      "bounds": [
+        248,
+        716,
+        1000,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_282",
+      "elementType": "text",
+      "bounds": [
+        248,
+        719,
+        116,
+        30
+      ],
+      "content": {
+        "text": "许继电气",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_283",
+      "elementType": "text",
+      "bounds": [
+        366,
+        719,
+        112,
+        30
+      ],
+      "content": {
+        "text": "中游 · 电力装备",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_284",
+      "elementType": "text",
+      "bounds": [
+        462,
+        719,
+        72,
+        30
+      ],
+      "content": {
+        "text": "31.09",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_285",
+      "elementType": "text",
+      "bounds": [
+        550,
+        719,
+        84,
+        30
+      ],
+      "content": {
+        "text": "+3.62%",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_286",
+      "elementType": "text",
+      "bounds": [
+        654,
+        719,
+        86,
+        30
+      ],
+      "content": {
+        "text": "1.9 亿",
+        "fontSize": 10,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_287",
+      "elementType": "text",
+      "bounds": [
+        768,
+        719,
+        66,
+        30
+      ],
+      "content": {
+        "text": "4.2%",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_288",
+      "elementType": "text",
+      "bounds": [
+        854,
+        719,
+        86,
+        30
+      ],
+      "content": {
+        "text": "21.7 亿",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_289",
+      "elementType": "line",
+      "bounds": [
+        1000,
+        726,
+        90,
+        16
+      ],
+      "viewBox": [
+        90,
+        16
+      ],
+      "points": "0.0,11.5 18.0,15.0 36.0,8.0 54.0,11.5 72.0,4.5 90.0,1.0",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "line_290",
+      "elementType": "line",
+      "bounds": [
+        1104,
+        726,
+        144,
+        16
+      ],
+      "viewBox": [
+        144,
+        16
+      ],
+      "points": "0.0,15.0 24.0,12.7 48.0,15.0 72.0,8.0 96.0,8.0 120.0,3.3 144.0,1.0",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "shape_291",
+      "elementType": "shape",
+      "bounds": [
+        248,
+        751,
+        1000,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$soft"
+      }
+    },
+    {
+      "elementId": "text_292",
+      "elementType": "text",
+      "bounds": [
+        248,
+        754,
+        116,
+        30
+      ],
+      "content": {
+        "text": "平高电气",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_293",
+      "elementType": "text",
+      "bounds": [
+        366,
+        754,
+        112,
+        30
+      ],
+      "content": {
+        "text": "中游 · 电力装备",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_294",
+      "elementType": "text",
+      "bounds": [
+        462,
+        754,
+        72,
+        30
+      ],
+      "content": {
+        "text": "19.86",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_295",
+      "elementType": "text",
+      "bounds": [
+        550,
+        754,
+        84,
+        30
+      ],
+      "content": {
+        "text": "-0.54%",
+        "fontSize": 10,
+        "color": "$green",
+        "fontFamily": "Arial",
+        "bold": true,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_296",
+      "elementType": "text",
+      "bounds": [
+        654,
+        754,
+        86,
+        30
+      ],
+      "content": {
+        "text": "-1.2 亿",
+        "fontSize": 10,
+        "color": "$green",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_297",
+      "elementType": "text",
+      "bounds": [
+        768,
+        754,
+        66,
+        30
+      ],
+      "content": {
+        "text": "3.5%",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_298",
+      "elementType": "text",
+      "bounds": [
+        854,
+        754,
+        86,
+        30
+      ],
+      "content": {
+        "text": "12.8 亿",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_299",
+      "elementType": "line",
+      "bounds": [
+        1000,
+        761,
+        90,
+        16
+      ],
+      "viewBox": [
+        90,
+        16
+      ],
+      "points": "0.0,1.0 18.0,4.5 36.0,8.0 54.0,4.5 72.0,11.5 90.0,15.0",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$green"
+      }
+    },
+    {
+      "elementId": "line_300",
+      "elementType": "line",
+      "bounds": [
+        1104,
+        761,
+        144,
+        16
+      ],
+      "viewBox": [
+        144,
+        16
+      ],
+      "points": "0.0,15.0 24.0,12.2 48.0,15.0 72.0,6.6 96.0,9.4 120.0,1.0 144.0,3.8",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$green"
+      }
+    },
+    {
+      "elementId": "text_301",
+      "elementType": "text",
+      "bounds": [
+        248,
+        794,
+        1024,
+        14
+      ],
+      "content": {
+        "text": "价格与资金为设计演示数据    ·    Esc 清除板块选择    ·    再次点击进入个股详情",
+        "fontSize": 8,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_302",
+      "elementType": "shape",
+      "bounds": [
+        1288,
+        48,
+        392,
+        764
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$rail"
+      }
+    },
+    {
+      "elementId": "shape_303",
+      "elementType": "shape",
+      "bounds": [
+        1288,
+        48,
+        1,
+        764
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "text_304",
+      "elementType": "text",
+      "bounds": [
+        1304,
+        62,
+        270,
+        20
+      ],
+      "content": {
+        "text": "事件流",
+        "fontSize": 12,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_305",
+      "elementType": "text",
+      "bounds": [
+        1574,
+        62,
+        90,
+        20
+      ],
+      "content": {
+        "text": "7×24",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_306",
+      "elementType": "shape",
+      "bounds": [
+        1304,
+        99,
+        2,
+        32
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$blue"
+      }
+    },
+    {
+      "elementId": "text_307",
+      "elementType": "text",
+      "bounds": [
+        1318,
+        94,
+        38,
+        18
+      ],
+      "content": {
+        "text": "09:52",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_308",
+      "elementType": "text",
+      "bounds": [
+        1362,
+        94,
+        40,
+        18
+      ],
+      "content": {
+        "text": "政策",
+        "fontSize": 9,
+        "color": "$blue",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_309",
+      "elementType": "text",
+      "bounds": [
+        1318,
+        113,
+        342,
+        22
+      ],
+      "content": {
+        "text": "国家能源局发布电网升级行动方案",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_310",
+      "elementType": "shape",
+      "bounds": [
+        1304,
+        145,
+        2,
+        32
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$blue"
+      }
+    },
+    {
+      "elementId": "text_311",
+      "elementType": "text",
+      "bounds": [
+        1318,
+        140,
+        38,
+        18
+      ],
+      "content": {
+        "text": "09:46",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_312",
+      "elementType": "text",
+      "bounds": [
+        1362,
+        140,
+        40,
+        18
+      ],
+      "content": {
+        "text": "中标",
+        "fontSize": 9,
+        "color": "$blue",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_313",
+      "elementType": "text",
+      "bounds": [
+        1318,
+        159,
+        342,
+        22
+      ],
+      "content": {
+        "text": "中国西电披露特高压设备中标公告",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_314",
+      "elementType": "shape",
+      "bounds": [
+        1304,
+        191,
+        2,
+        32
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "text_315",
+      "elementType": "text",
+      "bounds": [
+        1318,
+        186,
+        38,
+        18
+      ],
+      "content": {
+        "text": "09:38",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_316",
+      "elementType": "text",
+      "bounds": [
+        1362,
+        186,
+        40,
+        18
+      ],
+      "content": {
+        "text": "宏观",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_317",
+      "elementType": "text",
+      "bounds": [
+        1318,
+        205,
+        342,
+        22
+      ],
+      "content": {
+        "text": "国常会部署扩大有效投资",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_318",
+      "elementType": "shape",
+      "bounds": [
+        1304,
+        237,
+        2,
+        32
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "text_319",
+      "elementType": "text",
+      "bounds": [
+        1318,
+        232,
+        38,
+        18
+      ],
+      "content": {
+        "text": "09:27",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_320",
+      "elementType": "text",
+      "bounds": [
+        1362,
+        232,
+        40,
+        18
+      ],
+      "content": {
+        "text": "海外",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_321",
+      "elementType": "text",
+      "bounds": [
+        1318,
+        251,
+        342,
+        22
+      ],
+      "content": {
+        "text": "美债收益率回落，等待通胀数据",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_322",
+      "elementType": "shape",
+      "bounds": [
+        1304,
+        283,
+        2,
+        32
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "text_323",
+      "elementType": "text",
+      "bounds": [
+        1318,
+        278,
+        38,
+        18
+      ],
+      "content": {
+        "text": "09:15",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_324",
+      "elementType": "text",
+      "bounds": [
+        1362,
+        278,
+        40,
+        18
+      ],
+      "content": {
+        "text": "行业",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_325",
+      "elementType": "text",
+      "bounds": [
+        1318,
+        297,
+        342,
+        22
+      ],
+      "content": {
+        "text": "存储芯片现货价格延续上涨",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_326",
+      "elementType": "shape",
+      "bounds": [
+        1304,
+        329,
+        2,
+        32
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$blue"
+      }
+    },
+    {
+      "elementId": "text_327",
+      "elementType": "text",
+      "bounds": [
+        1318,
+        324,
+        38,
+        18
+      ],
+      "content": {
+        "text": "09:04",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_328",
+      "elementType": "text",
+      "bounds": [
+        1362,
+        324,
+        40,
+        18
+      ],
+      "content": {
+        "text": "资金",
+        "fontSize": 9,
+        "color": "$blue",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_329",
+      "elementType": "text",
+      "bounds": [
+        1318,
+        343,
+        342,
+        22
+      ],
+      "content": {
+        "text": "电网设备主力净流入创日内新高",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_330",
+      "elementType": "shape",
+      "bounds": [
+        1304,
+        382,
+        360,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "text_331",
+      "elementType": "text",
+      "bounds": [
+        1304,
+        396,
+        270,
+        20
+      ],
+      "content": {
+        "text": "全球市场",
+        "fontSize": 12,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_332",
+      "elementType": "text",
+      "bounds": [
+        1574,
+        396,
+        90,
+        20
+      ],
+      "content": {
+        "text": "延迟 15 分钟",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_333",
+      "elementType": "text",
+      "bounds": [
+        1304,
+        426,
+        104,
+        24
+      ],
+      "content": {
+        "text": "伦敦金",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_334",
+      "elementType": "text",
+      "bounds": [
+        1410,
+        426,
+        104,
+        24
+      ],
+      "content": {
+        "text": "4,081.01",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_335",
+      "elementType": "text",
+      "bounds": [
+        1520,
+        426,
+        60,
+        24
+      ],
+      "content": {
+        "text": "+0.31%",
+        "fontSize": 9,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_336",
+      "elementType": "line",
+      "bounds": [
+        1594,
+        431,
+        66,
+        14
+      ],
+      "viewBox": [
+        66,
+        14
+      ],
+      "points": "0.0,13.0 11.0,10.6 22.0,13.0 33.0,5.8 44.0,8.2 55.0,1.0 66.0,3.4",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "text_337",
+      "elementType": "text",
+      "bounds": [
+        1304,
+        457,
+        104,
+        24
+      ],
+      "content": {
+        "text": "NYMEX 原油",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_338",
+      "elementType": "text",
+      "bounds": [
+        1410,
+        457,
+        104,
+        24
+      ],
+      "content": {
+        "text": "91.09",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_339",
+      "elementType": "text",
+      "bounds": [
+        1520,
+        457,
+        60,
+        24
+      ],
+      "content": {
+        "text": "+4.91%",
+        "fontSize": 9,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_340",
+      "elementType": "line",
+      "bounds": [
+        1594,
+        462,
+        66,
+        14
+      ],
+      "viewBox": [
+        66,
+        14
+      ],
+      "points": "0.0,13.0 11.0,10.6 22.0,10.6 33.0,5.8 44.0,8.2 55.0,1.0 66.0,3.4",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "text_341",
+      "elementType": "text",
+      "bounds": [
+        1304,
+        488,
+        104,
+        24
+      ],
+      "content": {
+        "text": "美债 10 年",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_342",
+      "elementType": "text",
+      "bounds": [
+        1410,
+        488,
+        104,
+        24
+      ],
+      "content": {
+        "text": "4.687%",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_343",
+      "elementType": "text",
+      "bounds": [
+        1520,
+        488,
+        60,
+        24
+      ],
+      "content": {
+        "text": "+36.1bp",
+        "fontSize": 9,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_344",
+      "elementType": "line",
+      "bounds": [
+        1594,
+        493,
+        66,
+        14
+      ],
+      "viewBox": [
+        66,
+        14
+      ],
+      "points": "0.0,13.0 11.0,10.6 22.0,8.2 33.0,5.8 44.0,8.2 55.0,1.0 66.0,3.4",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "text_345",
+      "elementType": "text",
+      "bounds": [
+        1304,
+        519,
+        104,
+        24
+      ],
+      "content": {
+        "text": "美元指数",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_346",
+      "elementType": "text",
+      "bounds": [
+        1410,
+        519,
+        104,
+        24
+      ],
+      "content": {
+        "text": "98.42",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_347",
+      "elementType": "text",
+      "bounds": [
+        1520,
+        519,
+        60,
+        24
+      ],
+      "content": {
+        "text": "+0.18%",
+        "fontSize": 9,
+        "color": "$red",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_348",
+      "elementType": "line",
+      "bounds": [
+        1594,
+        524,
+        66,
+        14
+      ],
+      "viewBox": [
+        66,
+        14
+      ],
+      "points": "0.0,13.0 11.0,10.6 22.0,5.8 33.0,5.8 44.0,8.2 55.0,1.0 66.0,3.4",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$red"
+      }
+    },
+    {
+      "elementId": "text_349",
+      "elementType": "text",
+      "bounds": [
+        1304,
+        550,
+        104,
+        24
+      ],
+      "content": {
+        "text": "美元 / 离岸",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_350",
+      "elementType": "text",
+      "bounds": [
+        1410,
+        550,
+        104,
+        24
+      ],
+      "content": {
+        "text": "7.0842",
+        "fontSize": 10,
+        "color": "$text",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_351",
+      "elementType": "text",
+      "bounds": [
+        1520,
+        550,
+        60,
+        24
+      ],
+      "content": {
+        "text": "-0.12%",
+        "fontSize": 9,
+        "color": "$green",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "line_352",
+      "elementType": "line",
+      "bounds": [
+        1594,
+        555,
+        66,
+        14
+      ],
+      "viewBox": [
+        66,
+        14
+      ],
+      "points": "0.0,13.0 11.0,10.6 22.0,3.4 33.0,5.8 44.0,8.2 55.0,1.0 66.0,3.4",
+      "curve": "smooth",
+      "border": {
+        "style": "solid",
+        "width": 1.1,
+        "color": "$green"
+      }
+    },
+    {
+      "elementId": "shape_353",
+      "elementType": "shape",
+      "bounds": [
+        1304,
+        594,
+        360,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "text_354",
+      "elementType": "text",
+      "bounds": [
+        1304,
+        608,
+        270,
+        20
+      ],
+      "content": {
+        "text": "风险与日历",
+        "fontSize": 12,
+        "color": "$text",
+        "fontFamily": "MiSans",
+        "bold": true,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_355",
+      "elementType": "text",
+      "bounds": [
+        1574,
+        608,
+        90,
+        20
+      ],
+      "content": {
+        "text": "3 项",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "right",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_356",
+      "elementType": "text",
+      "bounds": [
+        1304,
+        640,
+        52,
+        26
+      ],
+      "content": {
+        "text": "10:00",
+        "fontSize": 9,
+        "color": "$amber",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_357",
+      "elementType": "text",
+      "bounds": [
+        1364,
+        640,
+        296,
+        26
+      ],
+      "content": {
+        "text": "国内 · 规模以上工业企业利润",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_358",
+      "elementType": "text",
+      "bounds": [
+        1304,
+        676,
+        52,
+        26
+      ],
+      "content": {
+        "text": "14:30",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_359",
+      "elementType": "text",
+      "bounds": [
+        1364,
+        676,
+        296,
+        26
+      ],
+      "content": {
+        "text": "美国 · 初请失业金人数",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_360",
+      "elementType": "text",
+      "bounds": [
+        1304,
+        712,
+        52,
+        26
+      ],
+      "content": {
+        "text": "明日",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "Arial",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "text_361",
+      "elementType": "text",
+      "bounds": [
+        1364,
+        712,
+        296,
+        26
+      ],
+      "content": {
+        "text": "国内 · 电网设备招标结果",
+        "fontSize": 10,
+        "color": "$sub",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    },
+    {
+      "elementId": "shape_362",
+      "elementType": "shape",
+      "bounds": [
+        1304,
+        752,
+        360,
+        1
+      ],
+      "shapeName": "rect",
+      "fill": {
+        "type": "solid",
+        "color": "$line"
+      }
+    },
+    {
+      "elementId": "text_363",
+      "elementType": "text",
+      "bounds": [
+        1304,
+        766,
+        360,
+        20
+      ],
+      "content": {
+        "text": "● 行情正常    ● 快讯正常    ○ 商品延迟",
+        "fontSize": 9,
+        "color": "$muted",
+        "fontFamily": "MiSans",
+        "bold": false,
+        "align": [
+          "left",
+          "middle"
+        ],
+        "wrap": false,
+        "lineHeight": 1.15
+      }
+    }
+  ]
+}

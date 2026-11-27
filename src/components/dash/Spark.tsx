@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useZoom } from "./ZoomCtx";
+import { UP_SOFT, DOWN_SOFT, FLAT_SOFT } from "@/lib/colors";
 
 interface SparkProps {
   points: { t: string; p: number }[];
@@ -80,15 +81,14 @@ export function Spark({ points, prec, width = 120, height = 36, fluid = false, e
     }
     const Y = (v: number) => height - 3 - ((v - min) / (max - min)) * (height - 6);
     const last = ps[ps.length - 1];
-    // mini 分时图专用亮度: 400 级在暗底偏暗, 提到 300 级 (rose-300/emerald-300/slate-300)
-    const color =
-      last - prec > 0 ? "#fda4af" : last - prec < 0 ? "#6ee7b7" : "#cbd5e1";
+    // mini 分时图使用独立的柔和语义色，保持与主涨跌色相同的亮度关系。
+    const color = last - prec > 0 ? UP_SOFT : last - prec < 0 ? DOWN_SOFT : FLAT_SOFT;
     const line = points.map((d, i) => `${xs[i].toFixed(1)},${Y(d.p).toFixed(1)}`).join(" ");
     const area = `${xs[0].toFixed(1)},${height - 1} ${line} ${xs[xs.length - 1].toFixed(1)},${height - 1}`;
     return { line, area, refY: Y(prec), color };
   }, [points, prec, width, height, session]);
 
-  if (!line) return <div style={{ width: fluid ? "100%" : width, height }} className="flex items-center justify-center text-[10px] text-slate-600">{emptyLabel}</div>;
+  if (!line) return <div style={{ width: fluid ? "100%" : width, height }} className="flex items-center justify-center text-meta text-db-faint">{emptyLabel}</div>;
 
   return (
     <svg
