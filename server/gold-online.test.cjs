@@ -88,11 +88,16 @@ function writeLocalAssets(box) {
     const d = new Date(Date.now() + offset), p = (n) => String(n).padStart(2, "0");
     return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
   };
+  // 写入顺序=旧→新且每写显式 bump mtime：生产 latestGoldFile() 按 mtime 取最新。
+  // 只按循环顺序写不够——同秒粒度下两个文件 mtime 相同，排序不稳定，旧价格(3990)会赢。
   for (const [offset, price] of [[-3600e3, 3990], [0, 4000]]) {
-    fs.writeFileSync(path.join(box.dataDir, `gold_data_${stamp(offset)}.json`), JSON.stringify({
+    const file = path.join(box.dataDir, `gold_data_${stamp(offset)}.json`);
+    fs.writeFileSync(file, JSON.stringify({
       gold_price: { prices: { USD: { price }, CNY: { price: price * 7.2 } }, intraday: {} },
       live_treasury_yields: { date: "2026-11-25", yields: { "10Y": 4.4 } },
     }));
+    const t = new Date(Date.now() + offset);
+    fs.utimesSync(file, t, t);
   }
   fs.mkdirSync(path.dirname(box.dbPath), { recursive: true });
   const db = new DatabaseSync(box.dbPath);
